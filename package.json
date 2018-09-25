@@ -1,0 +1,22 @@
+{
+  "name": "hamlet_processor",
+  "version": "1.0.0",
+  "description": "Sawtooth Processor for Hamlet Loyalty",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "big-integer": "^1.6.36",
+    "google-protobuf": "^3.6.1",
+    "jsbn": "^1.1.0",
+    "sawtooth-sdk": "^1.0.5"
+  },
+  "devDependencies": {
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
+}
