@@ -5,7 +5,7 @@ const _timeout = 2000
 
 // ASSET FUNCTIONS
 const getAsset = (name, addressCache, context) => {
-  let address = addresser.makeAssetAddress(name)
+  const address = addresser.makeAssetAddress(name)
   context.getState(
     [address],
     this.timeout

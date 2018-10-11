@@ -7,6 +7,8 @@ const rule_pb = require('./protos/rule_pb')
 
 const { setAccount, getAccount } = require('./account/accountState')
 const { setAsset, getAsset } = require('./asset/assetState')
+const { addHolding, setHolding, getHolding } = require('./holding/holdingState')
+
 const addresser = require('./hamletAddresser/addresser')
 
 
@@ -117,7 +119,13 @@ class HamletState {
   }
 
   // HOLDING FUNCTIONS
+  setHoldingState(id, label, description, publicKey, asset, quantity){
+    return setHolding(id, label, description, publicKey, asset, quantity, this.addressCache, this.context)
+  }
 
+  addHoldingToAccount(publicKey, id){
+    return addHolding(publicKey, id, this.addressCache, this.context)
+  }
 
   // OFFER FUNCTIONS
 
