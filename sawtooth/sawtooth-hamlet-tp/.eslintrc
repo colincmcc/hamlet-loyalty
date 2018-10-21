@@ -1,0 +1,7 @@
+{
+  "parser": "eslint",
+  "parserOptions": { },
+  "rules": {},
+  "extends": ["airbnb-base"],
+  "env": {}
+}
