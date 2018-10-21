@@ -1,0 +1,410 @@
+# STOP: please run k8-sawtooth-services.yaml first!
+# These deployments create 3 Sawtooth nodes, networked through services
+# built with the k8-sawtooth-services.yaml file.
+# These deployments are not stateful.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    name: sawtooth-0
+    app: sawtooth
+  name: sawtooth-0
+  namespace: sawtooth
+spec:
+  selector:
+    matchLabels:
+      name: sawtooth-0
+  template:
+    metadata:
+      labels:
+        name: sawtooth-0
+    spec:
+      containers:
+      - image: colincmcc/sawtooth-hamlet-tp:latest
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-hamlet-tp-js
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - nodejs ./src/index.js -h tcp://$HOSTNAME:4004
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-0-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-0-key-dir
+      - args:
+        - -c
+        - intkey-tp-python -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-intkey-tp-python:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-intkey-tp-python
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-0-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-0-key-dir
+      - args:
+        - -c
+        - poet-validator-registry-tp -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-poet-validator-registry-tp:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-poet-validator-registry-tp
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-0-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-0-key-dir
+      - args:
+        - -c
+        - if [ ! -e /etc/sawtooth/keys/validator.priv ]; then sawadm keygen; fi
+          && if [ ! -e config-genesis.batch ]; then sawset genesis -k /etc/sawtooth/keys/validator.priv
+          -o config-genesis.batch; fi && if [ ! -e config.batch ]; then sawset proposal
+          create -k /etc/sawtooth/keys/validator.priv sawtooth.consensus.algorithm=poet
+          sawtooth.poet.report_public_key_pem="$(cat /etc/sawtooth/simulator_rk_pub.pem)"
+          sawtooth.poet.valid_enclave_measurements=$(poet enclave measurement) sawtooth.poet.valid_enclave_basenames=$(poet
+          enclave basename) sawtooth.poet.initial_wait_time=15 sawtooth.poet.target_wait_time=15
+          sawtooth.publisher.max_batches_per_block=200 sawtooth.poet.key_block_claim_limit=100000
+          sawtooth.poet.ztest_minimum_win_count=100000 -o config.batch; fi && if
+          [ ! -e poet_genesis.batch ]; then poet registration create -k /etc/sawtooth/keys/validator.priv
+          -o poet_genesis.batch; fi && if [ ! -e /var/lib/sawtooth/genesis.batch
+          ]; then sawadm genesis config-genesis.batch config.batch poet_genesis.batch;
+          fi && if [ ! -e /root/.sawtooth/keys/my_key.priv ]; then sawtooth keygen
+          my_key; fi && sawtooth-validator -vv --endpoint tcp://$SAWTOOTH_0_SERVICE_HOST:8800
+          --bind component:tcp://eth0:4004 --bind network:tcp://eth0:8800 --peers
+          tcp://$SAWTOOTH_1_SERVICE_HOST:8800 --peers tcp://$SAWTOOTH_2_SERVICE_HOST:8800
+          --peers tcp://$SAWTOOTH_3_SERVICE_HOST:8800 --peers tcp://$SAWTOOTH_4_SERVICE_HOST:8800
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-validator:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-validator
+        ports:
+        - containerPort: 4004
+          name: tp
+          protocol: TCP
+        - containerPort: 8800
+          name: validators
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-0-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-0-key-dir
+      - args:
+        - -c
+        - echo 'url = "http://'$HOSTNAME':8008"' > etc/sawtooth/cli.toml && sawtooth keygen && tail -f /dev/null
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-all:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-shell
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-0-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-0-key-dir
+      - args:
+        - -c
+        - settings-tp -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-settings-tp:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-settings-tp
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-0-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-0-key-dir
+      - args:
+        - -c
+        - sawtooth-rest-api -B $HOSTNAME:8008 -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-rest-api:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-rest-api
+        ports:
+        - containerPort: 8008
+          name: api
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-0-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-0-key-dir
+      dnsPolicy: ClusterFirst
+      volumes:
+      - emptyDir: {}
+        name: sawtooth-0-sawtooth-dir
+      - emptyDir: {}
+        name: sawtooth-0-key-dir
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    name: sawtooth-1
+    app: sawtooth
+  name: sawtooth-1
+  namespace: sawtooth
+spec:
+  selector:
+    matchLabels:
+      name: sawtooth-1
+  template:
+    metadata:
+      labels:
+        name: sawtooth-1
+    spec:
+      containers:
+      - image: colincmcc/sawtooth-hamlet-tp:latest
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - nodejs ./src/index.js -h tcp://$HOSTNAME:4004
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-hamlet-tp-js
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-1-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-1-key-dir
+      - args:
+        - -c
+        - intkey-tp-python -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-intkey-tp-python:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-intkey-tp-python
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-1-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-1-key-dir
+      - args:
+        - -c
+        - poet-validator-registry-tp -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-poet-validator-registry-tp:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-poet-validator-registry-tp
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-1-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-1-key-dir
+      - args:
+        - -c
+        - sawadm keygen && sawtooth keygen my_key && sawtooth-validator -vv --endpoint
+          tcp://$SAWTOOTH_1_SERVICE_HOST:8800 --bind component:tcp://eth0:4004 --bind
+          network:tcp://eth0:8800 --peers tcp://$SAWTOOTH_0_SERVICE_HOST:8800 --peers
+          tcp://$SAWTOOTH_2_SERVICE_HOST:8800 --peers tcp://$SAWTOOTH_3_SERVICE_HOST:8800
+          --peers tcp://$SAWTOOTH_4_SERVICE_HOST:8800
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-validator:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-validator
+        ports:
+        - containerPort: 4004
+          name: tp
+          protocol: TCP
+        - containerPort: 8800
+          name: validators
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-1-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-1-key-dir
+      - args:
+        - -c
+        -  echo 'url = "http://'$HOSTNAME':8008"' > etc/sawtooth/cli.toml && sawtooth keygen && tail -f /dev/null
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-all:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-shell
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-1-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-1-key-dir
+      - args:
+        - -c
+        - settings-tp -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-settings-tp:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-settings-tp
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-1-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-1-key-dir
+      - args:
+        - -c
+        - sawtooth-rest-api -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-rest-api:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-rest-api
+        ports:
+        - containerPort: 8008
+          name: api
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-1-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-1-key-dir
+      restartPolicy: Always
+      volumes:
+      - emptyDir: {}
+        name: sawtooth-1-sawtooth-dir
+      - emptyDir: {}
+        name: sawtooth-1-key-dir
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    name: sawtooth-2
+    app: sawtooth
+  name: sawtooth-2
+  namespace: sawtooth
+spec:
+  selector:
+    matchLabels:
+      name: sawtooth-2
+  template:
+    metadata:
+      labels:
+        name: sawtooth-2
+    spec:
+      containers:
+      - image: colincmcc/sawtooth-hamlet-tp:latest
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-hamlet-tp-js
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - nodejs ./src/index.js -h tcp://$HOSTNAME:4004
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-2-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-2-key-dir
+      - args:
+        - -c
+        - intkey-tp-python -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-intkey-tp-python:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-intkey-tp-python
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-2-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-2-key-dir
+      - args:
+        - -c
+        - poet-validator-registry-tp -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-poet-validator-registry-tp:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-poet-validator-registry-tp
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-2-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-2-key-dir
+      - args:
+        - -c
+        - sawadm keygen && sawtooth keygen my_key && sawtooth-validator -vv --endpoint
+          tcp://$SAWTOOTH_2_SERVICE_HOST:8800 --bind component:tcp://eth0:4004 --bind
+          network:tcp://eth0:8800 --peers tcp://$SAWTOOTH_0_SERVICE_HOST:8800 --peers
+          tcp://$SAWTOOTH_1_SERVICE_HOST:8800 --peers tcp://$SAWTOOTH_3_SERVICE_HOST:8800
+          --peers tcp://$SAWTOOTH_4_SERVICE_HOST:8800
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-validator:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-validator
+        ports:
+        - containerPort: 4004
+          name: tp
+          protocol: TCP
+        - containerPort: 8800
+          name: validators
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-2-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-2-key-dir
+      - args:
+        - -c
+        -  echo 'url = "http://'$HOSTNAME':8008"' > etc/sawtooth/cli.toml && sawtooth keygen && tail -f /dev/null
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-all:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-shell
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-2-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-2-key-dir
+      - args:
+        - -c
+        - settings-tp -vv -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-settings-tp:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-settings-tp
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-2-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-2-key-dir
+      - args:
+        - -c
+        - sawtooth-rest-api -C tcp://$HOSTNAME:4004
+        command:
+        - /bin/sh
+        image: hyperledger/sawtooth-rest-api:1.0
+        imagePullPolicy: IfNotPresent
+        name: sawtooth-rest-api
+        ports:
+        - containerPort: 8008
+          name: api
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/sawtooth
+          name: sawtooth-2-sawtooth-dir
+        - mountPath: /etc/sawtooth/keys/
+          name: sawtooth-2-key-dir
+      volumes:
+      - emptyDir: {}
+        name: sawtooth-2-sawtooth-dir
+      - emptyDir: {}
+        name: sawtooth-2-key-dir

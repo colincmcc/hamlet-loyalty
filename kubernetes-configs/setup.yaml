@@ -1,0 +1,32 @@
+# Creates and role-binds an account to access the K8 api.
+# Necessary for RethinkDB to find and link to other Rethink instances on the network
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: api-read-account
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: api-read
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - endpoints
+    verbs:
+      - list
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: bind-api-read
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: api-read
+subjects:
+  - kind: ServiceAccount
+    name: api-read-account

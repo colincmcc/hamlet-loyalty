@@ -1,0 +1,119 @@
+# Dev version of an effective cluster
+# Deploy with Kops
+
+apiVersion: kops/v1alpha2
+kind: Cluster
+metadata:
+  name: hamletcluster.sectorapp.io
+spec:
+  api:
+    dns: {}
+  authorization:
+    rbac: {}
+  channel: stable
+  cloudProvider: aws
+  configBase: s3://sawtooth-hamlet-app-state-store/hamletcluster.sectorapp.io
+  etcdClusters:
+  - etcdMembers:
+    - instanceGroup: master-us-east-2a
+      name: a
+    name: main
+  - etcdMembers:
+    - instanceGroup: master-us-east-2a
+      name: a
+    name: events
+  iam:
+    allowContainerRegistry: true
+    legacy: false
+  kubernetesApiAccess:
+  - 0.0.0.0/0
+  kubernetesVersion: v1.9.9
+  masterPublicName: api.sectorapp.io
+  networkCIDR: 10.0.0.0/16
+  networkID: vpc-0d6a4dab5235a1647
+  networking:
+    kubenet: {}
+  nonMasqueradeCIDR: 100.64.0.0/10
+  sshAccess:
+  - 0.0.0.0/0
+  subnets:
+  - cidr: 10.0.32.0/19
+    name: us-east-2a
+    type: Public
+    zone: us-east-2a
+  - cidr: 10.0.64.0/19
+    name: us-east-2b
+    type: Public
+    zone: us-east-2b
+  - cidr: 10.0.96.0/19
+    name: us-east-2c
+    type: Public
+    zone: us-east-2c
+  topology:
+    dns:
+      type: Public
+    masters: public
+    nodes: public
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: hamletcluster.sectorapp.io
+  name: master-us-east-2a
+spec:
+  image: kope.io/k8s-1.9-debian-jessie-amd64-hvm-ebs-2018-03-11
+  machineType: t2.medium
+  maxSize: 1
+  minSize: 1
+  maxPrice: "0.02"
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-us-east-2a
+  role: Master
+  subnets:
+  - us-east-2a
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: hamletcluster.sectorapp.io
+  name: spotMicroNodes
+spec:
+  image: kope.io/k8s-1.9-debian-jessie-amd64-hvm-ebs-2018-03-11
+  machineType: t2.micro
+  maxSize: 3
+  minSize: 2
+  maxPrice: "0.01"
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes
+  role: Node
+  subnets:
+  - us-east-2a
+  - us-east-2b
+  - us-east-2c
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  labels:
+    kops.k8s.io/cluster: hamletcluster.sectorapp.io
+  name: microNodes
+spec:
+  image: kope.io/k8s-1.9-debian-jessie-amd64-hvm-ebs-2018-03-11
+  machineType: t2.micro
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes
+  role: Node
+  subnets:
+  - us-east-2a
+  - us-east-2b
+  - us-east-2c

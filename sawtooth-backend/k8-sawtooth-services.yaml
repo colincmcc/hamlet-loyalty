@@ -1,0 +1,155 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sawtooth-0
+  namespace: sawtooth
+spec:
+  ports:
+  - name: "4004"
+    port: 4004
+    protocol: TCP
+    targetPort: 4004
+  - name: "8008"
+    port: 8008
+    protocol: TCP
+    targetPort: 8008
+  - name: "8080"
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  - name: "8800"
+    port: 8800
+    protocol: TCP
+    targetPort: 8800
+  selector:
+    name: sawtooth-0
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sawtooth-1
+  namespace: sawtooth
+spec:
+  ports:
+  - name: "4004"
+    port: 4004
+    protocol: TCP
+    targetPort: 4004
+  - name: "8008"
+    port: 8008
+    protocol: TCP
+    targetPort: 8008
+  - name: "8080"
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  - name: "8800"
+    port: 8800
+    protocol: TCP
+    targetPort: 8800
+  selector:
+    name: sawtooth-1
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sawtooth-2
+  namespace: sawtooth
+spec:
+  ports:
+  - name: "4004"
+    port: 4004
+    protocol: TCP
+    targetPort: 4004
+  - name: "8008"
+    port: 8008
+    protocol: TCP
+    targetPort: 8008
+  - name: "8080"
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  - name: "8800"
+    port: 8800
+    protocol: TCP
+    targetPort: 8800
+  selector:
+    name: sawtooth-2
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sawtooth-3
+  namespace: sawtooth
+spec:
+  ports:
+  - name: "4004"
+    port: 4004
+    protocol: TCP
+    targetPort: 4004
+  - name: "8008"
+    port: 8008
+    protocol: TCP
+    targetPort: 8008
+  - name: "8080"
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  - name: "8800"
+    port: 8800
+    protocol: TCP
+    targetPort: 8800
+  selector:
+    name: sawtooth-3
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sawtooth-external
+  labels:
+    app: sawtooth
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:465005727508:certificate/010232de-fd16-42a5-961f-01ad93d996c1
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443,8443"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 443
+    targetPort: 8008
+    protocol: TCP
+    name: rest
+  selector:
+    app: sawtooth
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name:  sawtooth-validator-lb
+  labels:
+    app: sawtooth
+spec:
+  ports:
+  - port: 4004
+    targetPort: 4004
+    protocol: TCP
+    name: validator
+  selector:
+    app: sawtooth
+
+---
