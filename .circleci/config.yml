@@ -10,7 +10,7 @@ jobs:
           at: "./hamlet-music-msa/code"
       - restore_cache:
           keys:
-            - cargo-v1-{{ checksum "Cargo.toml" }}-
+            - cargo-v1-{{ checksum "./hamlet-music-msa/code/Cargo.toml" }}-
             - cargo-v1-
       - run: cargo update
       - run: cargo fetch
@@ -19,7 +19,7 @@ jobs:
           paths:
             - Cargo.lock
       - save_cache:
-          key: cargo-v1-{{ checksum "Cargo.toml" }}-{{ checksum "Cargo.lock" }}
+          key: cargo-v1-{{ checksum "/hamlet-music-msa/code/Cargo.toml" }}-{{ checksum "Cargo.lock" }}
           paths:
             - /usr/local/cargo/registry
             - /usr/local/cargo/git
@@ -33,7 +33,7 @@ jobs:
           at: "./hamlet-music-msa/code"
       - restore_cache:
           keys:
-            - cargo-v1-{{ checksum "Cargo.toml" }}-{{ checksum "Cargo.lock" }}
+            - cargo-v1-{{ checksum "/hamlet-music-msa/code/Cargo.toml" }}-{{ checksum "/hamlet-music-msa/code/Cargo.lock" }}
       - run:
           name: Print version information
           command: rustc --version; cargo --version
@@ -63,7 +63,7 @@ jobs:
           at: "./hamlet-music-msa/code"
       - restore_cache:
           keys:
-            - cargo-v1-{{ checksum "Cargo.toml" }}-{{ checksum "Cargo.lock" }}
+            - cargo-v1-{{ checksum "/hamlet-music-msa/code/Cargo.toml" }}-{{ checksum "/hamlet-music-msa/code/Cargo.lock" }}
       - run:
           name: Print version information
           command: rustc --version; cargo --version
@@ -80,7 +80,7 @@ jobs:
           at: "./hamlet-music-msa/code"
       - restore_cache:
           keys:
-            - cargo-v1-{{ checksum "Cargo.toml" }}-{{ checksum "Cargo.lock" }}
+            - cargo-v1-{{ checksum "/hamlet-music-msa/code/Cargo.toml" }}-{{ checksum "/hamlet-music-msa/code/Cargo.lock" }}
       - run:
           name: Print version information
           command: rustc --version; cargo --version
