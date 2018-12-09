@@ -6,6 +6,8 @@ jobs:
     working_directory: /mnt/crate
     steps:
       - checkout
+      - attach_workspace:
+          at: "./hamlet-music-msa/code"
       - restore_cache:
           keys:
             - cargo-v1-{{ checksum "Cargo.toml" }}-
@@ -28,7 +30,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: "."
+          at: "./hamlet-music-msa/code"
       - restore_cache:
           keys:
             - cargo-v1-{{ checksum "Cargo.toml" }}-{{ checksum "Cargo.lock" }}
@@ -58,7 +60,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: "."
+          at: "./hamlet-music-msa/code"
       - restore_cache:
           keys:
             - cargo-v1-{{ checksum "Cargo.toml" }}-{{ checksum "Cargo.lock" }}
@@ -75,7 +77,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: "."
+          at: "./hamlet-music-msa/code"
       - restore_cache:
           keys:
             - cargo-v1-{{ checksum "Cargo.toml" }}-{{ checksum "Cargo.lock" }}
@@ -93,7 +95,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: "."
+          at: "./hamlet-music-msa/code"
       - run: mkdir target/coverage
       - run:
           name: Rerun the tests collecting coverage
@@ -113,7 +115,7 @@ jobs:
           path: target/coverage-merged
           destination: coverage-merged
       - persist_to_workspace:
-          root: "."
+          root: "./hamlet-music-msa/code"
           paths:
             - target/coverage
   codecov_upload:
@@ -125,7 +127,7 @@ jobs:
       # exactly as everything was during the test run.
       - checkout
       - attach_workspace:
-          at: "."
+          at: "./hamlet-music-msa/code"
       - run:
           name: Upload to Codecov
           command: bash <(curl -s https://codecov.io/bash)
