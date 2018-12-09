@@ -1,0 +1,14 @@
+{
+    "providers": {
+        "awscloudformation": {
+            "AuthRoleName": "hamletfrontendapp-20181022141249-authRole",
+            "UnauthRoleArn": "arn:aws:iam::465005727508:role/hamletfrontendapp-20181022141249-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::465005727508:role/hamletfrontendapp-20181022141249-authRole",
+            "Region": "us-east-2",
+            "DeploymentBucketName": "hamletfrontendapp-20181022141249-deployment",
+            "UnauthRoleName": "hamletfrontendapp-20181022141249-unauthRole",
+            "StackName": "hamletfrontendapp-20181022141249",
+            "StackId": "arn:aws:cloudformation:us-east-2:465005727508:stack/hamletfrontendapp-20181022141249/78461a60-d62e-11e8-8ee1-069bf518e2a4"
+        }
+    }
+}
