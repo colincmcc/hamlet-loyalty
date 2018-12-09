@@ -34,4 +34,4 @@ config.py
 
 # Rust
 **/*.rs.bk
-**/target
+**/target/
