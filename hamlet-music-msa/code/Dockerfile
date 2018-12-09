@@ -1,29 +1,24 @@
-FROM colincmcc/rust-musl-builder as builder
+# -*- mode: dockerfile -*-
+#
+# An example Dockerfile showing how to build a Rust executable using this
+# image, and deploy it with a tiny Alpine Linux container.
 
-WORKDIR /home/rust/
+# Our first FROM statement declares the build environment.
+FROM ekidd/rust-musl-builder AS builder
 
-# TODO: Find method to install Rust dependencies without this step
-# Avoid having to install/build all dependencies by copying
-# the Cargo files and making a dummy src/main.rs
-COPY Cargo.toml .
-COPY Cargo.lock .
-RUN echo "fn main() {}" > src/main.rs
-RUN cargo test
+# Add our source code.
+ADD . ./
+
+# Fix permissions on source code.
+RUN sudo chown -R rust:rust /home/rust
+
+# Build our application.
 RUN cargo build --release
 
-# We need to touch our real main.rs file or else docker will use
-# the cached one.
-COPY . .
-RUN sudo touch src/main.rs
-
-RUN cargo test
-RUN cargo build --release
-
-# Size optimization
-RUN strip target/x86_64-unknown-linux-musl/release/hamlet-music-msa
-
-# Start building the final image
-FROM scratch
-WORKDIR /home/rust/
-COPY --from=builder /home/rust/target/x86_64-unknown-linux-musl/release/hamlet-music-msa .
-ENTRYPOINT ["./hamlet-music-msa"]
+# Now, we need to build our _real_ Docker container, copying in `using-diesel`.
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+COPY --from=builder \
+    /home/rust/src/target/x86_64-unknown-linux-musl/release/hamlet-music-msa \
+    /usr/local/bin/
+CMD /usr/local/bin/hamlet-music-msa
