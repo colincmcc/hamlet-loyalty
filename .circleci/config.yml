@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: colincmcc/hamlet-music-msa:latest
+      - image: circleci/rust:latest
 
 
     steps:
