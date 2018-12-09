@@ -15,7 +15,7 @@ jobs:
       - run: cargo update
       - run: cargo fetch
       - persist_to_workspace:
-          root: "."
+          root: "./hamlet-music-msa/code"
           paths:
             - Cargo.lock
       - save_cache:
@@ -50,7 +50,7 @@ jobs:
               [ -d $file -o ! -x $file ] && rm -r $file
             done
       - persist_to_workspace:
-          root: "."
+          root: "./hamlet-music-msa/code"
           paths:
             - target/debug/*
   test_release:
