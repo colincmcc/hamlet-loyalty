@@ -4,7 +4,7 @@
 # image, and deploy it with a tiny Alpine Linux container.
 
 # Our first FROM statement declares the build environment.
-FROM ekidd/rust-musl-builder AS builder
+FROM colincmcc/rust-musl-builder AS builder
 
 # Add our source code.
 ADD . ./
@@ -12,8 +12,10 @@ ADD . ./
 # Fix permissions on source code.
 RUN sudo chown -R rust:rust /home/rust
 
+RUN cargo install wasm-bindgen-cli
 # Build our application.
-RUN cargo build --release
+RUN chmod +x ./build.sh
+RUN ./build.sh
 
 # Now, we need to build our _real_ Docker container, copying in `using-diesel`.
 FROM alpine:latest

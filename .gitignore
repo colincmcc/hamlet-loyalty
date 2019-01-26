@@ -20,7 +20,7 @@ config.py
 
 # misc
 .DS_Store
-.env
+**/.env
 **/rethinkdb_data
 **/.vscode
 
