@@ -35,3 +35,4 @@ config.py
 # Rust
 **/*.rs.bk
 **/target/
+**/sawtooth-core
