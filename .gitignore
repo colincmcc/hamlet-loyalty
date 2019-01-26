@@ -3,6 +3,7 @@
 
 # Jetbrains Ides
 .idea/
+**/*.iml
 
 **/__pycache__/**
 
