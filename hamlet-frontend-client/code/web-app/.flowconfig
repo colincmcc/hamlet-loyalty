@@ -1,0 +1,16 @@
+[ignore]
+.*/build/.*
+.*/node_modules/.*
+.*/__tests__/.*
+.*/config/.*
+.*/scripts/.*
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]
