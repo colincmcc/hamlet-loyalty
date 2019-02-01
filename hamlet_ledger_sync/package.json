@@ -1,0 +1,26 @@
+{
+  "name": "hamlet_ledger_sync",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "watch": "nodemon src/index.js",
+    "test": "standard"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "js-schema": "^1.0.1",
+    "lodash": "^4.17.4",
+    "protobufjs": "^6.8.0",
+    "rethinkdb": "^2.3.3",
+    "sawtooth-sdk": "^1.0.0-rc",
+    "dotenv": "^6.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0",
+    "standard": "^10.0.3"
+  }
+}

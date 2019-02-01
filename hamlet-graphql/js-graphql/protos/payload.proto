@@ -1,0 +1,177 @@
+// Copyright 2017 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// ----------------------------------------------------------------------------
+
+syntax = "proto3";
+
+import "rule.proto";
+
+message TransactionPayload {
+
+    enum PayloadType {
+        TYPE_UNSET = 0;
+        CREATE_ACCOUNT = 2;
+        CREATE_ASSET = 3;
+        CREATE_HOLDING = 4;
+        CREATE_OFFER = 5;
+        ACCEPT_OFFER = 10;
+        CLOSE_OFFER = 11;
+        CREATE_RECORD = 21;
+        FINALIZE_RECORD = 22;
+        CREATE_RECORD_TYPE = 23;
+        UPDATE_PROPERTIES = 24;
+        CREATE_PROPOSAL = 25;
+        ANSWER_PROPOSAL = 26;
+        REVOKE_REPORTER = 27;
+    }
+
+    PayloadType payload_type = 1;
+    uint64 timestamp = 2;
+
+    CreateAccount create_account = 3;
+    CreateAsset create_asset = 4;
+    CreateHolding create_holding = 5;
+    CreateOffer create_offer = 6;
+    AcceptOffer accept_offer = 10;
+    CloseOffer close_offer = 11;
+    CreateRecord create_record = 21;
+    FinalizeRecord finalize_record =22;
+    CreateRecordType create_record_type = 23;
+    UpdateProperties update_properties = 24;
+    CreateProposal create_proposal = 25;
+    AnswerProposal answer_proposal = 26;
+    RevokeReporter revoke_reporter = 27;
+
+}
+
+message CreateAccount {
+    string label = 1;
+    string description = 2;
+}
+
+message CreateAsset {
+    string name = 1;
+    string description = 2;
+    repeated Rule rules = 3;
+}
+
+message CreateHolding {
+    string id = 1;
+    string label = 2;
+    string description = 3;
+    string asset = 4;
+    sint64 quantity = 5;
+}
+
+message CreateOffer {
+    string id = 1;
+    string label = 2;
+    string description = 3;
+    string source = 4;
+    sint64 source_quantity = 5;
+    string target = 6;
+    sint64 target_quantity = 7;
+    repeated Rule rules = 8;
+}
+
+message AcceptOffer {
+    string id = 1;
+    string source = 2;
+    string target = 3;
+    uint64 count = 4;
+}
+
+message CloseOffer {
+    string id = 1;
+}
+
+
+  message CreateRecord {
+    // The natural key of the Record
+    string record_id = 1;
+
+    // The name of the RecordType this Record belongs to
+    string record_type = 2;
+
+    repeated PropertyValue properties = 3;
+  }
+
+
+  message FinalizeRecord {
+    // The natural key of the Record
+    string record_id = 1;
+  }
+
+
+  message CreateRecordType {
+    string name = 1;
+
+    repeated PropertySchema properties = 2;
+  }
+
+
+  message UpdateProperties {
+    // The natural key of the Record
+    string record_id = 1;
+
+    repeated PropertyValue properties = 2;
+  }
+
+
+  message CreateProposal {
+    // The natural key of the Record
+    string record_id = 1;
+
+    // the public key of the Agent to whom the Proposal is sent
+    // (must be different from the Agent creating the Proposal)
+    string receiving_agent = 2;
+
+    Proposal.Role role = 3;
+
+    repeated string properties = 4;
+  }
+
+
+  message AnswerProposal {
+    enum Response {
+      ACCEPT = 0;
+      REJECT = 1;
+      CANCEL = 2;
+    }
+
+    // The natural key of the Record
+    string record_id = 1;
+
+    // The public key of the Agent to whom the proposal is sent
+    string receiving_agent = 2;
+
+    // The role being proposed (owner, custodian, or reporter)
+    Proposal.Role role = 3;
+
+    // The respose to the Proposal (accept, reject, or cancel)
+    Response response = 4;
+  }
+
+
+  message RevokeReporter {
+    // The natural key of the Record
+    string record_id = 1;
+
+    // The reporter's public key
+    string reporter_id = 2;
+
+    // The names of the Properties for which the reporter's
+    // authorization is revoked
+    repeated string properties = 3;
+  }

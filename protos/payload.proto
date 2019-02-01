@@ -16,6 +16,8 @@
 syntax = "proto3";
 
 import "rule.proto";
+import "property.proto";
+import "proposal.proto";
 
 message TransactionPayload {
 
@@ -27,16 +29,32 @@ message TransactionPayload {
         CREATE_OFFER = 5;
         ACCEPT_OFFER = 10;
         CLOSE_OFFER = 11;
+        CREATE_RECORD = 21;
+        FINALIZE_RECORD = 22;
+        CREATE_RECORD_TYPE = 23;
+        UPDATE_PROPERTIES = 24;
+        CREATE_PROPOSAL = 25;
+        ANSWER_PROPOSAL = 26;
+        REVOKE_REPORTER = 27;
     }
 
     PayloadType payload_type = 1;
+    uint64 timestamp = 2;
 
-    CreateAccount create_account = 2;
-    CreateAsset create_asset = 3;
-    CreateHolding create_holding = 4;
-    CreateOffer create_offer = 5;
+    CreateAccount create_account = 3;
+    CreateAsset create_asset = 4;
+    CreateHolding create_holding = 5;
+    CreateOffer create_offer = 6;
     AcceptOffer accept_offer = 10;
     CloseOffer close_offer = 11;
+    CreateRecord create_record = 21;
+    FinalizeRecord finalize_record =22;
+    CreateRecordType create_record_type = 23;
+    UpdateProperties update_properties = 24;
+    CreateProposal create_proposal = 25;
+    AnswerProposal answer_proposal = 26;
+    RevokeReporter revoke_reporter = 27;
+
 }
 
 message CreateAccount {
@@ -79,3 +97,83 @@ message AcceptOffer {
 message CloseOffer {
     string id = 1;
 }
+
+
+  message CreateRecord {
+    // The natural key of the Record
+    string record_id = 1;
+
+    // The name of the RecordType this Record belongs to
+    string record_type = 2;
+
+    repeated PropertyValue properties = 3;
+  }
+
+
+  message FinalizeRecord {
+    // The natural key of the Record
+    string record_id = 1;
+  }
+
+
+  message CreateRecordType {
+    string name = 1;
+
+    repeated PropertySchema properties = 2;
+  }
+
+
+  message UpdateProperties {
+    // The natural key of the Record
+    string record_id = 1;
+
+    repeated PropertyValue properties = 2;
+  }
+
+
+  message CreateProposal {
+    // The natural key of the Record
+    string record_id = 1;
+
+    // the public key of the Agent to whom the Proposal is sent
+    // (must be different from the Agent creating the Proposal)
+    string receiving_agent = 2;
+
+    Proposal.Role role = 3;
+
+    repeated string properties = 4;
+  }
+
+
+  message AnswerProposal {
+    enum Response {
+      ACCEPT = 0;
+      REJECT = 1;
+      CANCEL = 2;
+    }
+
+    // The natural key of the Record
+    string record_id = 1;
+
+    // The public key of the Agent to whom the proposal is sent
+    string receiving_agent = 2;
+
+    // The role being proposed (owner, custodian, or reporter)
+    Proposal.Role role = 3;
+
+    // The respose to the Proposal (accept, reject, or cancel)
+    Response response = 4;
+  }
+
+
+  message RevokeReporter {
+    // The natural key of the Record
+    string record_id = 1;
+
+    // The reporter's public key
+    string reporter_id = 2;
+
+    // The names of the Properties for which the reporter's
+    // authorization is revoked
+    repeated string properties = 3;
+  }

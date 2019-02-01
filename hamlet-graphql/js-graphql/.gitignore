@@ -20,11 +20,25 @@
 .env.production.local
 .env.production
 .env
+<<<<<<< HEAD
 
+=======
+.ssl
+
+# Package Manager
+>>>>>>> f6674dcb36a7a13b71f8a25b8fe2b3f6bcbb2787
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 # serverless
 .serverless
+<<<<<<< HEAD
 serverless.yml
+=======
+serverless.yml
+
+# reason
+.merlin
+.bsb.lock
+>>>>>>> f6674dcb36a7a13b71f8a25b8fe2b3f6bcbb2787

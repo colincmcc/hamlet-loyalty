@@ -1,0 +1,29 @@
+[package]
+name = "hamlet-tp"
+version = "0.1.0"
+authors = ["Colin <hello@colinmac.me>"]
+edition = "2018"
+build = "build.rs"
+
+[lib]
+path = "src/lib.rs"
+name = "lib_hamlet"
+
+[[bin]]
+path = "src/bin/main.rs"
+name = "bin_hamlet"
+
+[dependencies]
+rust-crypto = "0.2.36"
+clap = "2.32.0"
+log = "0.4.6"
+log4rs = "0.8.1"
+zmq = "0.8.2"
+sawtooth-sdk ="0.1.0"
+protobuf = { version = "2.2.4", features = ["with-bytes", "with-serde"] }
+rustc-serialize = "0.3.22"
+sawtooth-zmq = "0.8.2-dev5"
+
+[build-dependencies]
+protoc-rust = "2.2.4"
+glob = "0.2.11"
