@@ -1,0 +1,942 @@
+{
+  "nested": {
+    "Account": {
+      "fields": {
+        "publicKey": {
+          "type": "string",
+          "id": 1
+        },
+        "label": {
+          "type": "string",
+          "id": 2
+        },
+        "description": {
+          "type": "string",
+          "id": 3
+        },
+        "holdings": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 4
+        }
+      }
+    },
+    "AccountContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "Account",
+          "id": 1
+        }
+      }
+    },
+    "Asset": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "description": {
+          "type": "string",
+          "id": 2
+        },
+        "owners": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 3
+        },
+        "rules": {
+          "rule": "repeated",
+          "type": "Rule",
+          "id": 4
+        }
+      }
+    },
+    "AssetContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "Asset",
+          "id": 1
+        }
+      }
+    },
+    "Rule": {
+      "fields": {
+        "type": {
+          "type": "RuleType",
+          "id": 1
+        },
+        "value": {
+          "type": "bytes",
+          "id": 2
+        }
+      },
+      "nested": {
+        "RuleType": {
+          "values": {
+            "RULE_UNSET": 0,
+            "OWNER_HOLDINGS_INFINITE": 100,
+            "ALL_HOLDINGS_INFINITE": 101,
+            "NOT_TRANSFERABLE": 102,
+            "REQUIRE_SOURCE_TYPES": 103,
+            "REQUIRE_TARGET_TYPES": 104,
+            "REQUIRE_SOURCE_QUANTITIES": 105,
+            "REQUIRE_TARGET_QUANTITIES": 106,
+            "EXCHANGE_ONCE": 200,
+            "EXCHANGE_ONCE_PER_ACCOUNT": 201,
+            "EXCHANGE_LIMITED_TO_ACCOUNTS": 202
+          }
+        }
+      }
+    },
+    "Holding": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "id": 1
+        },
+        "label": {
+          "type": "string",
+          "id": 2
+        },
+        "description": {
+          "type": "string",
+          "id": 3
+        },
+        "account": {
+          "type": "string",
+          "id": 4
+        },
+        "asset": {
+          "type": "string",
+          "id": 5
+        },
+        "quantity": {
+          "type": "sint64",
+          "id": 6
+        }
+      }
+    },
+    "HoldingContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "Holding",
+          "id": 1
+        }
+      }
+    },
+    "Offer": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "id": 1
+        },
+        "label": {
+          "type": "string",
+          "id": 2
+        },
+        "description": {
+          "type": "string",
+          "id": 3
+        },
+        "owners": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 4
+        },
+        "source": {
+          "type": "string",
+          "id": 5
+        },
+        "sourceQuantity": {
+          "type": "sint64",
+          "id": 6
+        },
+        "target": {
+          "type": "string",
+          "id": 7
+        },
+        "targetQuantity": {
+          "type": "sint64",
+          "id": 8
+        },
+        "rules": {
+          "rule": "repeated",
+          "type": "Rule",
+          "id": 9
+        },
+        "status": {
+          "type": "Status",
+          "id": 10
+        },
+        "timestamp": {
+          "type": "uint64",
+          "id": 11
+        },
+        "role": {
+          "type": "Role",
+          "id": 12
+        }
+      },
+      "nested": {
+        "Role": {
+          "values": {
+            "OWNER": 0,
+            "CUSTODIAN": 1,
+            "REPORTER": 2
+          }
+        },
+        "Status": {
+          "values": {
+            "OPEN": 0,
+            "ACCEPTED": 1,
+            "REJECTED": 2,
+            "CANCELED": 3
+          }
+        }
+      }
+    },
+    "OfferContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "Offer",
+          "id": 1
+        }
+      }
+    },
+    "OfferHistory": {
+      "fields": {
+        "offerId": {
+          "type": "string",
+          "id": 1
+        },
+        "accountId": {
+          "type": "string",
+          "id": 2
+        }
+      }
+    },
+    "OfferHistoryContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "OfferHistory",
+          "id": 1
+        }
+      }
+    },
+    "TransactionPayload": {
+      "fields": {
+        "payloadType": {
+          "type": "PayloadType",
+          "id": 1
+        },
+        "timestamp": {
+          "type": "uint64",
+          "id": 2
+        },
+        "createAccount": {
+          "type": "CreateAccount",
+          "id": 3
+        },
+        "createAsset": {
+          "type": "CreateAsset",
+          "id": 4
+        },
+        "createHolding": {
+          "type": "CreateHolding",
+          "id": 5
+        },
+        "createOffer": {
+          "type": "CreateOffer",
+          "id": 6
+        },
+        "acceptOffer": {
+          "type": "AcceptOffer",
+          "id": 10
+        },
+        "closeOffer": {
+          "type": "CloseOffer",
+          "id": 11
+        },
+        "createRecord": {
+          "type": "CreateRecord",
+          "id": 21
+        },
+        "finalizeRecord": {
+          "type": "FinalizeRecord",
+          "id": 22
+        },
+        "createRecordType": {
+          "type": "CreateRecordType",
+          "id": 23
+        },
+        "updateProperties": {
+          "type": "UpdateProperties",
+          "id": 24
+        },
+        "createProposal": {
+          "type": "CreateProposal",
+          "id": 25
+        },
+        "answerProposal": {
+          "type": "AnswerProposal",
+          "id": 26
+        },
+        "revokeReporter": {
+          "type": "RevokeReporter",
+          "id": 27
+        }
+      },
+      "nested": {
+        "PayloadType": {
+          "values": {
+            "TYPE_UNSET": 0,
+            "CREATE_ACCOUNT": 2,
+            "CREATE_ASSET": 3,
+            "CREATE_HOLDING": 4,
+            "CREATE_OFFER": 5,
+            "ACCEPT_OFFER": 10,
+            "CLOSE_OFFER": 11,
+            "CREATE_RECORD": 21,
+            "FINALIZE_RECORD": 22,
+            "CREATE_RECORD_TYPE": 23,
+            "UPDATE_PROPERTIES": 24,
+            "CREATE_PROPOSAL": 25,
+            "ANSWER_PROPOSAL": 26,
+            "REVOKE_REPORTER": 27
+          }
+        }
+      }
+    },
+    "CreateAccount": {
+      "fields": {
+        "label": {
+          "type": "string",
+          "id": 1
+        },
+        "description": {
+          "type": "string",
+          "id": 2
+        }
+      }
+    },
+    "CreateAsset": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "description": {
+          "type": "string",
+          "id": 2
+        },
+        "rules": {
+          "rule": "repeated",
+          "type": "Rule",
+          "id": 3
+        }
+      }
+    },
+    "CreateHolding": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "id": 1
+        },
+        "label": {
+          "type": "string",
+          "id": 2
+        },
+        "description": {
+          "type": "string",
+          "id": 3
+        },
+        "asset": {
+          "type": "string",
+          "id": 4
+        },
+        "quantity": {
+          "type": "sint64",
+          "id": 5
+        }
+      }
+    },
+    "CreateOffer": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "id": 1
+        },
+        "label": {
+          "type": "string",
+          "id": 2
+        },
+        "description": {
+          "type": "string",
+          "id": 3
+        },
+        "source": {
+          "type": "string",
+          "id": 4
+        },
+        "sourceQuantity": {
+          "type": "sint64",
+          "id": 5
+        },
+        "target": {
+          "type": "string",
+          "id": 6
+        },
+        "targetQuantity": {
+          "type": "sint64",
+          "id": 7
+        },
+        "rules": {
+          "rule": "repeated",
+          "type": "Rule",
+          "id": 8
+        }
+      }
+    },
+    "AcceptOffer": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "id": 1
+        },
+        "source": {
+          "type": "string",
+          "id": 2
+        },
+        "target": {
+          "type": "string",
+          "id": 3
+        },
+        "count": {
+          "type": "uint64",
+          "id": 4
+        }
+      }
+    },
+    "CloseOffer": {
+      "fields": {
+        "id": {
+          "type": "string",
+          "id": 1
+        }
+      }
+    },
+    "CreateRecord": {
+      "fields": {
+        "recordId": {
+          "type": "string",
+          "id": 1
+        },
+        "recordType": {
+          "type": "string",
+          "id": 2
+        },
+        "properties": {
+          "rule": "repeated",
+          "type": "PropertyValue",
+          "id": 3
+        }
+      }
+    },
+    "FinalizeRecord": {
+      "fields": {
+        "recordId": {
+          "type": "string",
+          "id": 1
+        }
+      }
+    },
+    "CreateRecordType": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "properties": {
+          "rule": "repeated",
+          "type": "PropertySchema",
+          "id": 2
+        }
+      }
+    },
+    "UpdateProperties": {
+      "fields": {
+        "recordId": {
+          "type": "string",
+          "id": 1
+        },
+        "properties": {
+          "rule": "repeated",
+          "type": "PropertyValue",
+          "id": 2
+        }
+      }
+    },
+    "CreateProposal": {
+      "fields": {
+        "recordId": {
+          "type": "string",
+          "id": 1
+        },
+        "receivingAgent": {
+          "type": "string",
+          "id": 2
+        },
+        "role": {
+          "type": "Proposal.Role",
+          "id": 3
+        },
+        "properties": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 4
+        }
+      }
+    },
+    "AnswerProposal": {
+      "fields": {
+        "recordId": {
+          "type": "string",
+          "id": 1
+        },
+        "receivingAgent": {
+          "type": "string",
+          "id": 2
+        },
+        "role": {
+          "type": "Proposal.Role",
+          "id": 3
+        },
+        "response": {
+          "type": "Response",
+          "id": 4
+        }
+      },
+      "nested": {
+        "Response": {
+          "values": {
+            "ACCEPT": 0,
+            "REJECT": 1,
+            "CANCEL": 2
+          }
+        }
+      }
+    },
+    "RevokeReporter": {
+      "fields": {
+        "recordId": {
+          "type": "string",
+          "id": 1
+        },
+        "reporterId": {
+          "type": "string",
+          "id": 2
+        },
+        "properties": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 3
+        }
+      }
+    },
+    "Property": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "recordId": {
+          "type": "string",
+          "id": 2
+        },
+        "dataType": {
+          "type": "PropertySchema.DataType",
+          "id": 3
+        },
+        "reporters": {
+          "rule": "repeated",
+          "type": "Reporter",
+          "id": 4
+        },
+        "currentPage": {
+          "type": "uint32",
+          "id": 5
+        },
+        "wrapped": {
+          "type": "bool",
+          "id": 6
+        },
+        "fixed": {
+          "type": "bool",
+          "id": 9
+        },
+        "numberExponent": {
+          "type": "sint32",
+          "id": 10
+        },
+        "enumOptions": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 11
+        },
+        "structProperties": {
+          "rule": "repeated",
+          "type": "PropertySchema",
+          "id": 12
+        },
+        "unit": {
+          "type": "string",
+          "id": 20
+        }
+      },
+      "nested": {
+        "Reporter": {
+          "fields": {
+            "publicKey": {
+              "type": "string",
+              "id": 1
+            },
+            "authorized": {
+              "type": "bool",
+              "id": 2
+            },
+            "index": {
+              "type": "uint32",
+              "id": 3
+            }
+          }
+        }
+      }
+    },
+    "PropertyContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "Property",
+          "id": 1
+        }
+      }
+    },
+    "PropertySchema": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "dataType": {
+          "type": "DataType",
+          "id": 2
+        },
+        "required": {
+          "type": "bool",
+          "id": 3
+        },
+        "fixed": {
+          "type": "bool",
+          "id": 4
+        },
+        "delayed": {
+          "type": "bool",
+          "id": 5
+        },
+        "numberExponent": {
+          "type": "sint32",
+          "id": 10
+        },
+        "enumOptions": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 11
+        },
+        "structProperties": {
+          "rule": "repeated",
+          "type": "PropertySchema",
+          "id": 12
+        },
+        "unit": {
+          "type": "string",
+          "id": 20
+        }
+      },
+      "nested": {
+        "DataType": {
+          "values": {
+            "TYPE_UNSET": 0,
+            "BYTES": 1,
+            "BOOLEAN": 2,
+            "NUMBER": 3,
+            "STRING": 4,
+            "ENUM": 5,
+            "STRUCT": 6,
+            "LOCATION": 7
+          }
+        }
+      }
+    },
+    "PropertyValue": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "dataType": {
+          "type": "PropertySchema.DataType",
+          "id": 2
+        },
+        "bytesValue": {
+          "type": "bytes",
+          "id": 11
+        },
+        "booleanValue": {
+          "type": "bool",
+          "id": 12
+        },
+        "numberValue": {
+          "type": "sint64",
+          "id": 13
+        },
+        "stringValue": {
+          "type": "string",
+          "id": 14
+        },
+        "enumValue": {
+          "type": "string",
+          "id": 15
+        },
+        "structValues": {
+          "rule": "repeated",
+          "type": "PropertyValue",
+          "id": 16
+        },
+        "locationValue": {
+          "type": "Location",
+          "id": 17
+        }
+      }
+    },
+    "PropertyPage": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "recordId": {
+          "type": "string",
+          "id": 2
+        },
+        "reportedValues": {
+          "rule": "repeated",
+          "type": "ReportedValue",
+          "id": 3
+        }
+      },
+      "nested": {
+        "ReportedValue": {
+          "fields": {
+            "reporterIndex": {
+              "type": "uint32",
+              "id": 1
+            },
+            "timestamp": {
+              "type": "uint64",
+              "id": 2
+            },
+            "bytesValue": {
+              "type": "bytes",
+              "id": 11
+            },
+            "booleanValue": {
+              "type": "bool",
+              "id": 12
+            },
+            "numberValue": {
+              "type": "sint64",
+              "id": 13
+            },
+            "stringValue": {
+              "type": "string",
+              "id": 14
+            },
+            "enumValue": {
+              "type": "uint32",
+              "id": 15
+            },
+            "structValues": {
+              "rule": "repeated",
+              "type": "PropertyValue",
+              "id": 16
+            },
+            "locationValue": {
+              "type": "Location",
+              "id": 17
+            }
+          }
+        }
+      }
+    },
+    "PropertyPageContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "PropertyPage",
+          "id": 1
+        }
+      }
+    },
+    "Location": {
+      "fields": {
+        "latitude": {
+          "type": "sint64",
+          "id": 1
+        },
+        "longitude": {
+          "type": "sint64",
+          "id": 2
+        }
+      }
+    },
+    "Proposal": {
+      "fields": {
+        "recordId": {
+          "type": "string",
+          "id": 1
+        },
+        "timestamp": {
+          "type": "uint64",
+          "id": 2
+        },
+        "issuingAgent": {
+          "type": "string",
+          "id": 3
+        },
+        "receivingAgent": {
+          "type": "string",
+          "id": 4
+        },
+        "role": {
+          "type": "Role",
+          "id": 5
+        },
+        "properties": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 6
+        },
+        "status": {
+          "type": "Status",
+          "id": 7
+        },
+        "terms": {
+          "type": "string",
+          "id": 8
+        }
+      },
+      "nested": {
+        "Role": {
+          "values": {
+            "OWNER": 0,
+            "CUSTODIAN": 1,
+            "REPORTER": 2
+          }
+        },
+        "Status": {
+          "values": {
+            "OPEN": 0,
+            "ACCEPTED": 1,
+            "REJECTED": 2,
+            "CANCELED": 3
+          }
+        }
+      }
+    },
+    "ProposalContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "Proposal",
+          "id": 1
+        }
+      }
+    },
+    "Record": {
+      "fields": {
+        "recordId": {
+          "type": "string",
+          "id": 1
+        },
+        "recordType": {
+          "type": "string",
+          "id": 2
+        },
+        "owners": {
+          "rule": "repeated",
+          "type": "AssociatedAccount",
+          "id": 3
+        },
+        "custodians": {
+          "rule": "repeated",
+          "type": "AssociatedAccount",
+          "id": 4
+        },
+        "final": {
+          "type": "bool",
+          "id": 5
+        }
+      },
+      "nested": {
+        "AssociatedAccount": {
+          "fields": {
+            "accountId": {
+              "type": "string",
+              "id": 1
+            },
+            "timestamp": {
+              "type": "uint64",
+              "id": 2
+            }
+          }
+        }
+      }
+    },
+    "RecordContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "Record",
+          "id": 1
+        }
+      }
+    },
+    "RecordType": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "properties": {
+          "rule": "repeated",
+          "type": "PropertySchema",
+          "id": 2
+        }
+      }
+    },
+    "RecordTypeContainer": {
+      "fields": {
+        "entries": {
+          "rule": "repeated",
+          "type": "RecordType",
+          "id": 1
+        }
+      }
+    }
+  }
+}

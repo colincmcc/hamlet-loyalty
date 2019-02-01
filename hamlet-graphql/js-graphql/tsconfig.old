@@ -1,0 +1,18 @@
+{
+  "include": ["src/**/*", "scripts"],
+  "exclude": ["node_modules", "**/*.spec.ts"],
+  "typeRoots": ["node_modules/@types", "custom_types"],
+  "compilerOptions": {
+    "rootDirs": ["src", "scripts"],
+    "module": "commonjs",
+    "sourceMap": true,
+    "target": "es2018",
+    "lib": ["es2018", "esnext.asynciterable"],
+    "pretty": true,
+    "outDir": "./build",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true
+  }
+}

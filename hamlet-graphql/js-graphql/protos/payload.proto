@@ -16,8 +16,6 @@
 syntax = "proto3";
 
 import "rule.proto";
-import "property.proto";
-import "proposal.proto";
 
 message TransactionPayload {
 

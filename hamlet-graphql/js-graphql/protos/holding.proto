@@ -15,46 +15,15 @@
 
 syntax = "proto3";
 
-import "rule.proto";
-
-message Offer {
-
-    enum Role {
-        OWNER = 0;
-        CUSTODIAN = 1;
-        REPORTER = 2;
-      }
-
-    enum Status {
-        OPEN = 0;
-        ACCEPTED = 1;
-        REJECTED = 2;
-        CANCELED = 3;
-    }
-
+message Holding {
     string id = 1;
     string label = 2;
     string description = 3;
-    repeated string owners = 4;
-
-    string source = 5;
-    sint64 source_quantity = 6;
-
-    string target = 7;
-    sint64 target_quantity = 8;
-
-    repeated Rule rules = 9;
-
-    Status status = 10;
-
-    // Timestamp of the offer
-    uint64 timestamp = 11;
-
-  // What the Offer is for -- transferring ownership, transferring
-  // custodianship, or authorizing a reporter.
-    Role role = 12;
+    string account = 4;
+    string asset = 5;
+    sint64 quantity = 6;
 }
 
-message OfferContainer {
-    repeated Offer entries = 1;
+message HoldingContainer {
+    repeated Holding entries = 1;
 }
