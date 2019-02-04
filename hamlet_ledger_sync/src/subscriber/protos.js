@@ -23,7 +23,7 @@ const protobuf = require('protobufjs')
 const protos = {}
 
 const loadProtos = (filename, protoNames) => {
-  const protoPath = path.resolve(__dirname, '../../../../../protos', filename)
+  const protoPath = path.resolve(__dirname, '../../../protos', filename)
   return protobuf.load(protoPath)
     .then(root => {
       protoNames.forEach(name => {

@@ -3,8 +3,9 @@ import * as auth from '../service/auth';
 
 const AuthTC = TypeComposer.create(`
 type Auth {
-  authorization: String,
+  authorization: String
   encryptedKey: String
+  loggedIn: Boolean
 }
 `);
 AuthTC.addResolver({
@@ -14,12 +15,21 @@ AuthTC.addResolver({
     username: 'String',
     password: 'String'
   },
-  resolve: async ({ args, context }) => {
-    const authorization = await auth.authorize({
+  resolve: ({ args, context }) => {
+    const authorization = auth.authorize({
       username: args.username,
       password: args.password
     });
+
     return authorization;
+  }
+});
+
+AuthTC.addResolver({
+  name: 'logout',
+  type: AuthTC,
+  resolve: ({ args, context }) => {
+    auth.clearPrivateKey();
   }
 });
 
@@ -31,6 +41,7 @@ export function getAuthResolvers() {
 
 export function getAuthMutations() {
   return {
+    logout: AuthTC.getResolver('logout')
   };
 }
 

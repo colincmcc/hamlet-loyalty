@@ -36,6 +36,7 @@ const PropertyValueMsg = root.lookup('PropertyValue');
 const PropertySchemaMsg = root.lookup('PropertySchema');
 const LocationMsg = root.lookup('Location');
 const ProposalMsg = root.lookup('Proposal');
+export const RuleMsg = root.lookup('Rule');
 
 // Create data xforms on an action by action basis
 const propertiesXformer = xform => data => _.set(data, 'properties', data.properties.map(xform));

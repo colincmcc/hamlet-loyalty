@@ -105,13 +105,13 @@ app.post('/webhooks', hmacValidator, (req, res) => {
 const apolloServer = new ApolloServer({
   schema,
   introspection: true,
-  context: ({ req }) => {
+  context: async ({ req }) => {
     const token = req.headers.authorization || '';
     let user;
-    if (token != '') user = auth.verifyToken(token);
-    // add the user to the context
+    if (token !== '') user = await auth.verifyToken(token);
+    const privateKey = auth.getPrivateKey();
     const loader = new Dataloader(keys => Promise.all(keys.map(loadData)));
-    return { loader };
+    return { privateKey, user, loader };
   }
 });
 apolloServer.applyMiddleware({ app });

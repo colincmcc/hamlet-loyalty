@@ -10,7 +10,10 @@ type Info
 InfoTC.addFields({
   pubKey: {
     type: GraphQLString,
-    resolve: () => batcher.getPublicKey()
+    resolve: async ({ args, context }) => {
+      console.log(context.privateKey);
+      return batcher.getPublicKey();
+    }
   },
   mapsApiKey: {
     type: GraphQLString,
@@ -23,7 +26,8 @@ InfoTC.addResolver({
   name: 'findInfo',
   type: InfoTC,
   resolve: async ({ args, context }) => {
-
+    console.log(context.privateKey);
+    return { pubkey: batcher.getPublicKey() };
   }
 });
 export function getInfoResolvers() {

@@ -1,7 +1,7 @@
 import { GQC } from 'graphql-compose';
 // import * as mailgun from "mailgun";
 import pubsub from './subscriptions';
-import { getAuthResolvers } from './resolvers/Auth';
+import { getAuthResolvers, getAuthMutations } from './resolvers/Auth';
 import {
   getInfoResolvers,
   getAssetMutations,
@@ -17,7 +17,7 @@ import {
 require('dotenv').config();
 // * Misc
 const authQueries = getAuthResolvers();
-
+const authMutations = getAuthMutations();
 // * Sawtooth
 // Queries
 const assetQueries = getAssetResolvers();
@@ -33,7 +33,8 @@ const userMutations = getUserMutations();
 GQC.rootMutation().addFields({
   ...assetMutations,
   ...accountMutations,
-  ...userMutations
+  ...userMutations,
+  ...authMutations
 });
 GQC.rootQuery().addFields({
   ...infoQueries,

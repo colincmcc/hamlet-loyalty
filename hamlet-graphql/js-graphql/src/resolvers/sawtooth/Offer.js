@@ -1,14 +1,28 @@
-import { TypeComposer } from 'graphql-compose';
+import { TypeComposer, EnumTypeComposer } from 'graphql-compose';
 import { GraphQLString } from 'graphql'; // ES6
 import { createTransactionResolver } from '../../utils/resolverFunctions';
 
-
+export const StatusTC = EnumTypeComposer.create(`
+  enum Status {
+    STATUS_UNSET
+    OPEN
+    ACCEPTED
+    REJECTED
+    CANCELED
+  }
+`);
 const OfferTC = TypeComposer.create(`
-type Asset {
-  name: String
+type Offer {
+  id: String
+  label: String
   description: String
-  publicKey: String
-  owners: [String]
+  owners: [Account]
+  source: String
+  source_quantity: Int
+  target: String
+  target_quantity: Int
+  rules: [Rule]
+  status: Status
 }
 `);
 createTransactionResolver(OfferTC);

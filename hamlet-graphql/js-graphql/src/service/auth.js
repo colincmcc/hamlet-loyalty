@@ -18,15 +18,21 @@
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import * as secp256k1 from 'sawtooth-sdk/signing/secp256k1';
 import * as dotenv from 'dotenv';
+import * as sjcl from 'sjcl';
 import { BadRequest, Unauthorized } from '../utils/errors';
 import { userQuery } from './rethink';
 
 dotenv.config();
 
+
+// !! Do not save private key in server memory. Use client.
+let privateKey = null;
 const SALT_ROUNDS = 10;
 const { JWT_SECRET } = process.env;
-
+// TODO: Integrate Passport JS
+// !!
 // Hashes a password as promised
 const hashPassword = pass => bcrypt.hash(pass, SALT_ROUNDS);
 
@@ -47,6 +53,9 @@ const verifyToken = token => new Promise((resolve, reject) => {
   });
 });
 
+export const getPrivateKey = () => privateKey;
+export const clearPrivateKey = () => privateKey = null;
+
 
 // Checks an object with username and password keys.
 // Returns an auth token and the user's private key if it passes.
@@ -65,6 +74,9 @@ const authorize = ({ username, password }) => {
         .compare(password, user.password)
         .then((passValid) => {
           if (!passValid) throw new Error();
+          const privateKeyHex = sjcl.decrypt(password, user.encryptedKey);
+
+          privateKey = secp256k1.Secp256k1PrivateKey.fromHex(privateKeyHex);
           return createToken(user.publicKey);
         })
         .then(token => ({

@@ -1,6 +1,6 @@
 import { TypeComposer } from 'graphql-compose';
 import * as _ from 'lodash';
-import { withFilter } from 'apollo-server';
+import { withFilter, AuthenticationError } from 'apollo-server';
 import sjcl from 'sjcl';
 import * as dotenv from 'dotenv';
 import {
@@ -11,8 +11,10 @@ import {
   getSignerPublicKey
 } from '../service/blockchain';
 import {
-  fetchAccount, userInsert, userQuery, userUpdate
+  fetchAccount, userInsert, userQuery, userUpdate,
+  listAccounts
 } from '../service/rethink';
+import { RuleMsg } from '../service/blockchain/payloads';
 import {
   AssetTC, AccountTC, OfferTC, UserTC
 } from '../resolvers/sawtooth';
@@ -21,7 +23,7 @@ import * as auth from '../service/auth';
 
 dotenv.config();
 
-const { VALIDATOR_URL, SAWTOOTH_URL } = process.env;
+const { VALIDATOR_URL, SAWTOOTH_URL, JWT_SECRET } = process.env;
 const DEFAULT_WAIT_TIME = 30;
 
 
@@ -84,57 +86,67 @@ const updateUser = (changes, { authedKey }) => Promise.resolve()
   .then(updated => _.omit(updated, 'password'));
 
 // * Create Sawtooth Transaction
-export function createTransactionResolver(tc) {
+export function createTransactionResolver(tc, inputType) {
   tc.addResolver({
     name: 'createBcTransaction',
     type: tc,
-    args: {
-      name: 'String',
-      username: 'String',
-      description: 'String',
-      password: 'String',
-      encryptedKey: 'String',
-      email: 'String',
-      publicKey: 'String'
-    },
+    args: { input: inputType },
     resolve: async ({ args, context }) => {
+      if (!context.user) throw AuthenticationError('not logged in');
+      const { input } = args;
+
       let payload;
-      let account;
-      let privateKey;
-      let signerPublicKey;
-      let user;
-      let encryptedKey;
+      const { privateKey } = context;
+      const signerPublicKey = context.user;
+      let data;
+      let formattedData;
+      console.log(input.rules);
+      console.log(signerPublicKey);
+      console.log(privateKey);
+      const rulePayload = input.rules ? input.rules.map(rule => RuleMsg.encode({ type: rule.type.toString(), value: rule.value }).finish()) : [];
+
+      console.log('rules', rulePayload);
       switch (tc) {
         case AssetTC:
           console.log('Creating Asset');
-
+          // Asset owners are being set as the signers in the TP
           payload = payloadMethods.createAsset({
-            name: args.name,
-            decsription: args.description
+            name: input.name,
+            decsription: input.description,
+            rules: rulePayload
           });
+
+          formattedData = {
+            name: input.name,
+            description: input.decsription,
+            rules: input.rules,
+            owners: [context.user]
+          };
+
           break;
-
         case OfferTC:
-          console.log('Creating Asset');
+          console.log('Creating Offer');
 
-          payload = payloadMethods.createAsset({
-            name: args.name,
-            decsription: args.description
+          payload = payloadMethods.createOffer({
+            name: input.name,
+            decsription: input.description
           });
           break;
         default: {
-          privateKey = sjcl.decrypt(args.password, args.encryptedKey);
-          signerPublicKey = getSignerPublicKey(privateKey);
           break;
         }
       }
+      console.log('----signer pubkey', signerPublicKey);
       console.log('----created payload ', payload);
       const txnBytes = createTxn(payload, signerPublicKey, privateKey);
       console.log('----created txn', txnBytes);
 
-      const submitresponse = submit([txnBytes], { wait: DEFAULT_WAIT_TIME });
-      submitresponse.then(value => console.log('-----------------value', value));
-      console.log(submitresponse);
+      return submit([txnBytes], { wait: DEFAULT_WAIT_TIME })
+        .then(async (result) => {
+          console.log(result);
+
+          return formattedData;
+        });
     }
   });
 }
@@ -207,19 +219,11 @@ export function createAccountTransactionResolver(tc) {
   });
 }
 
-export function createDbFindOneResolver(tc) {
+export function createDbFindOneResolver(tc, fields) {
   tc.addResolver({
     name: 'dbFindOne',
     type: tc,
-    args: {
-      name: 'String',
-      username: 'String',
-      description: 'String',
-      password: 'String',
-      encryptedKey: 'String',
-      email: 'String',
-      publicKey: 'String'
-    },
+    args: fields,
     resolve: async ({ args, context }) => {
       let data;
       let formattedData;
@@ -261,8 +265,8 @@ export function createDbFindOneResolver(tc) {
 
 export function createDbFindManyResolver(tc) {
   tc.addResolver({
-    name: 'dbFindOne',
-    type: tc,
+    name: 'dbFindMany',
+    type: [tc],
     args: {
       name: 'String',
       username: 'String',
@@ -274,25 +278,23 @@ export function createDbFindManyResolver(tc) {
     },
     resolve: async ({ args, context }) => {
       let data;
+      let formattedData;
       switch (tc) {
         case AccountTC:
-          const accountData = await fetchAccount(args.publicKey, true);
+          data = await listAccounts({ publicKey: args.publicKey });
 
-          const data = {
-            label: accountData.label,
-            publicKey: accountData.publicKey,
-            user: {
-              username: accountData.username,
-              encryptedKey: accountData.encryptedKey,
-              email: accountData.email
-            }
+          formattedData = {
+            label: data.label,
+            publicKey: data.publicKey,
+            description: data.description,
+            holdings: data.holdings
           };
           break;
 
         default:
           break;
       }
-      return data;
+      return [formattedData];
     }
   });
 }
@@ -304,10 +306,17 @@ export function updateOneDbResolver(tc, fields) {
     type: tc,
     args: fields,
     resolve: async ({ args, context }) => {
-      if (!context.user) return {};
+      if (!context.user) throw AuthenticationError('not logged in');
       let updated;
       let formattedData;
-      formattedData = updateUser(args, { authedKey: context.user });
+      console.log('user updating data', context.user);
+      switch (tc) {
+        case UserTC:
+          formattedData = updateUser(args, { authedKey: context.user });
+          break;
+        default:
+          break;
+      }
 
       return formattedData;
     }

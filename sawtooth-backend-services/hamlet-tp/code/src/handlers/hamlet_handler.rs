@@ -95,7 +95,7 @@ impl HamletTransactionHandler {
         new_asset.set_description(asset_description.to_string());
         new_asset.set_name(asset_name.to_string());
         new_asset.set_owners(RepeatedField::from_vec(vec![signer.to_string()]));
-        //new_asset.set_rules(asset_rules);
+        new_asset.set_rules(RepeatedField::from_vec(asset_rules));
 
         state.set_asset(asset_name, new_asset)?;
         Ok(())

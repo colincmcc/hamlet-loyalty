@@ -15,6 +15,17 @@ export {
 } from './accountDB';
 
 export {
+  fetchProperty,
+  fetchRecord,
+  listRecords
+} from './recordDB';
+
+export {
+  fetchRecordType,
+  listRecordType
+} from './recordTypesDB';
+
+export {
   userQuery,
   userInsert,
   userUpdate
