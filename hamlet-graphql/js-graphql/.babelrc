@@ -1,9 +1,17 @@
 {
+<<<<<<< HEAD
+  "presets": ["env"],
+  "plugins": [
+    "transform-object-rest-spread",
+    "transform-runtime",
+    "syntax-dynamic-import"
+=======
   "presets": ["@babel/env"],
   "plugins": [
     "@babel/plugin-proposal-object-rest-spread",
     "@babel/plugin-transform-runtime",
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-proposal-class-properties"
+>>>>>>> f6674dcb36a7a13b71f8a25b8fe2b3f6bcbb2787
   ]
 }

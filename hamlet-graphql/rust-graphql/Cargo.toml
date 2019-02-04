@@ -13,6 +13,7 @@ path = "src/bin/main.rs"
 name = "bin_graphql"
 
 [dependencies]
+rust-crypto = "0.2.36"
 juniper = "0.11.1"
 reqwest = "0.9.5"
 serde_json = "1.0.33"
@@ -22,3 +23,12 @@ env_logger = "0.5"
 actix = "0.7"
 actix-web = "0.7"
 futures = "0.1"
+protobuf = { version = "2.2.4", features = ["with-bytes", "with-serde"] }
+jsonwebtoken = "5.0"
+uuid = { version = "0.6.5", features = ["serde", "v4"] }
+bcrypt = "0.2.1"
+sawtooth-sdk ="0.1.0"
+
+[build-dependencies]
+protoc-rust = "2.2.4"
+glob = "0.2.11"

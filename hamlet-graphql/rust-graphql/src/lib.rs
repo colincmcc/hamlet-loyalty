@@ -10,5 +10,8 @@ extern crate actix;
 extern crate actix_web;
 extern crate env_logger;
 extern crate futures;
-
+extern crate crypto;
+extern crate protobuf;
+extern crate sawtooth_sdk;
 pub mod schema;
+pub mod protos;

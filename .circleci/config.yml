@@ -1,5 +1,8 @@
+# Currently only deploys the hamlet-music microservice
+# Todo: sync with AWS S3
 version: 2
 jobs:
+  # Music Microservice
   cargo_fetch:
     docker:
       - image: rust:latest
@@ -148,6 +151,7 @@ jobs:
       - run:
           name: Upload to Codecov
           command: bash <(curl -s https://codecov.io/bash)
+  # Todo
 
 workflows:
   version: 2
