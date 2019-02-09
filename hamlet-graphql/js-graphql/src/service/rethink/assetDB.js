@@ -1,6 +1,20 @@
 
 import * as r from 'rethinkdb';
+import * as _ from 'lodash';
 import * as db from './rethinkRepository';
+
+const ASSET_SCHEMA = {
+  name: String,
+  description: String,
+  rules: [{ type: String, value: String }],
+  owners: [String]
+};
+
+// Modified asset schema with optional keys
+const UPDATE_SCHEMA = _.mapKeys(ASSET_SCHEMA, (_, key) => {
+  if (key === '*' || key[0] === '?') return key;
+  return `?${key}`;
+});
 
 /* Helpers */
 
@@ -31,7 +45,7 @@ const hasBlock = block => obj => r.and(
 const getTable = (tableName, block) => r.table(tableName).filter(hasBlock(block));
 
 const findAsset = assetId => block => getTable('assets', block)
-  .filter(hasAssetId(assetId))
+  .filter(hasName(assetId))
   .nth(0);
 
 
@@ -45,9 +59,12 @@ const getAccount = publicKey => block => getTable('accounts', block)
     results(0)
   ));
 
-const fetchAssetQuery = assetId => block => findAsset(assetId)(block);
+const fetchAssetQuery = assetId => (block) => {
+  console.log(block);
+  return findAsset(assetId)(block);
+};
 
-const listAssetsQuery = (authedKey, filterQuery) => block => getTable('assets', block)
+const listAssetsQuery = filterQuery => block => getTable('assets', block)
   .filter(filterQuery)
   .coerceTo('array');
 
@@ -56,7 +73,7 @@ const listAssetsQuery = (authedKey, filterQuery) => block => getTable('assets', 
 
 const fetchAsset = assetId => db.queryWithCurrentBlock(fetchAssetQuery(assetId));
 
-const listAssets = (authedKey, filterQuery) => db.queryWithCurrentBlock(listAssetsQuery(authedKey, filterQuery));
+const listAssets = filterQuery => db.queryWithCurrentBlock(listAssetsQuery(filterQuery));
 
 export {
   fetchAsset,

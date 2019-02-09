@@ -1,5 +1,10 @@
 import { TypeComposer, InputTypeComposer } from 'graphql-compose';
-import { createTransactionResolver, createDbFindManyResolver, createDbFindOneResolver } from '../../utils/resolverFunctions';
+import {
+  createTransactionResolver,
+  createUpdateTransactionResolver,
+  createDbFindManyResolver,
+  createDbFindOneResolver
+} from '../../utils/resolverFunctions';
 import AccountTC from './Account';
 import { RuleITC } from './Rule';
 
@@ -21,11 +26,13 @@ const AssetITC = InputTypeComposer.create({
     description: 'String',
     privateKey: 'String',
     rules: [RuleITC],
-    owners: ['String']
+    owners: ['String'],
+    encryptedKey: 'String',
+    password: 'String'
   }
 });
 createTransactionResolver(AssetTC, AssetITC);
-
+createUpdateTransactionResolver(AssetTC, AssetITC);
 createDbFindManyResolver(AssetTC);
 createDbFindOneResolver(AssetTC, AssetITC);
 
@@ -44,12 +51,15 @@ AssetTC.addRelation( // GraphQL relation definition
 );
 
 export function getAssetResolvers() {
-  return {};
+  return {
+    findAsset: AssetTC.getResolver('dbFindOne')
+  };
 }
 
 export function getAssetMutations() {
   return {
-    createAsset: AssetTC.getResolver('createBcTransaction')
+    createAsset: AssetTC.getResolver('createBcTransaction'),
+    updateAsset: AssetTC.getResolver('updateBcTransaction')
   };
 }
 

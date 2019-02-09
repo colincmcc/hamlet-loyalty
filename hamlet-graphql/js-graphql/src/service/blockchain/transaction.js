@@ -28,20 +28,22 @@ import {
 } from 'sawtooth-sdk/protobuf';
 import * as batcher from './batcher';
 
-// const STORAGE_KEY = "asset_track.encryptedKey";
-// const FAMILY_NAME = 'hamlet_loyalty';
-// const FAMILY_VERSION = '1.0';
-// const NAMESPACE = 'a4d67b';
 const FAMILY_NAME = 'hamlet_loyalty';
 const FAMILY_VERSION = '1.0';
-const NAMESPACE = 'a4d67b';
-
+export const NAMESPACE = 'a4d67b';
 const context = new secp256k1.Secp256k1Context();
-// let privateKey = null;
-// let signerPublicKey = null;
 const batcherPublicKey = batcher.getPublicKey();
 
 const createTxn = (payload, signerPublicKey, privateKey) => {
+  // const { emcruptedKey, privateKey, signerPublicKey } = makePrivateKey('if23hkdm');
+  // const pubkey = secp256k1.Secp256k1PublicKey.fromHex(signerPublicKey);
+  // const privkey = secp256k1.Secp256k1PrivateKey.fromHex('5c78f2ac51dfe375854b1bdc2291a36bc51aba83618d26384571874f2a829330');
+  console.log('privKey', privateKey);
+  console.log('privkeyhex', new secp256k1.Secp256k1PrivateKey(privateKey.privateKeyBytes).asHex());
+  const pubKey = secp256k1.Secp256k1PublicKey.fromHex(signerPublicKey);
+  console.log('pub key', pubKey);
+  console.log('pub keyhex', signerPublicKey);
+
   const header = TransactionHeader.encode({
     signerPublicKey,
     batcherPublicKey,
@@ -50,7 +52,7 @@ const createTxn = (payload, signerPublicKey, privateKey) => {
     inputs: [NAMESPACE],
     outputs: [NAMESPACE],
     dependencies: [],
-    // nonce: (Math.random() * 10 ** 18).toString(36),
+    nonce: (Math.random() * 10 ** 18).toString(36),
     payloadSha512: createHash('sha512')
       .update(payload)
       .digest('hex')
@@ -60,6 +62,8 @@ const createTxn = (payload, signerPublicKey, privateKey) => {
     header,
     headerSignature: context.sign(header, privateKey)
   });
+  console.log(transaction);
+  console.log('----verify', context.verify(transaction.headerSignature, header, pubKey));
   return transaction;
 };
 
@@ -72,6 +76,9 @@ const encodeTxns = transactions => TransactionList.encode({ transactions }).fini
 const makePrivateKey = (password) => {
   const privateKey = context.newRandomPrivateKey();
   const signerPublicKey = context.getPublicKey(privateKey).asHex();
+  console.log('---new privatekey', privateKey.asHex());
+  console.log('---new pubkey', signerPublicKey);
+
   const encryptedKey = sjcl.encrypt(password, privateKey.asHex());
   return { encryptedKey, publicKey: signerPublicKey, privateKey };
 };

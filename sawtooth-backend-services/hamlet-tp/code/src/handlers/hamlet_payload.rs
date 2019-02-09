@@ -14,6 +14,7 @@ pub enum Action {
     CreateProposal(payload::CreateProposal),
     AnswerProposal(payload::AnswerProposal),
     RevokeReporter(payload::RevokeReporter),
+    UpdateAsset(payload::UpdateAsset),
 }
 
 pub struct HamletPayload {
@@ -42,6 +43,15 @@ impl HamletPayload {
                     )));
                 }
                 Action::CreateAsset(create_asset.clone())
+            }
+            payload::TransactionPayload_PayloadType::UPDATE_ASSET => {
+                let update_asset = payload.get_update_asset();
+                if update_asset.get_name() == "" {
+                    return Err(ApplyError::InvalidTransaction(String::from(
+                        "Asset name cannot be an empty string",
+                    )));
+                }
+                Action::UpdateAsset(update_asset.clone())
             }
             payload::TransactionPayload_PayloadType::CREATE_ACCOUNT => {
                 let create_account = payload.get_create_account();

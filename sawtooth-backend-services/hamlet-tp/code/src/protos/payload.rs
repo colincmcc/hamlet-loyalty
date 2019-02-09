@@ -39,6 +39,7 @@ pub struct TransactionPayload {
     pub create_proposal: ::protobuf::SingularPtrField<CreateProposal>,
     pub answer_proposal: ::protobuf::SingularPtrField<AnswerProposal>,
     pub revoke_reporter: ::protobuf::SingularPtrField<RevokeReporter>,
+    pub update_asset: ::protobuf::SingularPtrField<UpdateAsset>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -507,6 +508,39 @@ impl TransactionPayload {
     pub fn get_revoke_reporter(&self) -> &RevokeReporter {
         self.revoke_reporter.as_ref().unwrap_or_else(|| RevokeReporter::default_instance())
     }
+
+    // .UpdateAsset update_asset = 28;
+
+    pub fn clear_update_asset(&mut self) {
+        self.update_asset.clear();
+    }
+
+    pub fn has_update_asset(&self) -> bool {
+        self.update_asset.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_update_asset(&mut self, v: UpdateAsset) {
+        self.update_asset = ::protobuf::SingularPtrField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_update_asset(&mut self) -> &mut UpdateAsset {
+        if self.update_asset.is_none() {
+            self.update_asset.set_default();
+        }
+        self.update_asset.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_update_asset(&mut self) -> UpdateAsset {
+        self.update_asset.take().unwrap_or_else(|| UpdateAsset::new())
+    }
+
+    pub fn get_update_asset(&self) -> &UpdateAsset {
+        self.update_asset.as_ref().unwrap_or_else(|| UpdateAsset::default_instance())
+    }
 }
 
 impl ::protobuf::Message for TransactionPayload {
@@ -576,6 +610,11 @@ impl ::protobuf::Message for TransactionPayload {
                 return false;
             }
         };
+        for v in &self.update_asset {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
         true
     }
 
@@ -631,6 +670,9 @@ impl ::protobuf::Message for TransactionPayload {
                 },
                 27 => {
                     ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.revoke_reporter)?;
+                },
+                28 => {
+                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.update_asset)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -699,6 +741,10 @@ impl ::protobuf::Message for TransactionPayload {
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
         if let Some(ref v) = self.revoke_reporter.as_ref() {
+            let len = v.compute_size();
+            my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        }
+        if let Some(ref v) = self.update_asset.as_ref() {
             let len = v.compute_size();
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
@@ -776,6 +822,11 @@ impl ::protobuf::Message for TransactionPayload {
         }
         if let Some(ref v) = self.revoke_reporter.as_ref() {
             os.write_tag(27, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        }
+        if let Some(ref v) = self.update_asset.as_ref() {
+            os.write_tag(28, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         }
@@ -896,6 +947,11 @@ impl ::protobuf::Message for TransactionPayload {
                     |m: &TransactionPayload| { &m.revoke_reporter },
                     |m: &mut TransactionPayload| { &mut m.revoke_reporter },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<UpdateAsset>>(
+                    "update_asset",
+                    |m: &TransactionPayload| { &m.update_asset },
+                    |m: &mut TransactionPayload| { &mut m.update_asset },
+                ));
                 ::protobuf::reflect::MessageDescriptor::new::<TransactionPayload>(
                     "TransactionPayload",
                     fields,
@@ -933,6 +989,7 @@ impl ::protobuf::Clear for TransactionPayload {
         self.clear_create_proposal();
         self.clear_answer_proposal();
         self.clear_revoke_reporter();
+        self.clear_update_asset();
         self.unknown_fields.clear();
     }
 }
@@ -965,6 +1022,7 @@ pub enum TransactionPayload_PayloadType {
     CREATE_PROPOSAL = 25,
     ANSWER_PROPOSAL = 26,
     REVOKE_REPORTER = 27,
+    UPDATE_ASSET = 28,
 }
 
 impl ::protobuf::ProtobufEnum for TransactionPayload_PayloadType {
@@ -988,6 +1046,7 @@ impl ::protobuf::ProtobufEnum for TransactionPayload_PayloadType {
             25 => ::std::option::Option::Some(TransactionPayload_PayloadType::CREATE_PROPOSAL),
             26 => ::std::option::Option::Some(TransactionPayload_PayloadType::ANSWER_PROPOSAL),
             27 => ::std::option::Option::Some(TransactionPayload_PayloadType::REVOKE_REPORTER),
+            28 => ::std::option::Option::Some(TransactionPayload_PayloadType::UPDATE_ASSET),
             _ => ::std::option::Option::None
         }
     }
@@ -1008,6 +1067,7 @@ impl ::protobuf::ProtobufEnum for TransactionPayload_PayloadType {
             TransactionPayload_PayloadType::CREATE_PROPOSAL,
             TransactionPayload_PayloadType::ANSWER_PROPOSAL,
             TransactionPayload_PayloadType::REVOKE_REPORTER,
+            TransactionPayload_PayloadType::UPDATE_ASSET,
         ];
         values
     }
@@ -1494,6 +1554,301 @@ impl ::std::fmt::Debug for CreateAsset {
 }
 
 impl ::protobuf::reflect::ProtobufValue for CreateAsset {
+    fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
+        ::protobuf::reflect::ProtobufValueRef::Message(self)
+    }
+}
+
+#[derive(PartialEq,Clone,Default)]
+pub struct UpdateAsset {
+    // message fields
+    pub name: ::std::string::String,
+    pub description: ::std::string::String,
+    pub rules: ::protobuf::RepeatedField<super::rule::Rule>,
+    pub owners: ::protobuf::RepeatedField<::std::string::String>,
+    // special fields
+    pub unknown_fields: ::protobuf::UnknownFields,
+    pub cached_size: ::protobuf::CachedSize,
+}
+
+impl UpdateAsset {
+    pub fn new() -> UpdateAsset {
+        ::std::default::Default::default()
+    }
+
+    // string name = 1;
+
+    pub fn clear_name(&mut self) {
+        self.name.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_name(&mut self, v: ::std::string::String) {
+        self.name = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_name(&mut self) -> &mut ::std::string::String {
+        &mut self.name
+    }
+
+    // Take field
+    pub fn take_name(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.name, ::std::string::String::new())
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    // string description = 2;
+
+    pub fn clear_description(&mut self) {
+        self.description.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_description(&mut self, v: ::std::string::String) {
+        self.description = v;
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_description(&mut self) -> &mut ::std::string::String {
+        &mut self.description
+    }
+
+    // Take field
+    pub fn take_description(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.description, ::std::string::String::new())
+    }
+
+    pub fn get_description(&self) -> &str {
+        &self.description
+    }
+
+    // repeated .Rule rules = 3;
+
+    pub fn clear_rules(&mut self) {
+        self.rules.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_rules(&mut self, v: ::protobuf::RepeatedField<super::rule::Rule>) {
+        self.rules = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_rules(&mut self) -> &mut ::protobuf::RepeatedField<super::rule::Rule> {
+        &mut self.rules
+    }
+
+    // Take field
+    pub fn take_rules(&mut self) -> ::protobuf::RepeatedField<super::rule::Rule> {
+        ::std::mem::replace(&mut self.rules, ::protobuf::RepeatedField::new())
+    }
+
+    pub fn get_rules(&self) -> &[super::rule::Rule] {
+        &self.rules
+    }
+
+    // repeated string owners = 4;
+
+    pub fn clear_owners(&mut self) {
+        self.owners.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_owners(&mut self, v: ::protobuf::RepeatedField<::std::string::String>) {
+        self.owners = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_owners(&mut self) -> &mut ::protobuf::RepeatedField<::std::string::String> {
+        &mut self.owners
+    }
+
+    // Take field
+    pub fn take_owners(&mut self) -> ::protobuf::RepeatedField<::std::string::String> {
+        ::std::mem::replace(&mut self.owners, ::protobuf::RepeatedField::new())
+    }
+
+    pub fn get_owners(&self) -> &[::std::string::String] {
+        &self.owners
+    }
+}
+
+impl ::protobuf::Message for UpdateAsset {
+    fn is_initialized(&self) -> bool {
+        for v in &self.rules {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                1 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.name)?;
+                },
+                2 => {
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.description)?;
+                },
+                3 => {
+                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.rules)?;
+                },
+                4 => {
+                    ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.owners)?;
+                },
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        if !self.name.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.name);
+        }
+        if !self.description.is_empty() {
+            my_size += ::protobuf::rt::string_size(2, &self.description);
+        }
+        for value in &self.rules {
+            let len = value.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        };
+        for value in &self.owners {
+            my_size += ::protobuf::rt::string_size(4, &value);
+        };
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+        if !self.name.is_empty() {
+            os.write_string(1, &self.name)?;
+        }
+        if !self.description.is_empty() {
+            os.write_string(2, &self.description)?;
+        }
+        for v in &self.rules {
+            os.write_tag(3, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        };
+        for v in &self.owners {
+            os.write_string(4, &v)?;
+        };
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &::std::any::Any {
+        self as &::std::any::Any
+    }
+    fn as_any_mut(&mut self) -> &mut ::std::any::Any {
+        self as &mut ::std::any::Any
+    }
+    fn into_any(self: Box<Self>) -> ::std::boxed::Box<::std::any::Any> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        Self::descriptor_static()
+    }
+
+    fn new() -> UpdateAsset {
+        UpdateAsset::new()
+    }
+
+    fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+        };
+        unsafe {
+            descriptor.get(|| {
+                let mut fields = ::std::vec::Vec::new();
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "name",
+                    |m: &UpdateAsset| { &m.name },
+                    |m: &mut UpdateAsset| { &mut m.name },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "description",
+                    |m: &UpdateAsset| { &m.description },
+                    |m: &mut UpdateAsset| { &mut m.description },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::rule::Rule>>(
+                    "rules",
+                    |m: &UpdateAsset| { &m.rules },
+                    |m: &mut UpdateAsset| { &mut m.rules },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "owners",
+                    |m: &UpdateAsset| { &m.owners },
+                    |m: &mut UpdateAsset| { &mut m.owners },
+                ));
+                ::protobuf::reflect::MessageDescriptor::new::<UpdateAsset>(
+                    "UpdateAsset",
+                    fields,
+                    file_descriptor_proto()
+                )
+            })
+        }
+    }
+
+    fn default_instance() -> &'static UpdateAsset {
+        static mut instance: ::protobuf::lazy::Lazy<UpdateAsset> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const UpdateAsset,
+        };
+        unsafe {
+            instance.get(UpdateAsset::new)
+        }
+    }
+}
+
+impl ::protobuf::Clear for UpdateAsset {
+    fn clear(&mut self) {
+        self.clear_name();
+        self.clear_description();
+        self.clear_rules();
+        self.clear_owners();
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for UpdateAsset {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for UpdateAsset {
     fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
         ::protobuf::reflect::ProtobufValueRef::Message(self)
     }
@@ -4409,70 +4764,75 @@ impl ::protobuf::reflect::ProtobufValue for RevokeReporter {
 
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n\rpayload.proto\x1a\nrule.proto\x1a\x0eproperty.proto\x1a\x0eproposal.\
-    proto\"\xe7\x08\n\x12TransactionPayload\x12B\n\x0cpayload_type\x18\x01\
-    \x20\x01(\x0e2\x1f.TransactionPayload.PayloadTypeR\x0bpayloadType\x12\
-    \x1c\n\ttimestamp\x18\x02\x20\x01(\x04R\ttimestamp\x125\n\x0ecreate_acco\
-    unt\x18\x03\x20\x01(\x0b2\x0e.CreateAccountR\rcreateAccount\x12/\n\x0ccr\
-    eate_asset\x18\x04\x20\x01(\x0b2\x0c.CreateAssetR\x0bcreateAsset\x125\n\
-    \x0ecreate_holding\x18\x05\x20\x01(\x0b2\x0e.CreateHoldingR\rcreateHoldi\
-    ng\x12/\n\x0ccreate_offer\x18\x06\x20\x01(\x0b2\x0c.CreateOfferR\x0bcrea\
-    teOffer\x12/\n\x0caccept_offer\x18\n\x20\x01(\x0b2\x0c.AcceptOfferR\x0ba\
-    cceptOffer\x12,\n\x0bclose_offer\x18\x0b\x20\x01(\x0b2\x0b.CloseOfferR\n\
-    closeOffer\x122\n\rcreate_record\x18\x15\x20\x01(\x0b2\r.CreateRecordR\
-    \x0ccreateRecord\x128\n\x0ffinalize_record\x18\x16\x20\x01(\x0b2\x0f.Fin\
-    alizeRecordR\x0efinalizeRecord\x12?\n\x12create_record_type\x18\x17\x20\
-    \x01(\x0b2\x11.CreateRecordTypeR\x10createRecordType\x12>\n\x11update_pr\
-    operties\x18\x18\x20\x01(\x0b2\x11.UpdatePropertiesR\x10updateProperties\
-    \x128\n\x0fcreate_proposal\x18\x19\x20\x01(\x0b2\x0f.CreateProposalR\x0e\
-    createProposal\x128\n\x0fanswer_proposal\x18\x1a\x20\x01(\x0b2\x0f.Answe\
-    rProposalR\x0eanswerProposal\x128\n\x0frevoke_reporter\x18\x1b\x20\x01(\
-    \x0b2\x0f.RevokeReporterR\x0erevokeReporter\"\xa2\x02\n\x0bPayloadType\
-    \x12\x0e\n\nTYPE_UNSET\x10\0\x12\x12\n\x0eCREATE_ACCOUNT\x10\x02\x12\x10\
-    \n\x0cCREATE_ASSET\x10\x03\x12\x12\n\x0eCREATE_HOLDING\x10\x04\x12\x10\n\
-    \x0cCREATE_OFFER\x10\x05\x12\x10\n\x0cACCEPT_OFFER\x10\n\x12\x0f\n\x0bCL\
-    OSE_OFFER\x10\x0b\x12\x11\n\rCREATE_RECORD\x10\x15\x12\x13\n\x0fFINALIZE\
-    _RECORD\x10\x16\x12\x16\n\x12CREATE_RECORD_TYPE\x10\x17\x12\x15\n\x11UPD\
-    ATE_PROPERTIES\x10\x18\x12\x13\n\x0fCREATE_PROPOSAL\x10\x19\x12\x13\n\
-    \x0fANSWER_PROPOSAL\x10\x1a\x12\x13\n\x0fREVOKE_REPORTER\x10\x1b\"G\n\rC\
-    reateAccount\x12\x14\n\x05label\x18\x01\x20\x01(\tR\x05label\x12\x20\n\
-    \x0bdescription\x18\x02\x20\x01(\tR\x0bdescription\"`\n\x0bCreateAsset\
-    \x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x20\n\x0bdescription\
-    \x18\x02\x20\x01(\tR\x0bdescription\x12\x1b\n\x05rules\x18\x03\x20\x03(\
-    \x0b2\x05.RuleR\x05rules\"\x89\x01\n\rCreateHolding\x12\x0e\n\x02id\x18\
-    \x01\x20\x01(\tR\x02id\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\
-    \x12\x20\n\x0bdescription\x18\x03\x20\x01(\tR\x0bdescription\x12\x14\n\
-    \x05asset\x18\x04\x20\x01(\tR\x05asset\x12\x1a\n\x08quantity\x18\x05\x20\
-    \x01(\x12R\x08quantity\"\xf4\x01\n\x0bCreateOffer\x12\x0e\n\x02id\x18\
-    \x01\x20\x01(\tR\x02id\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\
-    \x12\x20\n\x0bdescription\x18\x03\x20\x01(\tR\x0bdescription\x12\x16\n\
-    \x06source\x18\x04\x20\x01(\tR\x06source\x12'\n\x0fsource_quantity\x18\
-    \x05\x20\x01(\x12R\x0esourceQuantity\x12\x16\n\x06target\x18\x06\x20\x01\
-    (\tR\x06target\x12'\n\x0ftarget_quantity\x18\x07\x20\x01(\x12R\x0etarget\
-    Quantity\x12\x1b\n\x05rules\x18\x08\x20\x03(\x0b2\x05.RuleR\x05rules\"c\
-    \n\x0bAcceptOffer\x12\x0e\n\x02id\x18\x01\x20\x01(\tR\x02id\x12\x16\n\
-    \x06source\x18\x02\x20\x01(\tR\x06source\x12\x16\n\x06target\x18\x03\x20\
-    \x01(\tR\x06target\x12\x14\n\x05count\x18\x04\x20\x01(\x04R\x05count\"\
-    \x1c\n\nCloseOffer\x12\x0e\n\x02id\x18\x01\x20\x01(\tR\x02id\"|\n\x0cCre\
-    ateRecord\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12\x1f\n\
-    \x0brecord_type\x18\x02\x20\x01(\tR\nrecordType\x12.\n\nproperties\x18\
-    \x03\x20\x03(\x0b2\x0e.PropertyValueR\nproperties\"-\n\x0eFinalizeRecord\
-    \x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\"W\n\x10CreateReco\
-    rdType\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12/\n\nproperties\
-    \x18\x02\x20\x03(\x0b2\x0f.PropertySchemaR\nproperties\"_\n\x10UpdatePro\
-    perties\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12.\n\npro\
-    perties\x18\x02\x20\x03(\x0b2\x0e.PropertyValueR\nproperties\"\x9e\x01\n\
-    \x0eCreateProposal\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\
-    \x12+\n\x11receiving_account\x18\x02\x20\x01(\tR\x10receivingAccount\x12\
-    \"\n\x04role\x18\x03\x20\x01(\x0e2\x0e.Proposal.RoleR\x04role\x12\x1e\n\
-    \nproperties\x18\x04\x20\x03(\tR\nproperties\"\xe4\x01\n\x0eAnswerPropos\
-    al\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12+\n\x11receiv\
-    ing_account\x18\x02\x20\x01(\tR\x10receivingAccount\x12\"\n\x04role\x18\
-    \x03\x20\x01(\x0e2\x0e.Proposal.RoleR\x04role\x124\n\x08response\x18\x04\
-    \x20\x01(\x0e2\x18.AnswerProposal.ResponseR\x08response\".\n\x08Response\
-    \x12\n\n\x06ACCEPT\x10\0\x12\n\n\x06REJECT\x10\x01\x12\n\n\x06CANCEL\x10\
-    \x02\"n\n\x0eRevokeReporter\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08\
-    recordId\x12\x1f\n\x0breporter_id\x18\x02\x20\x01(\tR\nreporterId\x12\
-    \x1e\n\nproperties\x18\x03\x20\x03(\tR\npropertiesb\x06proto3\
+    proto\"\xaa\t\n\x12TransactionPayload\x12B\n\x0cpayload_type\x18\x01\x20\
+    \x01(\x0e2\x1f.TransactionPayload.PayloadTypeR\x0bpayloadType\x12\x1c\n\
+    \ttimestamp\x18\x02\x20\x01(\x04R\ttimestamp\x125\n\x0ecreate_account\
+    \x18\x03\x20\x01(\x0b2\x0e.CreateAccountR\rcreateAccount\x12/\n\x0ccreat\
+    e_asset\x18\x04\x20\x01(\x0b2\x0c.CreateAssetR\x0bcreateAsset\x125\n\x0e\
+    create_holding\x18\x05\x20\x01(\x0b2\x0e.CreateHoldingR\rcreateHolding\
+    \x12/\n\x0ccreate_offer\x18\x06\x20\x01(\x0b2\x0c.CreateOfferR\x0bcreate\
+    Offer\x12/\n\x0caccept_offer\x18\n\x20\x01(\x0b2\x0c.AcceptOfferR\x0bacc\
+    eptOffer\x12,\n\x0bclose_offer\x18\x0b\x20\x01(\x0b2\x0b.CloseOfferR\ncl\
+    oseOffer\x122\n\rcreate_record\x18\x15\x20\x01(\x0b2\r.CreateRecordR\x0c\
+    createRecord\x128\n\x0ffinalize_record\x18\x16\x20\x01(\x0b2\x0f.Finaliz\
+    eRecordR\x0efinalizeRecord\x12?\n\x12create_record_type\x18\x17\x20\x01(\
+    \x0b2\x11.CreateRecordTypeR\x10createRecordType\x12>\n\x11update_propert\
+    ies\x18\x18\x20\x01(\x0b2\x11.UpdatePropertiesR\x10updateProperties\x128\
+    \n\x0fcreate_proposal\x18\x19\x20\x01(\x0b2\x0f.CreateProposalR\x0ecreat\
+    eProposal\x128\n\x0fanswer_proposal\x18\x1a\x20\x01(\x0b2\x0f.AnswerProp\
+    osalR\x0eanswerProposal\x128\n\x0frevoke_reporter\x18\x1b\x20\x01(\x0b2\
+    \x0f.RevokeReporterR\x0erevokeReporter\x12/\n\x0cupdate_asset\x18\x1c\
+    \x20\x01(\x0b2\x0c.UpdateAssetR\x0bupdateAsset\"\xb4\x02\n\x0bPayloadTyp\
+    e\x12\x0e\n\nTYPE_UNSET\x10\0\x12\x12\n\x0eCREATE_ACCOUNT\x10\x02\x12\
+    \x10\n\x0cCREATE_ASSET\x10\x03\x12\x12\n\x0eCREATE_HOLDING\x10\x04\x12\
+    \x10\n\x0cCREATE_OFFER\x10\x05\x12\x10\n\x0cACCEPT_OFFER\x10\n\x12\x0f\n\
+    \x0bCLOSE_OFFER\x10\x0b\x12\x11\n\rCREATE_RECORD\x10\x15\x12\x13\n\x0fFI\
+    NALIZE_RECORD\x10\x16\x12\x16\n\x12CREATE_RECORD_TYPE\x10\x17\x12\x15\n\
+    \x11UPDATE_PROPERTIES\x10\x18\x12\x13\n\x0fCREATE_PROPOSAL\x10\x19\x12\
+    \x13\n\x0fANSWER_PROPOSAL\x10\x1a\x12\x13\n\x0fREVOKE_REPORTER\x10\x1b\
+    \x12\x10\n\x0cUPDATE_ASSET\x10\x1c\"G\n\rCreateAccount\x12\x14\n\x05labe\
+    l\x18\x01\x20\x01(\tR\x05label\x12\x20\n\x0bdescription\x18\x02\x20\x01(\
+    \tR\x0bdescription\"`\n\x0bCreateAsset\x12\x12\n\x04name\x18\x01\x20\x01\
+    (\tR\x04name\x12\x20\n\x0bdescription\x18\x02\x20\x01(\tR\x0bdescription\
+    \x12\x1b\n\x05rules\x18\x03\x20\x03(\x0b2\x05.RuleR\x05rules\"x\n\x0bUpd\
+    ateAsset\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x20\n\x0bdesc\
+    ription\x18\x02\x20\x01(\tR\x0bdescription\x12\x1b\n\x05rules\x18\x03\
+    \x20\x03(\x0b2\x05.RuleR\x05rules\x12\x16\n\x06owners\x18\x04\x20\x03(\t\
+    R\x06owners\"\x89\x01\n\rCreateHolding\x12\x0e\n\x02id\x18\x01\x20\x01(\
+    \tR\x02id\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\x12\x20\n\x0bd\
+    escription\x18\x03\x20\x01(\tR\x0bdescription\x12\x14\n\x05asset\x18\x04\
+    \x20\x01(\tR\x05asset\x12\x1a\n\x08quantity\x18\x05\x20\x01(\x12R\x08qua\
+    ntity\"\xf4\x01\n\x0bCreateOffer\x12\x0e\n\x02id\x18\x01\x20\x01(\tR\x02\
+    id\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\x12\x20\n\x0bdescript\
+    ion\x18\x03\x20\x01(\tR\x0bdescription\x12\x16\n\x06source\x18\x04\x20\
+    \x01(\tR\x06source\x12'\n\x0fsource_quantity\x18\x05\x20\x01(\x12R\x0eso\
+    urceQuantity\x12\x16\n\x06target\x18\x06\x20\x01(\tR\x06target\x12'\n\
+    \x0ftarget_quantity\x18\x07\x20\x01(\x12R\x0etargetQuantity\x12\x1b\n\
+    \x05rules\x18\x08\x20\x03(\x0b2\x05.RuleR\x05rules\"c\n\x0bAcceptOffer\
+    \x12\x0e\n\x02id\x18\x01\x20\x01(\tR\x02id\x12\x16\n\x06source\x18\x02\
+    \x20\x01(\tR\x06source\x12\x16\n\x06target\x18\x03\x20\x01(\tR\x06target\
+    \x12\x14\n\x05count\x18\x04\x20\x01(\x04R\x05count\"\x1c\n\nCloseOffer\
+    \x12\x0e\n\x02id\x18\x01\x20\x01(\tR\x02id\"|\n\x0cCreateRecord\x12\x1b\
+    \n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12\x1f\n\x0brecord_type\
+    \x18\x02\x20\x01(\tR\nrecordType\x12.\n\nproperties\x18\x03\x20\x03(\x0b\
+    2\x0e.PropertyValueR\nproperties\"-\n\x0eFinalizeRecord\x12\x1b\n\trecor\
+    d_id\x18\x01\x20\x01(\tR\x08recordId\"W\n\x10CreateRecordType\x12\x12\n\
+    \x04name\x18\x01\x20\x01(\tR\x04name\x12/\n\nproperties\x18\x02\x20\x03(\
+    \x0b2\x0f.PropertySchemaR\nproperties\"_\n\x10UpdateProperties\x12\x1b\n\
+    \trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12.\n\nproperties\x18\x02\
+    \x20\x03(\x0b2\x0e.PropertyValueR\nproperties\"\x9e\x01\n\x0eCreatePropo\
+    sal\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12+\n\x11recei\
+    ving_account\x18\x02\x20\x01(\tR\x10receivingAccount\x12\"\n\x04role\x18\
+    \x03\x20\x01(\x0e2\x0e.Proposal.RoleR\x04role\x12\x1e\n\nproperties\x18\
+    \x04\x20\x03(\tR\nproperties\"\xe4\x01\n\x0eAnswerProposal\x12\x1b\n\tre\
+    cord_id\x18\x01\x20\x01(\tR\x08recordId\x12+\n\x11receiving_account\x18\
+    \x02\x20\x01(\tR\x10receivingAccount\x12\"\n\x04role\x18\x03\x20\x01(\
+    \x0e2\x0e.Proposal.RoleR\x04role\x124\n\x08response\x18\x04\x20\x01(\x0e\
+    2\x18.AnswerProposal.ResponseR\x08response\".\n\x08Response\x12\n\n\x06A\
+    CCEPT\x10\0\x12\n\n\x06REJECT\x10\x01\x12\n\n\x06CANCEL\x10\x02\"n\n\x0e\
+    RevokeReporter\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12\
+    \x1f\n\x0breporter_id\x18\x02\x20\x01(\tR\nreporterId\x12\x1e\n\npropert\
+    ies\x18\x03\x20\x03(\tR\npropertiesb\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

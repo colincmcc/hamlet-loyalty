@@ -75,26 +75,7 @@ const getTable = (tableName, block) => r.table(tableName).filter(hasCurrentBlock
 
 const listQuery = filterQuery => block => getTable('accounts', block)
   .filter(filterQuery)
-  .map(account => r.expr({
-    name: getName(account),
-    key: getPublicKey(account),
-    ownsAssets: getTable('assets', block)
-      .filter(isAssetOwner(account))
-      .map(getAssetId)
-      .distinct(),
-    owns: getTable('records', block)
-      .filter(isRecordOwner(account))
-      .map(getRecordId)
-      .distinct(),
-    custodian: getTable('records', block)
-      .filter(isRecordCustodian(account))
-      .map(getRecordId)
-      .distinct(),
-    reports: getTable('properties', block)
-      .filter(isReporter(account))
-      .map(getRecordId)
-      .distinct()
-  })).coerceTo('array');
+  .coerceTo('array');
 
 const fetchUser = publicKey => r.table('users')
   .filter(hasPublicKey(publicKey))

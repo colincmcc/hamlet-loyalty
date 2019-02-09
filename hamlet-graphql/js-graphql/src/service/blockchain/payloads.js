@@ -20,7 +20,8 @@ const ACTIONS = [
   'UPDATE_PROPERTIES',
   'CREATE_PROPOSAL',
   'ANSWER_PROPOSAL',
-  'REVOKE_REPORTER'
+  'REVOKE_REPORTER',
+  'UPDATE_ASSET'
 ];
 
 // Create dictionary with key, enum and class names
@@ -31,16 +32,16 @@ const titleify = allCaps => allCaps
 
 // Compile Protobufs
 const root = protobuf.Root.fromJSON(protoJson);
-const PayloadMsg = root.lookup('TransactionPayload');
+export const PayloadMsg = root.lookup('TransactionPayload');
 const PropertyValueMsg = root.lookup('PropertyValue');
 const PropertySchemaMsg = root.lookup('PropertySchema');
 const LocationMsg = root.lookup('Location');
 const ProposalMsg = root.lookup('Proposal');
 export const RuleMsg = root.lookup('Rule');
-
+export const AssetMsg = root.lookup('Asset');
+export const CreateAssetMsg = root.lookup('CreateAsset');
 // Create data xforms on an action by action basis
 const propertiesXformer = xform => data => _.set(data, 'properties', data.properties.map(xform));
-
 const valueXform = propertiesXformer(prop => PropertyValueMsg.create(prop));
 
 const schemaXform = propertiesXformer((prop) => {
@@ -64,7 +65,6 @@ const actionMap2 = ACTIONS.reduce((acc, enumAction) => {
   const className = `${titleify(enumAction)}`;
 
   const protoValue = protos[className];
-
 
   let xform = x => x;
 
@@ -105,7 +105,6 @@ actionMap.createRecordType.xform = schemaXform;
 actionMap.updateProperties.xform = valueXform;
 
 _.map(actionMap, action => _.set(action, 'proto', root.lookup(action.name)));
-
 /**
  * Encodes a new Payload with the specified action
  */
@@ -149,7 +148,9 @@ payloadMethods.createRecordType.enum = PropertySchemaMsg.DataType;
 payloadMethods.updateProperties.enum = PropertySchemaMsg.DataType;
 payloadMethods.createProposal.enum = ProposalMsg.Role;
 payloadMethods.answerProposal.enum = actionMap.answerProposal.proto.Response;
+payloadMethods.createAsset.enum = RuleMsg.RuleType;
+payloadMethods.updateAsset.enum = RuleMsg.RuleType;
+
 
 const FLOAT_PRECISION = 1000000;
-
 export { payloadMethods, encode, FLOAT_PRECISION };

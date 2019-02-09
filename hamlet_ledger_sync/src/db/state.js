@@ -39,6 +39,14 @@ const xformStruct = properties => {
   }))
 }
 
+/**
+ * Updates the table with the current delta change.  If the delta entry has duplicate key values, change the end block number to the current block.
+ * @param {*} tableName
+ * @param {*} indexName
+ * @param {*} indexValue
+ * @param {*} doc
+ * @param {*} blockNum
+ */
 const addBlockState = (tableName, indexName, indexValue, doc, blockNum) => {
   return db.modifyTable(tableName, table => {
     return table
@@ -46,6 +54,7 @@ const addBlockState = (tableName, indexName, indexValue, doc, blockNum) => {
       .filter({ endBlockNum: Number.MAX_SAFE_INTEGER })
       .coerceTo('array')
       .do(oldDocs => {
+        console.log(blockNum)
         return oldDocs
           .filter({ startBlockNum: blockNum })
           .coerceTo('array')
@@ -54,7 +63,6 @@ const addBlockState = (tableName, indexName, indexValue, doc, blockNum) => {
               // If there are duplicates, do nothing
               duplicates.count().gt(0),
               duplicates,
-
               // Otherwise, update the end block on any old docs,
               // and insert the new one
               table
@@ -78,17 +86,17 @@ const addAccount = (account, blockNum) => {
 }
 
 const addAsset = (asset, blockNum) => {
-  return addBlockState('assets', 'publicKey', asset.publicKey,
+  return addBlockState('assets', 'name', asset.name,
   asset, blockNum)
 }
 
 const addHolding = (holding, blockNum) => {
-  return addBlockState('holding', 'publicKey', holding.id,
+  return addBlockState('holding', 'hodlingId', holding.id,
   holding, blockNum)
 }
 
 const addOffer = (holding, blockNum) => {
-  return addBlockState('holding', 'publicKey', holding.id,
+  return addBlockState('holding', 'offerId', offer.id,
   holding, blockNum)
 }
 
@@ -163,6 +171,7 @@ const addProposal = (proposal, blockNum) => {
 
 module.exports = {
   addAccount,
+  addAsset,
   addRecord,
   addRecordType,
   addProperty,

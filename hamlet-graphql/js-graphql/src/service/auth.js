@@ -75,7 +75,8 @@ const authorize = ({ username, password }) => {
         .then((passValid) => {
           if (!passValid) throw new Error();
           const privateKeyHex = sjcl.decrypt(password, user.encryptedKey);
-
+          console.log('auth Private Key Hex', privateKeyHex);
+          // privateKey = privateKeyHex;
           privateKey = secp256k1.Secp256k1PrivateKey.fromHex(privateKeyHex);
           return createToken(user.publicKey);
         })

@@ -40,7 +40,8 @@ GQC.rootQuery().addFields({
   ...infoQueries,
   ...accountQueries,
   ...userQueries,
-  ...authQueries
+  ...authQueries,
+  ...assetQueries
 });
 
 // GQC.rootSubscription().addFields({});

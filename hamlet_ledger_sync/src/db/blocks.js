@@ -20,7 +20,8 @@ const r = require('rethinkdb')
 const db = require('./')
 
 const stateTables = [
-  'agents',
+  'accounts',
+  'assets',
   'records',
   'recordTypes',
   'properties',

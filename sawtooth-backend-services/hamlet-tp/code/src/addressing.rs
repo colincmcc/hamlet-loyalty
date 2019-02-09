@@ -3,7 +3,7 @@ use crypto::digest::Digest;
 use crypto::sha2::Sha512;
 
 const FAMILY_NAME: &str = "hamlet_loyalty";
-const ASSET: &str = "as";
+const ASSET: &str = "ae";
 const ACCOUNT: &str = "ac";
 const PROPERTY: &str = "ea";
 const PROPOSAL: &str = "aa";

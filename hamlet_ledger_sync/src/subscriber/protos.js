@@ -76,7 +76,8 @@ const compile = () => {
       'UpdateProperties',
       'CreateProposal',
       'AnswerProposal',
-      'RevokeReporter'
+      'UpdateAsset',
+
     ])
   ])
 }

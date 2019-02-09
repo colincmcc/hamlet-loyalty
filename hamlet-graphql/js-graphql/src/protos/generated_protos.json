@@ -289,6 +289,10 @@
         "revokeReporter": {
           "type": "RevokeReporter",
           "id": 27
+        },
+        "updateAsset": {
+          "type": "UpdateAsset",
+          "id": 28
         }
       },
       "nested": {
@@ -307,7 +311,8 @@
             "UPDATE_PROPERTIES": 24,
             "CREATE_PROPOSAL": 25,
             "ANSWER_PROPOSAL": 26,
-            "REVOKE_REPORTER": 27
+            "REVOKE_REPORTER": 27,
+            "UPDATE_ASSET": 28
           }
         }
       }
@@ -338,6 +343,28 @@
           "rule": "repeated",
           "type": "Rule",
           "id": 3
+        }
+      }
+    },
+    "UpdateAsset": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "description": {
+          "type": "string",
+          "id": 2
+        },
+        "rules": {
+          "rule": "repeated",
+          "type": "Rule",
+          "id": 3
+        },
+        "owners": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 4
         }
       }
     },
@@ -487,7 +514,7 @@
           "type": "string",
           "id": 1
         },
-        "receivingAgent": {
+        "receivingAccount": {
           "type": "string",
           "id": 2
         },
@@ -508,7 +535,7 @@
           "type": "string",
           "id": 1
         },
-        "receivingAgent": {
+        "receivingAccount": {
           "type": "string",
           "id": 2
         },

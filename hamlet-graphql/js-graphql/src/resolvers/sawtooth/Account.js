@@ -1,5 +1,4 @@
-import { TypeComposer } from 'graphql-compose';
-import { GraphQLString } from 'graphql'; // ES6
+import { TypeComposer, InputTypeComposer } from 'graphql-compose';
 
 import {
   createAccountTransactionResolver,
@@ -7,8 +6,9 @@ import {
   createDbFindManyResolver
 } from '../../utils/resolverFunctions';
 import UserTC from './User';
-import { Account } from '../../protos/proto';
-
+import AssetTC from './Asset';
+import HoldingTC from './Holding';
+import RecordTC from './Record';
 
 const AccountTC = TypeComposer.create(`
 type Account {
@@ -16,26 +16,64 @@ type Account {
   description: String
   publicKey: String
   holdings: [String]
-  user: User
-  assets: [Asset]
-  holdings: [Holding]
-  ownedRecords: [Record]
-  custodianRecords: [Record]
-  reports: [Property]
 }
 `);
 
-createAccountTransactionResolver(AccountTC);
-createDbFindOneResolver(AccountTC, {
-  name: 'String',
-  publicKey: 'String',
-  email: 'String',
-  assetId: 'String',
-  ownedRecordId: 'String',
-  custodianRecordId: 'String',
-  reportId: 'String'
+AccountTC.addRelation(
+  'assets',
+  {
+    resolver: () => AssetTC.getResolver('dbFindOne'),
+    prepareArgs: {
+      filter: source => ({ owners: `${[source.publicKey]}` })
+    }
+  }
+);
+
+AccountTC.addRelation(
+  'holdings',
+  {
+    resolver: () => UserTC.getResolver('dbFindOne'),
+    prepareArgs: {
+      filter: source => ({ owners: `${[source.publicKey]}` })
+    }
+  }
+);
+
+AccountTC.addRelation(
+  'records',
+  {
+    resolver: () => UserTC.getResolver('dbFindOne'),
+    prepareArgs: {
+      filter: source => ({ owners: `${[source.publicKey]}` })
+    }
+  }
+);
+AccountTC.addRelation(
+  'user',
+  {
+    resolver: () => UserTC.getResolver('dbFindOne'),
+    prepareArgs: {
+      input: source => ({ publicKey: `${source.publicKey}` })
+    }
+  }
+);
+const AccountITC = InputTypeComposer.create({
+  name: 'AccountInput',
+  description: 'Used to find or create an Account',
+  fields: {
+    label: 'String',
+    publicKey: 'String',
+    email: 'String',
+    assetId: 'String',
+    ownedRecordId: 'String',
+    custodianRecordId: 'String',
+    reportId: 'String'
+  }
 });
-createDbFindManyResolver(AccountTC);
+
+createAccountTransactionResolver(AccountTC);
+createDbFindOneResolver(AccountTC, AccountITC);
+createDbFindManyResolver(AccountTC, AccountITC);
 
 export function getAccountResolvers() {
   return {

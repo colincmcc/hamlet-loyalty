@@ -55,7 +55,7 @@ const getProtoName = address => {
 
   const names = {
     ac: 'Account',
-    as: 'Asset',
+    ae: 'Asset',
     aa: 'Proposal',
     ec: 'Record',
     ee: 'RecordType'

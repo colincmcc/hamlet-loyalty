@@ -940,9 +940,6 @@ export interface IOffer {
 
     /** Offer timestamp */
     timestamp?: (number|Long|null);
-
-    /** Offer role */
-    role?: (Offer.Role|null);
 }
 
 /** Represents an Offer. */
@@ -986,9 +983,6 @@ export class Offer implements IOffer {
 
     /** Offer timestamp. */
     public timestamp: (number|Long);
-
-    /** Offer role. */
-    public role: Offer.Role;
 
     /**
      * Creates a new Offer instance using the specified properties.
@@ -1063,19 +1057,13 @@ export class Offer implements IOffer {
 
 export namespace Offer {
 
-    /** Role enum. */
-    enum Role {
-        OWNER = 0,
-        CUSTODIAN = 1,
-        REPORTER = 2
-    }
-
     /** Status enum. */
     enum Status {
-        OPEN = 0,
-        ACCEPTED = 1,
-        REJECTED = 2,
-        CANCELED = 3
+        STATUS_UNSET = 0,
+        OPEN = 1,
+        ACCEPTED = 2,
+        REJECTED = 3,
+        CANCELED = 4
     }
 }
 
@@ -1216,6 +1204,9 @@ export interface ITransactionPayload {
 
     /** TransactionPayload revokeReporter */
     revokeReporter?: (IRevokeReporter|null);
+
+    /** TransactionPayload updateAsset */
+    updateAsset?: (IUpdateAsset|null);
 }
 
 /** Represents a TransactionPayload. */
@@ -1271,6 +1262,9 @@ export class TransactionPayload implements ITransactionPayload {
 
     /** TransactionPayload revokeReporter. */
     public revokeReporter?: (IRevokeReporter|null);
+
+    /** TransactionPayload updateAsset. */
+    public updateAsset?: (IUpdateAsset|null);
 
     /**
      * Creates a new TransactionPayload instance using the specified properties.
@@ -1557,6 +1551,114 @@ export class CreateAsset implements ICreateAsset {
 
     /**
      * Converts this CreateAsset to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+/** Properties of an UpdateAsset. */
+export interface IUpdateAsset {
+
+    /** UpdateAsset name */
+    name?: (string|null);
+
+    /** UpdateAsset description */
+    description?: (string|null);
+
+    /** UpdateAsset rules */
+    rules?: (IRule[]|null);
+
+    /** UpdateAsset owners */
+    owners?: (string[]|null);
+}
+
+/** Represents an UpdateAsset. */
+export class UpdateAsset implements IUpdateAsset {
+
+    /**
+     * Constructs a new UpdateAsset.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IUpdateAsset);
+
+    /** UpdateAsset name. */
+    public name: string;
+
+    /** UpdateAsset description. */
+    public description: string;
+
+    /** UpdateAsset rules. */
+    public rules: IRule[];
+
+    /** UpdateAsset owners. */
+    public owners: string[];
+
+    /**
+     * Creates a new UpdateAsset instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns UpdateAsset instance
+     */
+    public static create(properties?: IUpdateAsset): UpdateAsset;
+
+    /**
+     * Encodes the specified UpdateAsset message. Does not implicitly {@link UpdateAsset.verify|verify} messages.
+     * @param message UpdateAsset message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IUpdateAsset, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified UpdateAsset message, length delimited. Does not implicitly {@link UpdateAsset.verify|verify} messages.
+     * @param message UpdateAsset message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IUpdateAsset, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes an UpdateAsset message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns UpdateAsset
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): UpdateAsset;
+
+    /**
+     * Decodes an UpdateAsset message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns UpdateAsset
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): UpdateAsset;
+
+    /**
+     * Verifies an UpdateAsset message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates an UpdateAsset message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns UpdateAsset
+     */
+    public static fromObject(object: { [k: string]: any }): UpdateAsset;
+
+    /**
+     * Creates a plain object from an UpdateAsset message. Also converts values to other types if specified.
+     * @param message UpdateAsset
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: UpdateAsset, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this UpdateAsset to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };
@@ -2396,8 +2498,8 @@ export interface ICreateProposal {
     /** CreateProposal recordId */
     recordId?: (string|null);
 
-    /** CreateProposal receivingAgent */
-    receivingAgent?: (string|null);
+    /** CreateProposal receivingAccount */
+    receivingAccount?: (string|null);
 
     /** CreateProposal role */
     role?: (Proposal.Role|null);
@@ -2418,8 +2520,8 @@ export class CreateProposal implements ICreateProposal {
     /** CreateProposal recordId. */
     public recordId: string;
 
-    /** CreateProposal receivingAgent. */
-    public receivingAgent: string;
+    /** CreateProposal receivingAccount. */
+    public receivingAccount: string;
 
     /** CreateProposal role. */
     public role: Proposal.Role;
@@ -2504,8 +2606,8 @@ export interface IAnswerProposal {
     /** AnswerProposal recordId */
     recordId?: (string|null);
 
-    /** AnswerProposal receivingAgent */
-    receivingAgent?: (string|null);
+    /** AnswerProposal receivingAccount */
+    receivingAccount?: (string|null);
 
     /** AnswerProposal role */
     role?: (Proposal.Role|null);
@@ -2526,8 +2628,8 @@ export class AnswerProposal implements IAnswerProposal {
     /** AnswerProposal recordId. */
     public recordId: string;
 
-    /** AnswerProposal receivingAgent. */
-    public receivingAgent: string;
+    /** AnswerProposal receivingAccount. */
+    public receivingAccount: string;
 
     /** AnswerProposal role. */
     public role: Proposal.Role;
@@ -3783,6 +3885,246 @@ export class Location implements ILocation {
     public toJSON(): { [k: string]: any };
 }
 
+/** Properties of a Proposal. */
+export interface IProposal {
+
+    /** Proposal recordId */
+    recordId?: (string|null);
+
+    /** Proposal timestamp */
+    timestamp?: (number|Long|null);
+
+    /** Proposal issuingAgent */
+    issuingAgent?: (string|null);
+
+    /** Proposal receivingAgent */
+    receivingAgent?: (string|null);
+
+    /** Proposal role */
+    role?: (Proposal.Role|null);
+
+    /** Proposal properties */
+    properties?: (string[]|null);
+
+    /** Proposal status */
+    status?: (Proposal.Status|null);
+
+    /** Proposal terms */
+    terms?: (string|null);
+}
+
+/** Represents a Proposal. */
+export class Proposal implements IProposal {
+
+    /**
+     * Constructs a new Proposal.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IProposal);
+
+    /** Proposal recordId. */
+    public recordId: string;
+
+    /** Proposal timestamp. */
+    public timestamp: (number|Long);
+
+    /** Proposal issuingAgent. */
+    public issuingAgent: string;
+
+    /** Proposal receivingAgent. */
+    public receivingAgent: string;
+
+    /** Proposal role. */
+    public role: Proposal.Role;
+
+    /** Proposal properties. */
+    public properties: string[];
+
+    /** Proposal status. */
+    public status: Proposal.Status;
+
+    /** Proposal terms. */
+    public terms: string;
+
+    /**
+     * Creates a new Proposal instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns Proposal instance
+     */
+    public static create(properties?: IProposal): Proposal;
+
+    /**
+     * Encodes the specified Proposal message. Does not implicitly {@link Proposal.verify|verify} messages.
+     * @param message Proposal message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IProposal, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified Proposal message, length delimited. Does not implicitly {@link Proposal.verify|verify} messages.
+     * @param message Proposal message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IProposal, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a Proposal message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns Proposal
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Proposal;
+
+    /**
+     * Decodes a Proposal message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns Proposal
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Proposal;
+
+    /**
+     * Verifies a Proposal message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a Proposal message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns Proposal
+     */
+    public static fromObject(object: { [k: string]: any }): Proposal;
+
+    /**
+     * Creates a plain object from a Proposal message. Also converts values to other types if specified.
+     * @param message Proposal
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: Proposal, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this Proposal to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
+export namespace Proposal {
+
+    /** Role enum. */
+    enum Role {
+        OWNER = 0,
+        CUSTODIAN = 1,
+        REPORTER = 2
+    }
+
+    /** Status enum. */
+    enum Status {
+        OPEN = 0,
+        ACCEPTED = 1,
+        REJECTED = 2,
+        CANCELED = 3
+    }
+}
+
+/** Properties of a ProposalContainer. */
+export interface IProposalContainer {
+
+    /** ProposalContainer entries */
+    entries?: (IProposal[]|null);
+}
+
+/** Represents a ProposalContainer. */
+export class ProposalContainer implements IProposalContainer {
+
+    /**
+     * Constructs a new ProposalContainer.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IProposalContainer);
+
+    /** ProposalContainer entries. */
+    public entries: IProposal[];
+
+    /**
+     * Creates a new ProposalContainer instance using the specified properties.
+     * @param [properties] Properties to set
+     * @returns ProposalContainer instance
+     */
+    public static create(properties?: IProposalContainer): ProposalContainer;
+
+    /**
+     * Encodes the specified ProposalContainer message. Does not implicitly {@link ProposalContainer.verify|verify} messages.
+     * @param message ProposalContainer message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: IProposalContainer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Encodes the specified ProposalContainer message, length delimited. Does not implicitly {@link ProposalContainer.verify|verify} messages.
+     * @param message ProposalContainer message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encodeDelimited(message: IProposalContainer, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a ProposalContainer message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ProposalContainer
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): ProposalContainer;
+
+    /**
+     * Decodes a ProposalContainer message from the specified reader or buffer, length delimited.
+     * @param reader Reader or buffer to decode from
+     * @returns ProposalContainer
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): ProposalContainer;
+
+    /**
+     * Verifies a ProposalContainer message.
+     * @param message Plain object to verify
+     * @returns `null` if valid, otherwise the reason why it is not
+     */
+    public static verify(message: { [k: string]: any }): (string|null);
+
+    /**
+     * Creates a ProposalContainer message from a plain object. Also converts values to their respective internal types.
+     * @param object Plain object
+     * @returns ProposalContainer
+     */
+    public static fromObject(object: { [k: string]: any }): ProposalContainer;
+
+    /**
+     * Creates a plain object from a ProposalContainer message. Also converts values to other types if specified.
+     * @param message ProposalContainer
+     * @param [options] Conversion options
+     * @returns Plain object
+     */
+    public static toObject(message: ProposalContainer, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+    /**
+     * Converts this ProposalContainer to JSON.
+     * @returns JSON object
+     */
+    public toJSON(): { [k: string]: any };
+}
+
 /** Properties of a Record. */
 export interface IRecord {
 
@@ -4267,246 +4609,6 @@ export class RecordTypeContainer implements IRecordTypeContainer {
 
     /**
      * Converts this RecordTypeContainer to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
-/** Properties of a Proposal. */
-export interface IProposal {
-
-    /** Proposal recordId */
-    recordId?: (string|null);
-
-    /** Proposal timestamp */
-    timestamp?: (number|Long|null);
-
-    /** Proposal issuingAgent */
-    issuingAgent?: (string|null);
-
-    /** Proposal receivingAgent */
-    receivingAgent?: (string|null);
-
-    /** Proposal role */
-    role?: (Proposal.Role|null);
-
-    /** Proposal properties */
-    properties?: (string[]|null);
-
-    /** Proposal status */
-    status?: (Proposal.Status|null);
-
-    /** Proposal terms */
-    terms?: (string|null);
-}
-
-/** Represents a Proposal. */
-export class Proposal implements IProposal {
-
-    /**
-     * Constructs a new Proposal.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IProposal);
-
-    /** Proposal recordId. */
-    public recordId: string;
-
-    /** Proposal timestamp. */
-    public timestamp: (number|Long);
-
-    /** Proposal issuingAgent. */
-    public issuingAgent: string;
-
-    /** Proposal receivingAgent. */
-    public receivingAgent: string;
-
-    /** Proposal role. */
-    public role: Proposal.Role;
-
-    /** Proposal properties. */
-    public properties: string[];
-
-    /** Proposal status. */
-    public status: Proposal.Status;
-
-    /** Proposal terms. */
-    public terms: string;
-
-    /**
-     * Creates a new Proposal instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns Proposal instance
-     */
-    public static create(properties?: IProposal): Proposal;
-
-    /**
-     * Encodes the specified Proposal message. Does not implicitly {@link Proposal.verify|verify} messages.
-     * @param message Proposal message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IProposal, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified Proposal message, length delimited. Does not implicitly {@link Proposal.verify|verify} messages.
-     * @param message Proposal message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IProposal, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a Proposal message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns Proposal
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): Proposal;
-
-    /**
-     * Decodes a Proposal message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns Proposal
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Proposal;
-
-    /**
-     * Verifies a Proposal message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates a Proposal message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns Proposal
-     */
-    public static fromObject(object: { [k: string]: any }): Proposal;
-
-    /**
-     * Creates a plain object from a Proposal message. Also converts values to other types if specified.
-     * @param message Proposal
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: Proposal, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this Proposal to JSON.
-     * @returns JSON object
-     */
-    public toJSON(): { [k: string]: any };
-}
-
-export namespace Proposal {
-
-    /** Role enum. */
-    enum Role {
-        OWNER = 0,
-        CUSTODIAN = 1,
-        REPORTER = 2
-    }
-
-    /** Status enum. */
-    enum Status {
-        OPEN = 0,
-        ACCEPTED = 1,
-        REJECTED = 2,
-        CANCELED = 3
-    }
-}
-
-/** Properties of a ProposalContainer. */
-export interface IProposalContainer {
-
-    /** ProposalContainer entries */
-    entries?: (IProposal[]|null);
-}
-
-/** Represents a ProposalContainer. */
-export class ProposalContainer implements IProposalContainer {
-
-    /**
-     * Constructs a new ProposalContainer.
-     * @param [properties] Properties to set
-     */
-    constructor(properties?: IProposalContainer);
-
-    /** ProposalContainer entries. */
-    public entries: IProposal[];
-
-    /**
-     * Creates a new ProposalContainer instance using the specified properties.
-     * @param [properties] Properties to set
-     * @returns ProposalContainer instance
-     */
-    public static create(properties?: IProposalContainer): ProposalContainer;
-
-    /**
-     * Encodes the specified ProposalContainer message. Does not implicitly {@link ProposalContainer.verify|verify} messages.
-     * @param message ProposalContainer message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encode(message: IProposalContainer, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Encodes the specified ProposalContainer message, length delimited. Does not implicitly {@link ProposalContainer.verify|verify} messages.
-     * @param message ProposalContainer message or plain object to encode
-     * @param [writer] Writer to encode to
-     * @returns Writer
-     */
-    public static encodeDelimited(message: IProposalContainer, writer?: $protobuf.Writer): $protobuf.Writer;
-
-    /**
-     * Decodes a ProposalContainer message from the specified reader or buffer.
-     * @param reader Reader or buffer to decode from
-     * @param [length] Message length if known beforehand
-     * @returns ProposalContainer
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): ProposalContainer;
-
-    /**
-     * Decodes a ProposalContainer message from the specified reader or buffer, length delimited.
-     * @param reader Reader or buffer to decode from
-     * @returns ProposalContainer
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): ProposalContainer;
-
-    /**
-     * Verifies a ProposalContainer message.
-     * @param message Plain object to verify
-     * @returns `null` if valid, otherwise the reason why it is not
-     */
-    public static verify(message: { [k: string]: any }): (string|null);
-
-    /**
-     * Creates a ProposalContainer message from a plain object. Also converts values to their respective internal types.
-     * @param object Plain object
-     * @returns ProposalContainer
-     */
-    public static fromObject(object: { [k: string]: any }): ProposalContainer;
-
-    /**
-     * Creates a plain object from a ProposalContainer message. Also converts values to other types if specified.
-     * @param message ProposalContainer
-     * @param [options] Conversion options
-     * @returns Plain object
-     */
-    public static toObject(message: ProposalContainer, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-    /**
-     * Converts this ProposalContainer to JSON.
      * @returns JSON object
      */
     public toJSON(): { [k: string]: any };

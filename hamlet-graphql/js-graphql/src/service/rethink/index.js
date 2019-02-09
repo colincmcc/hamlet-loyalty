@@ -15,6 +15,12 @@ export {
 } from './accountDB';
 
 export {
+  fetchAsset,
+  listAssets,
+  assetUpdate
+} from './assetDB';
+
+export {
   fetchProperty,
   fetchRecord,
   listRecords

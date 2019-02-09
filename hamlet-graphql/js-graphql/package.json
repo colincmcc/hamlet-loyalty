@@ -1,84 +1,4 @@
 {
-<<<<<<< HEAD
-    "name": "iph-graphql",
-    "version": "1.0.0",
-    "description": "GraphQL Server for Multiple API's",
-    "dependencies": {
-        "apollo-server": "^2.0.4",
-        "apollo-server-express": "^2.0.3",
-        "axios": "^0.18.0",
-        "babel-plugin-transform-object-rest-spread": "^6.26.0",
-        "babel-runtime": "^6.26.0",
-        "body-parser": "^1.18.3",
-        "coinbase": "^2.0.8",
-        "cors": "^2.8.4",
-        "crypto": "^1.0.1",
-        "dataloader": "^1.4.0",
-        "dotenv": "^6.0.0",
-        "express": "^4.16.3",
-        "express-graphql": "^0.6.12",
-        "graphql": "^0.13.2",
-        "graphql-compose": "^4.8.1",
-        "graphql-compose-json": "^1.1.2",
-        "graphql-subscriptions": "^0.5.8",
-        "http": "0.0.0",
-        "mailgun.js": "^2.0.1",
-        "node-fetch": "^2.2.0",
-        "request-promise": "^4.2.2",
-        "subscriptions-transport-ws": "^0.9.14"
-    },
-    "main": "lib/index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "graphql": "babel-node lib/index.js",
-        "start": "nodemon lib/index.js --exec babel-node ",
-        "build": "babel lib -d dist",
-        "serve": "babel-node dist/index.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "Iph-GraphQL"
-    },
-    "author": "Colin McCullough",
-    "license": "ISC",
-    "devDependencies": {
-        "babel-cli": "^6.26.0",
-        "babel-plugin-syntax-dynamic-import": "^6.18.0",
-        "babel-plugin-transform-runtime": "^6.23.0",
-        "babel-preset-env": "^1.7.0",
-        "babel-preset-es2017": "^6.24.1",
-        "eslint": "^5.8.0",
-        "eslint-config-airbnb-base": "^13.1.0",
-        "eslint-plugin-import": "^2.14.0",
-        "nodemon": "^1.18.3"
-    },
-    "eslintConfig": {
-        "extends": "airbnb-base",
-        "env": {
-            "es6": true,
-            "browser": true
-        },
-        "rules": {
-            "brace-style": [
-                "error",
-                "stroustrup"
-            ],
-            "comma-dangle": [
-                "error",
-                "never"
-            ],
-            "no-unused-vars": [
-                "warn"
-            ],
-            "no-var": [
-                "off"
-            ],
-            "one-var": [
-                "off"
-            ]
-        }
-    }
-=======
   "name": "hamlet-graphql",
   "version": "1.0.0",
   "description": "GraphQL Server for Multiple API's",
@@ -91,6 +11,7 @@
     "apollo-server-express": "^2.0.3",
     "axios": "^0.18.0",
     "bcrypt": "^3.0.3",
+    "big-integer": "^1.6.41",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "crypto": "^1.0.1",
@@ -191,5 +112,4 @@
       ]
     }
   }
->>>>>>> f6674dcb36a7a13b71f8a25b8fe2b3f6bcbb2787
 }

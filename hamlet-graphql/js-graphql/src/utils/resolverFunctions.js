@@ -8,18 +8,24 @@ import {
   makePrivateKey,
   payloadMethods,
   createTxn,
-  getSignerPublicKey
+  getSignerPublicKey,
+  getPrivateKey
 } from '../service/blockchain';
 import {
   fetchAccount, userInsert, userQuery, userUpdate,
-  listAccounts
+  listAccounts, assetUpdate, fetchAsset, listAssets
 } from '../service/rethink';
-import { RuleMsg } from '../service/blockchain/payloads';
+import {
+  RuleMsg, AssetMsg, PayloadMsg, CreateAssetMsg
+} from '../service/blockchain/payloads';
 import {
   AssetTC, AccountTC, OfferTC, UserTC
 } from '../resolvers/sawtooth';
+import { CreateAsset, Rule } from '../protos/proto';
+
 import { BadRequest } from './errors';
 import * as auth from '../service/auth';
+import { fetchUser } from '../service/rethink/userDB';
 
 dotenv.config();
 
@@ -94,31 +100,36 @@ export function createTransactionResolver(tc, inputType) {
     resolve: async ({ args, context }) => {
       if (!context.user) throw AuthenticationError('not logged in');
       const { input } = args;
+      const password = input.password;
+      const encryptedKey = input.encryptedKey;
+      // const privateKey = getPrivateKey(password, encryptedKey);
 
       let payload;
       const { privateKey } = context;
       const signerPublicKey = context.user;
       let data;
       let formattedData;
-      console.log(input.rules);
       console.log(signerPublicKey);
       console.log(privateKey);
-      const rulePayload = input.rules ? input.rules.map(rule => RuleMsg.encode({ type: rule.type.toString(), value: rule.value }).finish()) : [];
-
+      // TODO: fix rule.value output to be bytes
+      const rulePayload = input.rules ? input.rules.map(rule => ({
+        type: payloadMethods.createAsset.enum[rule.type],
+        value: rule.value
+      })) : [];
       console.log('rules', rulePayload);
+
       switch (tc) {
         case AssetTC:
           console.log('Creating Asset');
-          // Asset owners are being set as the signers in the TP
+
           payload = payloadMethods.createAsset({
             name: input.name,
-            decsription: input.description,
+            description: input.description,
             rules: rulePayload
           });
-
           formattedData = {
             name: input.name,
-            description: input.decsription,
+            description: input.description,
             rules: input.rules,
             owners: [context.user]
           };
@@ -129,7 +140,78 @@ export function createTransactionResolver(tc, inputType) {
 
           payload = payloadMethods.createOffer({
             name: input.name,
-            decsription: input.description
+            description: input.description
+          });
+          break;
+        default: {
+          break;
+        }
+      }
+      console.log('----signer pubkey', signerPublicKey);
+      console.log('----created payload ', payload);
+      const txnBytes = createTxn(payload, signerPublicKey, privateKey);
+      console.log('----created txn', txnBytes);
+
+      return submit([txnBytes], { wait: DEFAULT_WAIT_TIME })
+        .then(async (result) => {
+          console.log(result);
+
+          return formattedData;
+        });
+    }
+  });
+}
+
+// * Create Sawtooth Transaction
+export function createUpdateTransactionResolver(tc, inputType) {
+  tc.addResolver({
+    name: 'updateBcTransaction',
+    type: tc,
+    args: { input: inputType },
+    resolve: async ({ args, context }) => {
+      if (!context.user) throw AuthenticationError('not logged in');
+      const { input } = args;
+      const password = input.password;
+      const encryptedKey = input.encryptedKey;
+      let payload;
+      const { privateKey } = context;
+      const signerPublicKey = context.user;
+      let data;
+      let formattedData;
+
+      console.log(signerPublicKey);
+      console.log(privateKey);
+      // TODO: fix rule.value output to be bytes
+      const rulePayload = input.rules ? input.rules.map(rule => ({
+        type: payloadMethods.createAsset.enum[rule.type],
+        value: rule.value
+      })) : [];
+      console.log('rules', rulePayload);
+
+      switch (tc) {
+        case AssetTC:
+          console.log('Updating Asset');
+
+          payload = payloadMethods.updateAsset({
+            name: input.name,
+            description: input.description,
+            rules: rulePayload,
+            owners: input.owners
+          });
+          formattedData = {
+            name: input.name,
+            description: input.description,
+            rules: input.rules,
+            owners: input.owners
+          };
+
+          break;
+        case OfferTC:
+          console.log('Updating Offer');
+
+          payload = payloadMethods.updateOffer({
+            name: input.name,
+            description: input.description
           });
           break;
         default: {
@@ -183,7 +265,8 @@ export function createAccountTransactionResolver(tc) {
       const signerPublicKey = publicKey;
       const privateKey = newPrivateKey;
       const payload = accountPayload;
-
+      console.log('----pub key', signerPublicKey);
+      console.log('----privKey', privateKey);
       const user = {
         username: args.username,
         password: args.password,
@@ -196,6 +279,7 @@ export function createAccountTransactionResolver(tc) {
       const txnBytes = createTxn(payload, signerPublicKey, privateKey);
       console.log('----created txn', txnBytes);
 
+      // TODO: Create user, then create blockchain record
       return submit([txnBytes], { wait: DEFAULT_WAIT_TIME })
         .then(async (result) => {
           console.log(result);
@@ -219,17 +303,18 @@ export function createAccountTransactionResolver(tc) {
   });
 }
 
-export function createDbFindOneResolver(tc, fields) {
+export function createDbFindOneResolver(tc, inputType) {
   tc.addResolver({
     name: 'dbFindOne',
     type: tc,
-    args: fields,
+    args: { input: inputType },
     resolve: async ({ args, context }) => {
+      const { input } = args;
       let data;
       let formattedData;
       switch (tc) {
         case AccountTC:
-          data = await fetchAccount(args.publicKey, true);
+          data = await fetchAccount(input.publicKey, true);
 
           formattedData = {
             label: data.label,
@@ -242,59 +327,55 @@ export function createDbFindOneResolver(tc, fields) {
           };
           break;
         case UserTC:
-          data = await fetchAccount(args.publicKey, true);
+          console.log(input);
+          formattedData = await fetchUser(input.publicKey, true);
+          break;
+        case AssetTC:
+          data = await fetchAsset(input.name, true);
 
           formattedData = {
-            label: data.label,
-            publicKey: data.publicKey,
-            user: {
-              username: data.username,
-              encryptedKey: data.encryptedKey,
-              email: data.email
-            }
+            name: data.name,
+            id: data.id,
+            description: data.description,
+            owners: data.owners,
+            rules: data.rules
           };
           break;
         default:
           break;
       }
+      console.log('findOne', formattedData);
       return formattedData;
     }
   });
 }
 
 
-export function createDbFindManyResolver(tc) {
+export function createDbFindManyResolver(tc, inputType) {
   tc.addResolver({
     name: 'dbFindMany',
     type: [tc],
-    args: {
-      name: 'String',
-      username: 'String',
-      description: 'String',
-      password: 'String',
-      encryptedKey: 'String',
-      email: 'String',
-      publicKey: 'String'
-    },
+    args: { input: inputType },
     resolve: async ({ args, context }) => {
+      const { input } = args;
       let data;
       let formattedData;
+      let filterQuery;
       switch (tc) {
         case AccountTC:
-          data = await listAccounts({ publicKey: args.publicKey });
-
-          formattedData = {
-            label: data.label,
-            publicKey: data.publicKey,
-            description: data.description,
-            holdings: data.holdings
-          };
+          data = await listAccounts(input);
           break;
-
+        case AssetTC:
+          data = await listAssets(input);
+          break;
+        case UserTC:
+          data = await listUsers(input);
+          break;
         default:
           break;
       }
-      return [formattedData];
+      console.log('---------------data', data);
+      return data;
     }
   });
 }
@@ -313,6 +394,9 @@ export function updateOneDbResolver(tc, fields) {
       switch (tc) {
         case UserTC:
           formattedData = updateUser(args, { authedKey: context.user });
+          break;
+        case AssetTC:
+          formattedData = assetUpdate(args.assetName, args);
           break;
         default:
           break;

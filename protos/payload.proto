@@ -36,6 +36,7 @@ message TransactionPayload {
         CREATE_PROPOSAL = 25;
         ANSWER_PROPOSAL = 26;
         REVOKE_REPORTER = 27;
+        UPDATE_ASSET = 28;
     }
 
     PayloadType payload_type = 1;
@@ -54,7 +55,7 @@ message TransactionPayload {
     CreateProposal create_proposal = 25;
     AnswerProposal answer_proposal = 26;
     RevokeReporter revoke_reporter = 27;
-
+    UpdateAsset update_asset = 28;
 }
 
 message CreateAccount {
@@ -66,6 +67,13 @@ message CreateAsset {
     string name = 1;
     string description = 2;
     repeated Rule rules = 3;
+}
+
+message UpdateAsset {
+    string name = 1;
+    string description = 2;
+    repeated Rule rules = 3;
+    repeated string owners = 4;
 }
 
 message CreateHolding {
@@ -137,7 +145,7 @@ message CloseOffer {
 
     // the public key of the Agent to whom the Proposal is sent
     // (must be different from the Agent creating the Proposal)
-    string receiving_agent = 2;
+    string receiving_account = 2;
 
     Proposal.Role role = 3;
 
@@ -156,7 +164,7 @@ message CloseOffer {
     string record_id = 1;
 
     // The public key of the Agent to whom the proposal is sent
-    string receiving_agent = 2;
+    string receiving_account = 2;
 
     // The role being proposed (owner, custodian, or reporter)
     Proposal.Role role = 3;

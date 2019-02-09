@@ -3,11 +3,7 @@
 
 # Jetbrains Ides
 .idea/
-<<<<<<< HEAD
 .iml
-=======
-
->>>>>>> f0d80e76f4fc0bafadc23a9c4f7f746fe7178884
 **/__pycache__/**
 
 # Node

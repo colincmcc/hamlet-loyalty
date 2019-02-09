@@ -19,6 +19,14 @@ const UPDATE_SCHEMA = _.mapKeys(USER_SCHEMA, (_, key) => {
   return `?${key}`;
 });
 
+const getAttribute = attr => obj => obj(attr);
+const getPublicKey = getAttribute('publicKey');
+
+const hasPublicKey = key => obj => r.eq(
+  key,
+  getPublicKey(obj)
+);
+
 const userQuery = query => db.queryTable('users', query);
 
 // TODO: refactor insert steps
@@ -69,7 +77,12 @@ const userUpdate = (publicKey, changes) => db.validate(changes, UPDATE_SCHEMA)
           })
       ));
   });
+
+
+const fetchUser = filterQuery => r.table('users').filter(filterQuery);
+
 export {
+  fetchUser,
   userQuery,
   userInsert,
   userUpdate

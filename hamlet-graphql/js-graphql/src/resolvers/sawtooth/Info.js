@@ -5,16 +5,11 @@ import * as batcher from '../../service/blockchain/batcher';
 
 
 const InfoTC = TypeComposer.create(`
-type Info
+type Info {
+  batcherPublicKey: String
+}
 `);
 InfoTC.addFields({
-  pubKey: {
-    type: GraphQLString,
-    resolve: async ({ args, context }) => {
-      console.log(context.privateKey);
-      return batcher.getPublicKey();
-    }
-  },
   mapsApiKey: {
     type: GraphQLString,
     resolve: () => process.env.MAPS_API_KEY
@@ -27,7 +22,8 @@ InfoTC.addResolver({
   type: InfoTC,
   resolve: async ({ args, context }) => {
     console.log(context.privateKey);
-    return { pubkey: batcher.getPublicKey() };
+    console.log(context.user);
+    return { batcherPublicKey: batcher.getPublicKey() };
   }
 });
 export function getInfoResolvers() {

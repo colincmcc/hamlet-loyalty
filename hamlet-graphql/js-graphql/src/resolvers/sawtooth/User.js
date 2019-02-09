@@ -1,6 +1,5 @@
-import { TypeComposer } from 'graphql-compose';
-import AccountTC from './Account';
-import { updateOneDbResolver } from '../../utils/resolverFunctions';
+import { TypeComposer, InputTypeComposer } from 'graphql-compose';
+import { updateOneDbResolver, createDbFindOneResolver } from '../../utils/resolverFunctions';
 
 const UserTC = TypeComposer.create(`
 type User {
@@ -13,26 +12,30 @@ type User {
 }
 `);
 
-
-UserTC.addRelation( // GraphQL relation definition
-  'account',
-  {
-    resolver: () => AccountTC.getResolver('dbFindOne'),
-    prepareArgs: {
-      filter: source => ({
-        publicKey: `${source.publicKey}`
-      })
-    },
-    projection: { publicKey: true }
+const UserITC = InputTypeComposer.create({
+  name: 'UserInput',
+  description: 'Used to find or create an User',
+  fields: {
+    label: 'String',
+    publicKey: 'String',
+    email: 'String',
+    assetId: 'String',
+    ownedRecordId: 'String',
+    custodianRecordId: 'String',
+    reportId: 'String'
   }
-);
+});
+createDbFindOneResolver(UserTC, UserITC);
+
 updateOneDbResolver(UserTC, {
   username: 'String',
   password: 'String',
   email: 'String'
 });
 export function getUserResolvers() {
-  return {};
+  return {
+    findUser: UserTC.getResolver('dbFindOne')
+  };
 }
 
 export function getUserMutations() {

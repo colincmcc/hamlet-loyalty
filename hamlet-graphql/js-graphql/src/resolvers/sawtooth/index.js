@@ -1,8 +1,8 @@
 export { default as RuleTC, RuleTypeTC } from './Rule';
+export { default as AssetTC, getAssetResolvers, getAssetMutations } from './Asset';
 
 export { default as AccountTC, getAccountResolvers, getAccountMutations } from './Account';
 
-export { default as AssetTC, getAssetResolvers, getAssetMutations } from './Asset';
 
 export { default as HoldingTC, getHoldingResolvers, getHoldingMutations } from './Holding';
 
