@@ -97,18 +97,7 @@ impl HamletTransactionHandler {
         new_asset.set_name(asset_name.to_string());
         new_asset.set_owners(RepeatedField::from_vec(vec![signer.to_string()]));
         new_asset.set_rules(RepeatedField::from_vec(asset_rules));
-        /*
-        for (rule) in asset_rules {
-            info!(
-                "Rule: {:?} {}",
-                rule.get_value().to_string(),
-                rule.get_field_type().to_string()
-            );
-            let mut new_rule = rule::Rule::new();
-            new_rule.value = rule.get_value();
-            new_rule.field_type = rule.get_field_type();
-            new_asset.rules.push(new_rule.clone());
-        } */
+
         state.set_asset(asset_name, new_asset)?;
         Ok(())
     }
@@ -166,6 +155,148 @@ impl HamletTransactionHandler {
         state.set_asset(asset_name, asset_clone)?;
         Ok(())
     }
+
+    fn _create_holding(
+        &self,
+        payload: payload::CreateHolding,
+        mut state: HamletState,
+        signer: &str
+    ) -> Result<(), ApplyError> {
+        match state.get_account(signer) {
+            Ok(Some(_)) => (),
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Account is not registered: {}",
+                    signer
+                )))
+            }
+            Err(err) => return Err(err),
+        }
+
+        let holding_id = payload.get_id();
+        let holding_label = payload.get_label();
+        let holding_description = payload.get_description();
+        let holding_asset = payload.get_asset();
+        let holding_quantity = payload.get_quantity();
+
+
+        match state.get_holding(holding_id) {
+            Ok(Some(_)) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Holding with this id already exists: {}",
+                    holding_id
+                )))
+            }
+            Ok(None) => (),
+            Err(err) => return Err(err),
+        }
+
+        // Check if the asset exists
+        let asset = match state.get_asset(holding_asset) {
+            Ok(Some(asset)) => asset,
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Asset does not exist {}",
+                    holding_asset
+                )))
+            }
+            Err(err) => return Err(err),
+        };
+        // The signer must be an owner of the asset
+        match asset.get_owners().contains(&signer.to_string()) && holding_quantity > 0 {
+            true => (),
+            false => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Account {} is not authorized to create a holding greater than 0 with this asset: {}",
+                    signer,
+                    asset.get_name()
+                )))
+            }
+        }
+
+        let mut new_holding = holding::Holding::new();
+        new_holding.set_id(holding_id.to_string());
+        new_holding.set_label(holding_label.to_string());
+        new_holding.set_description(holding_description.to_string());
+        new_holding.set_account(signer.to_string());
+        new_holding.set_asset(holding_asset.to_string());
+        new_holding.set_quantity(holding_quantity);
+
+        state.set_holding(holding_id, new_holding)?;
+        Ok(())
+    }
+
+
+    fn _create_offer(
+        &self,
+        payload: payload::CreateOffer,
+        mut state: HamletState,
+        signer: &str
+    ) -> Result<(), ApplyError> {
+        match state.get_account(signer) {
+            Ok(Some(_)) => (),
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Account is not registered: {}",
+                    signer
+                )))
+            }
+            Err(err) => return Err(err),
+        }
+
+        let holding_id = payload.get_id();
+        let holding_label = payload.get_label();
+        let holding_description = payload.get_description();
+        let holding_asset = payload.get_asset();
+        let holding_quantity = payload.get_quantity();
+
+
+        match state.get_holding(holding_id) {
+            Ok(Some(_)) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Holding with this id already exists: {}",
+                    holding_id
+                )))
+            }
+            Ok(None) => (),
+            Err(err) => return Err(err),
+        }
+
+        // Check if the asset exists
+        let asset = match state.get_asset(holding_asset) {
+            Ok(Some(asset)) => asset,
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Asset does not exist {}",
+                    holding_asset
+                )))
+            }
+            Err(err) => return Err(err),
+        };
+        // The signer must be an owner of the asset
+        match asset.get_owners().contains(&signer.to_string()) && holding_quantity > 0 {
+            true => (),
+            false => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Account {} is not authorized to create a holding greater than 0 with this asset: {}",
+                    signer,
+                    asset.get_name()
+                )))
+            }
+        }
+
+        let mut new_holding = holding::Holding::new();
+        new_holding.set_id(holding_id.to_string());
+        new_holding.set_label(holding_label.to_string());
+        new_holding.set_description(holding_description.to_string());
+        new_holding.set_account(signer.to_string());
+        new_holding.set_asset(holding_asset.to_string());
+        new_holding.set_quantity(holding_quantity);
+
+        state.set_holding(holding_id, new_holding)?;
+        Ok(())
+    }
+
     fn _create_record(
         &self,
         payload: payload::CreateRecord,
@@ -1206,6 +1337,15 @@ impl TransactionHandler for HamletTransactionHandler {
             Action::UpdateAsset(asset_payload) => {
                 self._update_asset(asset_payload, state, signer)?
             }
+            Action::CreateOffer(offer_payload) => {
+                self._create_offer(offer_payload, state, signer)?
+            }
+            Action::AcceptOffer(offer_payload) => {
+                self._accept_offer(offer_payload, state, signer)?
+            }
+            Action::CloseOffer(offer_payload) => {
+                self._close_offer(offer_payload, state, signer)?
+            }
             Action::CreateRecord(record_payload) => {
                 self._create_record(record_payload, state, signer, payload.get_timestamp())?
             }
@@ -1232,6 +1372,9 @@ impl TransactionHandler for HamletTransactionHandler {
             )?,
             Action::RevokeReporter(revoke_reporter_payload) => {
                 self._revoke_reporter(revoke_reporter_payload, state, signer)?
+            }
+            Action::CreateHolding(holding_payload) => {
+                self._create_holding(holding_payload, state, signer)?
             }
             /*
             other_action => {

@@ -78,8 +78,10 @@ const userUpdate = (publicKey, changes) => db.validate(changes, UPDATE_SCHEMA)
       ));
   });
 
-
-const fetchUser = filterQuery => r.table('users').filter(filterQuery);
+const fetchUser = publicKey => r.table('users')
+  .filter(hasPublicKey(publicKey))
+  .pluck('username', 'email', 'encryptedKey')
+  .nth(0);
 
 export {
   fetchUser,

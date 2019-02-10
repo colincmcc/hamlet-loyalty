@@ -82,7 +82,7 @@ const fetchUser = publicKey => r.table('users')
   .pluck('username', 'email', 'encryptedKey')
   .nth(0);
 
-const fetchQuery = (publicKey, auth) => block => getTable('accounts', block)
+const fetchQueryWithUser = (publicKey, auth) => block => getTable('accounts', block)
   .filter(hasPublicKey(publicKey))
   .pluck('label', 'publicKey')
   .nth(0)
@@ -95,7 +95,10 @@ const fetchQuery = (publicKey, auth) => block => getTable('accounts', block)
       account
     )
   );
-
+const fetchQuery = (publicKey, auth) => block => getTable('accounts', block)
+  .filter(hasPublicKey(publicKey))
+  .pluck('label', 'publicKey')
+  .nth(0);
 
 const listAccounts = filterQuery => db.queryWithCurrentBlock(listQuery(filterQuery));
 

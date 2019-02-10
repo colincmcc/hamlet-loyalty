@@ -318,17 +318,11 @@ export function createDbFindOneResolver(tc, inputType) {
 
           formattedData = {
             label: data.label,
-            publicKey: data.publicKey,
-            user: {
-              username: data.username,
-              encryptedKey: data.encryptedKey,
-              email: data.email
-            }
+            publicKey: data.publicKey
           };
           break;
         case UserTC:
-          console.log(input);
-          formattedData = await fetchUser(input.publicKey, true);
+          formattedData = await userQuery(users => users.filter(input), false)[0];
           break;
         case AssetTC:
           data = await fetchAsset(input.name, true);
@@ -369,12 +363,11 @@ export function createDbFindManyResolver(tc, inputType) {
           data = await listAssets(input);
           break;
         case UserTC:
-          data = await listUsers(input);
+          data = await userQuery(users => users.filter(input));
           break;
         default:
           break;
       }
-      console.log('---------------data', data);
       return data;
     }
   });

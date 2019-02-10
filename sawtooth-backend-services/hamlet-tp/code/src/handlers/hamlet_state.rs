@@ -97,7 +97,7 @@ impl<'a> HamletState<'a> {
             Ok(serialized) => serialized,
             Err(_) => {
                 return Err(ApplyError::InternalError(String::from(
-                    "Cannot serialize record container",
+                    "Cannot serialize asset container",
                 )))
             }
         };
@@ -168,6 +168,94 @@ impl<'a> HamletState<'a> {
             .map_err(|err| ApplyError::InternalError(format!("{}", err)))?;
         Ok(())
     }
+
+    pub fn get_holding(&mut self, holding_id: &str) -> Result<Option<holding::Holding>, ApplyError> {
+        let address = make_holding_address(holding_id);
+        let holding_containers = self.context.get_state(vec![address])?;
+
+        match holding_containers {
+            Some(packed) => {
+                let holdings: holding::HoldingContainer =
+                    match protobuf::parse_from_bytes(packed.as_slice()) {
+                        Ok(holdings) => holdings,
+                        Err(_) => {
+                            return Err(ApplyError::InternalError(String::from(
+                                "Cannot deserialize holding container",
+                            )))
+                        }
+                    };
+
+                for holding in holdings.get_entries() {
+                    if holding.id == holding_id {
+                        return Ok(Some(holding.clone()));
+                    }
+                }
+                Ok(None)
+            }
+            None => Ok(None),
+        }
+    }
+
+    pub fn set_holding(&mut self, holding_id: &str, a: holding::Holding) -> Result<(), ApplyError> {
+        let address = make_holding_address(holding_id);
+        let holding_containers = self.context.get_state(vec![address.clone()])?;
+
+        let mut holding_container = match holding_containers {
+            Some(packed) => match protobuf::parse_from_bytes(packed.as_slice()) {
+                Ok(holdings) => holdings,
+                Err(_) => {
+                    return Err(ApplyError::InternalError(String::from(
+                        "Cannot deserialize holding container",
+                    )))
+                }
+            },
+            None => holding::HoldingContainer::new(),
+        };
+        /*
+         *  Remove old holding if it exists and sort the assets by name
+         */
+        let holdings = holding_container.get_entries().to_vec();
+        let mut index = None;
+        let mut count = 0;
+
+        // Find the existing Asset's index in the deserialized Asset list
+        for holding in holdings.clone() {
+            if holding.id == holding_id {
+                index = Some(count);
+                break;
+            }
+            count = count + 1;
+        }
+
+        // Match that index in the container and remove the entry
+        match index {
+            Some(x) => {
+                holding_container.entries.remove(x);
+            }
+            None => (),
+        };
+
+        holding_container.entries.push(a);
+        holding_container
+            .entries
+            .sort_by_key(|x| x.clone().id);
+
+        let serialized = match holding_container.write_to_bytes() {
+            Ok(serialized) => serialized,
+            Err(_) => {
+                return Err(ApplyError::InternalError(String::from(
+                    "Cannot serialize holding container",
+                )))
+            }
+        };
+        let mut sets = HashMap::new();
+        sets.insert(address, serialized);
+        self.context
+            .set_state(sets)
+            .map_err(|err| ApplyError::InternalError(format!("{}", err)))?;
+        Ok(())
+    }
+
 
     pub fn get_property(
         &mut self,

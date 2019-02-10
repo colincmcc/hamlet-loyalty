@@ -1,5 +1,9 @@
 import { TypeComposer, InputTypeComposer } from 'graphql-compose';
-import { updateOneDbResolver, createDbFindOneResolver } from '../../utils/resolverFunctions';
+import {
+  updateOneDbResolver,
+  createDbFindOneResolver,
+  createDbFindManyResolver
+} from '../../utils/resolverFunctions';
 
 const UserTC = TypeComposer.create(`
 type User {
@@ -26,7 +30,7 @@ const UserITC = InputTypeComposer.create({
   }
 });
 createDbFindOneResolver(UserTC, UserITC);
-
+createDbFindManyResolver(UserTC, UserITC);
 updateOneDbResolver(UserTC, {
   username: 'String',
   password: 'String',
@@ -34,7 +38,8 @@ updateOneDbResolver(UserTC, {
 });
 export function getUserResolvers() {
   return {
-    findUser: UserTC.getResolver('dbFindOne')
+    findUser: UserTC.getResolver('dbFindOne'),
+    findUsers: UserTC.getResolver('dbFindMany')
   };
 }
 

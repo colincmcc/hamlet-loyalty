@@ -9,6 +9,8 @@ const PROPERTY: &str = "ea";
 const PROPOSAL: &str = "aa";
 const RECORD: &str = "ec";
 const RECORD_TYPE: &str = "ee";
+const HOLDING: &str = "ho";
+const OFFER: &str = "of";
 
 pub fn get_hamlet_prefix() -> String {
     let mut sha = Sha512::new();
@@ -34,7 +36,12 @@ pub fn make_asset_address(asset_name: &str) -> String {
 pub fn make_account_address(identifier: &str) -> String {
     get_hamlet_prefix() + &ACCOUNT + &hash(identifier, 62)
 }
-
+pub fn make_holding_address(holding_id: &str) -> String {
+    get_hamlet_prefix() + &HOLDING + &hash(holding_id, 62)
+}
+pub fn make_offer_address(offer_id: &str) -> String {
+    get_hamlet_prefix() + &OFFER + &hash(offer_id, 62)
+}
 pub fn make_record_address(record_id: &str) -> String {
     get_hamlet_prefix() + &RECORD + &hash(record_id, 62)
 }

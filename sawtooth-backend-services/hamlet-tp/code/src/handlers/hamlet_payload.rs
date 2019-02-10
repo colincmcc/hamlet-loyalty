@@ -15,6 +15,10 @@ pub enum Action {
     AnswerProposal(payload::AnswerProposal),
     RevokeReporter(payload::RevokeReporter),
     UpdateAsset(payload::UpdateAsset),
+    CreateHolding(payload::CreateHolding),
+    CreateOffer(payload::CreateOffer),
+    AcceptOffer(payload::AcceptOffer),
+    CloseOffer(payload::CloseOffer)
 }
 
 pub struct HamletPayload {
@@ -62,44 +66,41 @@ impl HamletPayload {
                 }
                 Action::CreateAccount(create_account.clone())
             }
-            //
-            // TODO: Implement below options
-            //
             payload::TransactionPayload_PayloadType::CREATE_HOLDING=> {
-                let create_account = payload.get_create_account();
-                if create_account.get_label() == "" {
+                let create_holding = payload.get_create_holding();
+                if create_holding.get_id() == "" {
                     return Err(ApplyError::InvalidTransaction(String::from(
-                        "Account name cannot be an empty string",
+                        "Holding Id cannot be an empty string",
                     )));
                 }
-                Action::CreateAccount(create_account.clone())
+                Action::CreateHolding(create_holding.clone())
             }
             payload::TransactionPayload_PayloadType::CREATE_OFFER => {
-                let create_account = payload.get_create_account();
-                if create_account.get_label() == "" {
+                let create_offer = payload.get_create_offer();
+                if create_offer.get_id() == "" {
                     return Err(ApplyError::InvalidTransaction(String::from(
-                        "Account name cannot be an empty string",
+                        "Offer Id cannot be an empty string",
                     )));
                 }
-                Action::CreateAccount(create_account.clone())
+                Action::CreateOffer(create_offer.clone())
             }
             payload::TransactionPayload_PayloadType::CLOSE_OFFER => {
-                let create_account = payload.get_create_account();
-                if create_account.get_label() == "" {
+                let close_offer = payload.get_close_offer();
+                if close_offer.get_id() == "" {
                     return Err(ApplyError::InvalidTransaction(String::from(
-                        "Account name cannot be an empty string",
+                        "Offer Id cannot be an empty string",
                     )));
                 }
-                Action::CreateAccount(create_account.clone())
+                Action::CloseOffer(close_offer.clone())
             }
             payload::TransactionPayload_PayloadType::ACCEPT_OFFER => {
-                let create_account = payload.get_create_account();
-                if create_account.get_label() == "" {
+                let accept_offer = payload.get_accept_offer();
+                if accept_offer.get_id() == "" {
                     return Err(ApplyError::InvalidTransaction(String::from(
-                        "Account name cannot be an empty string",
+                        "Offer Id cannot be an empty string",
                     )));
                 }
-                Action::CreateAccount(create_account.clone())
+                Action::AcceptOffer(accept_offer.clone())
             }
             payload::TransactionPayload_PayloadType::TYPE_UNSET => {
                 let create_account = payload.get_create_account();

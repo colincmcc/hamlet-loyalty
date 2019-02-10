@@ -49,9 +49,9 @@ AccountTC.addRelation(
   }
 );
 AccountTC.addRelation(
-  'user',
+  'users',
   {
-    resolver: () => UserTC.getResolver('dbFindOne'),
+    resolver: () => UserTC.getResolver('dbFindMany'),
     prepareArgs: {
       input: source => ({ publicKey: `${source.publicKey}` })
     }
