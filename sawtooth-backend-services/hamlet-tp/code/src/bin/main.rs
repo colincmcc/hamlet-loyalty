@@ -1,7 +1,6 @@
 
 use clap::{clap_app, crate_version};
-use lib_hamlet::handlers;
-use crate::handlers::hamlet_handler::HamletTransactionHandler;
+use lib_hamlet::hamlet_handler::HamletTransactionHandler;
 use log::{info, error};
 use log::LevelFilter;
 use log4rs::append::console::ConsoleAppender;

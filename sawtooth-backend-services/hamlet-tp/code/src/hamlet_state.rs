@@ -1,14 +1,10 @@
-use crypto::digest::Digest;
-use crypto::sha2::Sha512;
 use sawtooth_sdk::processor::handler::ApplyError;
 use sawtooth_sdk::processor::handler::TransactionContext;
-use std::collections::hash_map::Entry;
 use std::collections::HashMap;
-use std::str::from_utf8;
-use crate::addressing::*;
-use crate::protos::*;
 use protobuf::Message;
 use protobuf;
+use crate::std_ext::addressing::*;
+use crate::protos::*;
 
 pub struct HamletState<'a> {
     context: &'a mut TransactionContext
