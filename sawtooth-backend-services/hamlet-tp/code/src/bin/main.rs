@@ -1,14 +1,24 @@
-
-use clap::{clap_app, crate_version};
-use lib_hamlet::hamlet_handler::HamletTransactionHandler;
-use log::{info, error};
-use log::LevelFilter;
-use log4rs::append::console::ConsoleAppender;
-use log4rs::config::{Appender, Config, Root};
-use log4rs::encode::pattern::PatternEncoder;
-use sawtooth_sdk::processor::TransactionProcessor;
+use cfg_if::cfg_if;
+cfg_if! {
+    if #[cfg(target_arch = "wasm32")] {
+        use sabre_sdk::{WasmPtr, execute_entrypoint};
+    } else {
+        use sawtooth_sdk::processor::TransactionProcessor;
+        use clap::{clap_app, crate_version};
+        use log::{info, error};
+        use log::LevelFilter;
+        use log4rs::append::console::ConsoleAppender;
+        use log4rs::config::{Appender, Config, Root};
+        use log4rs::encode::pattern::PatternEncoder;
+        use lib_hamlet::hamlet_handler::HamletTransactionHandler;
+    }
+}
 use std::process;
 
+#[cfg(target_arch = "wasm32")]
+fn main() {}
+
+#[cfg(not(target_arch = "wasm32"))]
 fn main() {
     let matches = clap_app!(hamlet_loyalty =>
         (version: crate_version!())
@@ -64,3 +74,5 @@ fn main() {
     processor.add_handler(&handler);
     processor.start();
 }
+
+

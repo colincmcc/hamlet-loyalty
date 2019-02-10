@@ -1,5 +1,13 @@
-use sawtooth_sdk::processor::handler::ApplyError;
-use sawtooth_sdk::processor::handler::TransactionContext;
+cfg_if! {
+    if #[cfg(target_arch = "wasm32")] {
+        use sabre_sdk::ApplyError;
+        use sabre_sdk::TransactionContext;
+    } else {
+        use sawtooth_sdk::processor::handler::ApplyError;
+        use sawtooth_sdk::processor::handler::TransactionContext;
+    }
+}
+
 use std::collections::HashMap;
 use protobuf::Message;
 use protobuf;
@@ -679,5 +687,92 @@ impl<'a> HamletState<'a> {
             .set_state(sets)
             .map_err(|err| ApplyError::InternalError(format!("{}", err)))?;
         Ok(())
+    }
+
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn get_agent(&mut self, public_key: &str) -> Result<Option<Agent>, ApplyError> {
+        let address = compute_agent_address(public_key);
+        let d = self.context.get_state(vec![address])?;
+        match d {
+            Some(packed) => {
+                let agents: AgentList = match protobuf::parse_from_bytes(packed.as_slice()) {
+                    Ok(agents) => agents,
+                    Err(err) => {
+                        return Err(ApplyError::InternalError(format!(
+                            "Cannot deserialize record container: {:?}",
+                            err,
+                        )))
+                    }
+                };
+
+                for agent in agents.get_agents() {
+                    if agent.public_key == public_key {
+                        return Ok(Some(agent.clone()));
+                    }
+                }
+                Ok(None)
+            }
+            None => Ok(None),
+        }
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn get_organization(&mut self, id: &str) -> Result<Option<Organization>, ApplyError> {
+        let address = compute_org_address(id);
+        let d = self.context.get_state(vec![address])?;
+        match d {
+            Some(packed) => {
+                let orgs: OrganizationList = match protobuf::parse_from_bytes(packed.as_slice()) {
+                    Ok(orgs) => orgs,
+                    Err(err) => {
+                        return Err(ApplyError::InternalError(format!(
+                            "Cannot deserialize organization list: {:?}",
+                            err,
+                        )))
+                    }
+                };
+
+                for org in orgs.get_organizations() {
+                    if org.org_id == id {
+                        return Ok(Some(org.clone()));
+                    }
+                }
+                Ok(None)
+            }
+            None => Ok(None),
+        }
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn get_smart_permission(
+        &mut self,
+        org_id: &str,
+        name: &str,
+    ) -> Result<Option<SmartPermission>, ApplyError> {
+        let address = compute_smart_permission_address(org_id, name);
+        let d = self.context.get_state(vec![address])?;
+        match d {
+            Some(packed) => {
+                let smart_permissions: SmartPermissionList =
+                    match protobuf::parse_from_bytes(packed.as_slice()) {
+                        Ok(smart_permissions) => smart_permissions,
+                        Err(err) => {
+                            return Err(ApplyError::InternalError(format!(
+                                "Cannot deserialize smart permission list: {:?}",
+                                err,
+                            )))
+                        }
+                    };
+
+                for smart_permission in smart_permissions.get_smart_permissions() {
+                    if smart_permission.name == name {
+                        return Ok(Some(smart_permission.clone()));
+                    }
+                }
+                Ok(None)
+            }
+            None => Ok(None),
+        }
     }
 }

@@ -2,6 +2,50 @@
 use crypto::digest::Digest;
 use crypto::sha2::Sha512;
 
+#[cfg(target_arch = "wasm32")]
+const PIKE_NAMESPACE: &'static str = "cad11d";
+
+/// The smart permission prefix for global state (00ec03)
+#[cfg(target_arch = "wasm32")]
+const SMART_PERMISSION_PREFIX: &'static str = "00ec03";
+
+#[cfg(target_arch = "wasm32")]
+const PIKE_AGENT_PREFIX: &'static str = "cad11d00";
+
+#[cfg(target_arch = "wasm32")]
+const PIKE_ORG_PREFIX: &'static str = "cad11d01";
+
+cfg_if! {
+    if #[cfg(target_arch = "wasm32")] {
+        fn compute_agent_address(name: &str) -> String {
+            let mut sha = Sha512::new();
+            sha.input(name.as_bytes());
+
+            String::from(PIKE_AGENT_PREFIX) + &sha.result_str()[..62].to_string()
+        }
+
+        fn compute_org_address(name: &str) -> String {
+            let mut sha = Sha512::new();
+            sha.input(name.as_bytes());
+
+            String::from(PIKE_ORG_PREFIX) + &sha.result_str()[..62].to_string()
+        }
+
+        fn compute_smart_permission_address(org_id: &str, name: &str) -> String {
+            let mut sha_org_id = Sha512::new();
+            sha_org_id.input(org_id.as_bytes());
+
+            let mut sha_name = Sha512::new();
+            sha_name.input(name.as_bytes());
+
+            String::from(SMART_PERMISSION_PREFIX)
+                + &sha_org_id.result_str()[..6].to_string()
+                + &sha_name.result_str()[..58].to_string()
+        }
+    }
+}
+
+
 const FAMILY_NAME: &str = "hamlet_loyalty";
 const ASSET: &str = "ae";
 const ACCOUNT: &str = "ac";

@@ -4,4 +4,7 @@ pub mod holding;
 pub mod offer;
 pub mod offer_history;
 pub mod payload;
+pub mod property;
+pub mod proposal;
+pub mod record;
 pub mod rule;

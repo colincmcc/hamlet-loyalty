@@ -3,6 +3,7 @@ use crate::protos::*;
 use sawtooth_sdk::processor::handler::{ApplyError};
 use protobuf::{RepeatedField};
 
+// Rule validation
 pub fn _is_not_transferable(asset: asset::Asset, owner_public_key: &str) -> bool {
     if _has_rule(asset.get_rules().to_vec(), rule::Rule_RuleType::NOT_TRANSFERABLE) && asset.get_owners().contains(&owner_public_key.to_string()) {
         return true
@@ -20,7 +21,7 @@ pub fn _has_rule(rules: Vec<rule::Rule>, rule_type: rule::Rule_RuleType) -> bool
     return false
 }
 
-
+// Misc
 pub fn _make_new_reported_value(
     reporter_index: u32,
     timestamp: u64,

@@ -1,5 +1,19 @@
+cfg_if! {
+    if #[cfg(target_arch = "wasm32")] {
+        use sabre_sdk::ApplyError;
+        use sabre_sdk::TransactionContext;
+        use sabre_sdk::TransactionHandler;
+        use sabre_sdk::TpProcessRequest;
+        use sabre_sdk::{WasmPtr, execute_entrypoint, invoke_smart_permission};
+        use protos::smart_permission::{Agent, AgentList, Organization, OrganizationList, SmartPermission,
+                            SmartPermissionList};
+        use protobuf;
+        use crate::handle;
+    } else {
+        use sawtooth_sdk::processor::handler::{ApplyError, TransactionContext, TransactionHandler};
+    }
+}
 use sawtooth_sdk::messages::processor::TpProcessRequest;
-use sawtooth_sdk::processor::handler::{ApplyError, TransactionContext, TransactionHandler};
 use protobuf;
 
 use crate::hamlet_state::HamletState;
@@ -36,6 +50,8 @@ impl TransactionHandler for HamletTransactionHandler {
         self.namespaces.clone()
     }
 
+
+    #[cfg(not(target_arch = "wasm32"))]
     fn apply(
         &self,
         request: &TpProcessRequest,
@@ -66,14 +82,36 @@ impl TransactionHandler for HamletTransactionHandler {
         };
         */
 
-        let state = HamletState::new(context);
+        let mut state = HamletState::new(context);
 
+        #[cfg(not(target_arch = "wasm32"))]
         info!(
             "Payload: {:?} {} {}",
             payload.get_action(),
             request.get_header().get_inputs()[0],
             request.get_header().get_outputs()[0]
         );
+
+        #[cfg(target_arch = "wasm32")]
+            let result = run_smart_permisson(
+            &mut state,
+            signer,
+            request.get_payload())
+            .map_err(|err| ApplyError::InvalidTransaction(
+                format!("Unable to run smart permission: {}", err)));
+
+
+        #[cfg(target_arch = "wasm32")]
+            match result {
+            Ok(1) => (),
+            Ok(0) => return Err(ApplyError::InvalidTransaction(format!(
+                "Account does not have permission: {}", signer
+            ))),
+            _ => return Err(ApplyError::InvalidTransaction(
+                "Something went wrong".into()
+            ))
+        }
+
 
         match payload.get_action() {
             Action::CreateAccount(account_payload) => {
@@ -139,4 +177,48 @@ impl TransactionHandler for HamletTransactionHandler {
         }
         Ok(())
     }
+}
+
+#[cfg(target_arch = "wasm32")]
+fn run_smart_permisson(state: &mut HamletState, signer: &str, payload: &[u8]) -> Result<i32, ApplyError> {
+    let agent = match state.get_agent(signer)? {
+        Some(agent) => agent,
+        None => return Err(ApplyError::InvalidTransaction(format!(
+            "Signer is not an agent: {}", signer
+        )))
+    };
+
+    let org_id = agent.get_org_id();
+
+    let smart_permission_addr = handle::compute_smart_permission_address(org_id, "test");
+
+    invoke_smart_permission(
+        smart_permission_addr,
+        "test".to_string(),
+        agent.get_roles().to_vec(),
+        org_id.to_string(),
+        signer.to_string(),
+        payload).map_err(|err| ApplyError::InvalidTransaction(
+        format!("Unable to run smart permission: {}", err)))
+}
+
+#[cfg(target_arch = "wasm32")]
+// Sabre apply must return a bool
+fn apply(
+    request: &TpProcessRequest,
+    context: &mut TransactionContext,
+) -> Result<bool, ApplyError> {
+
+    let handler = HamletTransactionHandler::new();
+    match handler.apply(request, context) {
+        Ok(_) => Ok(true),
+        Err(err) => Err(err)
+    }
+
+}
+
+#[cfg(target_arch = "wasm32")]
+#[no_mangle]
+pub unsafe fn entrypoint(payload: WasmPtr, signer: WasmPtr, signature: WasmPtr) -> i32 {
+    execute_entrypoint(payload, signer, signature, apply)
 }
