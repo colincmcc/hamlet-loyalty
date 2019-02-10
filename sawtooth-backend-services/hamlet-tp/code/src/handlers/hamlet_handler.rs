@@ -244,56 +244,142 @@ impl HamletTransactionHandler {
             Err(err) => return Err(err),
         }
 
-        let holding_id = payload.get_id();
-        let holding_label = payload.get_label();
-        let holding_description = payload.get_description();
-        let holding_asset = payload.get_asset();
-        let holding_quantity = payload.get_quantity();
+        let offer_id = payload.get_id();
+        let offer_label = payload.get_label();
+        let offer_description = payload.get_description();
+        let offer_source = payload.get_source();
+        let offer_source_quantity = payload.get_source_quantity();
+        let offer_target = payload.get_target();
+        let offer_target_quantity = payload.get_target_quantity();
+        let offer_rules = payload.get_rules().to_vec();
 
 
-        match state.get_holding(holding_id) {
+        match state.get_offer(offer_id) {
             Ok(Some(_)) => {
                 return Err(ApplyError::InvalidTransaction(format!(
-                    "Holding with this id already exists: {}",
-                    holding_id
+                    "Offer with this id already exists: {}",
+                    offer_id
                 )))
             }
             Ok(None) => (),
             Err(err) => return Err(err),
         }
 
-        // Check if the asset exists
-        let asset = match state.get_asset(holding_asset) {
-            Ok(Some(asset)) => asset,
+        let source_holding = match state.get_holding(offer_source) {
+            Ok(Some(holding)) => holding,
             Ok(None) => {
                 return Err(ApplyError::InvalidTransaction(format!(
-                    "Asset does not exist {}",
-                    holding_asset
+                    "Holding does not exist {}",
+                    offer_source
                 )))
             }
             Err(err) => return Err(err),
         };
-        // The signer must be an owner of the asset
-        match asset.get_owners().contains(&signer.to_string()) && holding_quantity > 0 {
-            true => (),
-            false => {
-                return Err(ApplyError::InvalidTransaction(format!(
-                    "Account {} is not authorized to create a holding greater than 0 with this asset: {}",
-                    signer,
-                    asset.get_name()
-                )))
-            }
+
+        if source_holding.account != signer.to_string() {
+            return Err(ApplyError::InvalidTransaction(format!(
+                "Holding account is not owned by the signer {}",
+                signer
+            )))
         }
 
-        let mut new_holding = holding::Holding::new();
-        new_holding.set_id(holding_id.to_string());
-        new_holding.set_label(holding_label.to_string());
-        new_holding.set_description(holding_description.to_string());
-        new_holding.set_account(signer.to_string());
-        new_holding.set_asset(holding_asset.to_string());
-        new_holding.set_quantity(holding_quantity);
+        let source_asset = match state.get_asset(source_holding.get_asset()) {
+            Ok(Some(asset)) => asset,
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Asset does not exist {}",
+                    source_holding.get_asset()
+                )))
+            }
+            Err(err) => return Err(err),
+        };
 
-        state.set_holding(holding_id, new_holding)?;
+        let target_holding = match state.get_holding(offer_target) {
+            Ok(Some(holding)) => holding,
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Holding does not exist {}",
+                    offer_target
+                )))
+            }
+            Err(err) => return Err(err),
+        };
+
+        let target_asset = match state.get_asset(target_holding.get_asset()) {
+            Ok(Some(asset)) => asset,
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Asset does not exist {}",
+                    source_holding.get_asset()
+                )))
+            }
+            Err(err) => return Err(err),
+        };
+
+        if _is_not_transferable(target_asset, &signer) {
+            return Err(ApplyError::InvalidTransaction(format!(
+                "Asset is not transferable {}",
+                source_holding.get_asset()
+            )))
+        }
+
+        let mut new_offer = offer::Offer::new();
+        new_offer.set_id(offer_id.to_string());
+        new_offer.set_label(offer_label.to_string());
+        new_offer.set_description(offer_description.to_string());
+        new_offer.set_source(offer_source.to_string());
+        new_offer.set_source_quantity(offer_source_quantity);
+        new_offer.set_target(offer_target.to_string());
+        new_offer.set_target_quantity(offer_target_quantity);
+        new_offer.set_owners(RepeatedField::from_vec(vec![signer.to_string()]));
+        new_offer.set_rules(RepeatedField::from_vec(offer_rules));
+        new_offer.set_status(offer::Offer_Status::OPEN);
+
+
+        state.set_offer(offer_id, new_offer)?;
+        Ok(())
+    }
+
+    fn _accept_offer(
+        &self,
+        payload: payload::AcceptOffer,
+        mut state: HamletState,
+        signer: &str
+    ) -> Result<(), ApplyError> {
+        let offer_id = payload.get_id();
+
+        match state.get_offer(offer_id) {
+            Ok(Some(_)) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Offer with this id already exists: {}",
+                    offer_id
+                )))
+            }
+            Ok(None) => (),
+            Err(err) => return Err(err),
+        }
+        Ok(())
+
+    }
+
+    fn _close_offer(
+        &self,
+        payload: payload::CloseOffer,
+        mut state: HamletState,
+        signer: &str
+    ) -> Result<(), ApplyError> {
+        let offer_id = payload.get_id();
+
+        match state.get_offer(offer_id) {
+            Ok(Some(_)) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Offer with this id already exists: {}",
+                    offer_id
+                )))
+            }
+            Ok(None) => (),
+            Err(err) => return Err(err),
+        }
         Ok(())
     }
 
@@ -1270,6 +1356,23 @@ impl HamletTransactionHandler {
         }
 
         Ok(())
+    }
+
+    fn _is_not_transferable(&self, asset: asset::Asset, owner_public_key: &str) -> bool {
+        if _has_rule(asset.get_rules().to_vec(), rule::Rule_RuleType::NOT_TRANSFERABLE) && asset.get_owners().contains(&owner_public_key.to_string()) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    fn _has_rule(rules: Vec<rule::Rule>, rule_type: rule::Rule_RuleType) -> bool {
+        for rule in rules {
+            if rule.get_field_type() == rule_type {
+                return true
+            }
+        }
+        return false
     }
 
 }

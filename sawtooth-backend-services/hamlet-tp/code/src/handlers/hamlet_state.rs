@@ -169,6 +169,65 @@ impl<'a> HamletState<'a> {
         Ok(())
     }
 
+    pub fn get_offer(&mut self, offer_id: &str) -> Result<Option<offer::Offer>, ApplyError> {
+        let address = make_offer_address(offer_id);
+        let d = self.context.get_state(vec![address])?;
+        match d {
+            Some(packed) => {
+                let offers: offer::OfferContainer =
+                    match protobuf::parse_from_bytes(packed.as_slice()) {
+                        Ok(offers) => offers,
+                        Err(_) => {
+                            return Err(ApplyError::InternalError(String::from(
+                                "Cannot deserialize account container",
+                            )))
+                        }
+                    };
+
+                for offer in offers.get_entries() {
+                    if offer.id == offer_id {
+                        return Ok(Some(offer.clone()));
+                    }
+                }
+                Ok(None)
+            }
+            None => Ok(None),
+        }
+    }
+
+    pub fn set_offer(&mut self, offer_id: &str, offer: offer::Offer) -> Result<(), ApplyError> {
+        let address = make_offer_address(offer_id);
+        let d = self.context.get_state(vec![address.clone()])?;
+        let mut offers = match d {
+            Some(packed) => match protobuf::parse_from_bytes(packed.as_slice()) {
+                Ok(offers) => offers,
+                Err(_) => {
+                    return Err(ApplyError::InternalError(String::from(
+                        "Cannot deserialize offer container",
+                    )))
+                }
+            },
+            None => offer::OfferContainer::new(),
+        };
+
+        offers.entries.push(offer);
+        offers.entries.sort_by_key(|a| a.clone().id);
+        let serialized = match offers.write_to_bytes() {
+            Ok(serialized) => serialized,
+            Err(_) => {
+                return Err(ApplyError::InternalError(String::from(
+                    "Cannot serialize offer container",
+                )))
+            }
+        };
+        let mut sets = HashMap::new();
+        sets.insert(address, serialized);
+        self.context
+            .set_state(sets)
+            .map_err(|err| ApplyError::InternalError(format!("{}", err)))?;
+        Ok(())
+    }
+
     pub fn get_holding(&mut self, holding_id: &str) -> Result<Option<holding::Holding>, ApplyError> {
         let address = make_holding_address(holding_id);
         let holding_containers = self.context.get_state(vec![address])?;
