@@ -7,7 +7,7 @@ Loyalty framework for the community.
 </h3>
 
 <h3 align="center">
-This readme is under heavy development. Email hamlet@colinmac.me for any immediate questions.
+This readme is under heavy development. Email hello@colinmac.me for any immediate questions.
 </h3>
 
 
