@@ -5,6 +5,7 @@ use crate::hamlet_state::HamletState;
 use crate::protos::*;
 use crate::hamlet_handler;
 use crate::std_ext::handle;
+use crate::handlers::holding_state::Holding;
 
 /**
 * Offers are the method of exchange for Assets being held in Holdings.  An Offer uses an Account's
@@ -39,12 +40,12 @@ pub trait Offer {
     * - The Offer does not exist or is not Open
     * - The receiver source Holding does not exist.
     * - The receiver target Holding does not exist.
-    * - The offerer source holding asset does not match the
+    * - The offeror source holding asset does not match the
       receiver target holding asset.
-    * - The offerer target holding asset does not match the
+    * - The offeror target holding asset does not match the
       the receiver source holding asset.
     * - The receiver source holding does not have the required quantity.
-    * - The offerer source holding does not have the required quantity.
+    * - The offeror source holding does not have the required quantity.
     */
     fn accept(
         &self,
@@ -205,7 +206,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
         let offer_id = payload.get_id();
         let accept_offer_source = payload.get_source();
         let accept_offer_target = payload.get_target();
-        let accept_offer_count = payload.get_count();
+        let accept_offer_count = payload.get_count() as i64;
 
         // Check that the offer exists and is open
         let offer: offer::Offer = match state.get_offer(offer_id) {
@@ -228,6 +229,8 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
         };
         let offeror_source = offer.get_source();
         let offeror_target = offer.get_target();
+        let offeror_source_qty = offer.get_source_quantity();
+        let offeror_target_qty = offer.get_target_quantity();
 
         // Make sure the holdings exist
         let offeror_source_holding: holding::Holding = match state.get_holding(offeror_source) {
@@ -240,8 +243,9 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             }
             Err(err) => return Err(err),
         };
-        let offeror_source_holding_account = offeror_source_holding.get_account();
+        let offeror_source_holding_id = offeror_source_holding.get_id();
         let offeror_source_holding_asset = offeror_source_holding.get_asset();
+        let offeror_source_holding_qty = offeror_source_holding.get_quantity();
 
         let offeror_target_holding = match state.get_holding(offeror_target) {
             Ok(Some(holding)) => holding,
@@ -253,8 +257,9 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             }
             Err(err) => return Err(err),
         };
-        let offeror_target_holding_account = offeror_target_holding.get_account();
+        let offeror_target_holding_id = offeror_target_holding.get_id();
         let offeror_target_holding_asset = offeror_target_holding.get_asset();
+        let offeror_target_holding_qty = offeror_target_holding.get_quantity();
 
         // Get the receiving Accounts Holding and Asset info
         let receiver_source_holding = match state.get_holding(accept_offer_source) {
@@ -267,8 +272,9 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             }
             Err(err) => return Err(err),
         };
-        let receiver_source_holding_account = receiver_source_holding.get_account();
+        let receiver_source_holding_id = receiver_source_holding.get_id();
         let receiver_source_holding_asset = receiver_source_holding.get_asset();
+        let receiver_source_holding_qty = receiver_source_holding.get_quantity();
 
         let receiver_target_holding = match state.get_holding(accept_offer_target) {
             Ok(Some(holding)) => holding,
@@ -280,22 +286,23 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             }
             Err(err) => return Err(err),
         };
-        let receiver_target_holding_account = receiver_target_holding.get_account();
+        let receiver_target_holding_id = receiver_target_holding.get_id();
         let receiver_target_holding_asset = receiver_target_holding.get_asset();
+        let receiver_target_holding_qty = receiver_target_holding.get_quantity();
 
         // Make sure that the assets are the same
         // TODO: combine validation
-        if offeror_source_holding_account != receiver_target_holding_asset {
+        if offeror_source_holding_asset != receiver_target_holding_asset {
             return Err(ApplyError::InvalidTransaction(format!(
                 "The offeror's is sending Asset {} and receiver's Holding holds Asset {}",
-                offeror_source_holding_account,
+                offeror_source_holding_asset,
                 receiver_target_holding_asset
             )))
         }
-        if offeror_target_holding_account != receiver_source_holding_asset {
+        if offeror_target_holding_asset != receiver_source_holding_asset {
             return Err(ApplyError::InvalidTransaction(format!(
                 "The offeror's Holding holds Asset {} the receiver is sending Asset {}",
-                offeror_target_holding_account,
+                offeror_target_holding_asset,
                 receiver_source_holding_asset
             )))
         }
@@ -320,11 +327,19 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             Err(err) => return Err(err),
         }
         */
-        // Add State functions to modify holding quantity
-
         // ! TODO: Do rule validation
-        Ok(())
 
+        let new_rec_source_holding_qty = receiver_source_holding_qty - offeror_target_qty * accept_offer_count;
+        let new_rec_target_holding_qty = receiver_target_holding_qty + offeror_source_qty * accept_offer_count;
+        let new_off_source_holding_qty = offeror_source_holding_qty - offeror_source_qty * accept_offer_count;
+        let new_off_target_holding_qty = offeror_target_holding_qty + offeror_target_qty * accept_offer_count;
+
+        // TODO: when available - async or coroutine
+        state.update_holding(receiver_source_holding_id, new_rec_source_holding_qty);
+        state.update_holding(receiver_target_holding_id, new_rec_target_holding_qty);
+        state.update_holding(offeror_source_holding_id, new_off_source_holding_qty);
+        state.update_holding(offeror_target_holding_id, new_off_target_holding_qty);
+        Ok(())
     }
 
     fn close(

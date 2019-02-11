@@ -319,6 +319,29 @@ impl<'a> HamletState<'a> {
         Ok(())
     }
 
+    pub fn update_holding(
+        &mut self,
+        holding_id: &str,
+        new_quantity: i64
+    ) -> Result<(), ApplyError>{
+
+        let holding = match self.get_holding(holding_id) {
+            Ok(Some(updated_holding)) => updated_holding,
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Holding does not exist: {}",
+                    holding_id
+                )))
+            }
+            Err(err) => return Err(err),
+        };
+
+        let mut updated_holding = holding.clone();
+
+        updated_holding.set_quantity(new_quantity);
+        self.set_holding(holding_id, updated_holding)?;
+        Ok(())
+    }
 
     pub fn get_property(
         &mut self,

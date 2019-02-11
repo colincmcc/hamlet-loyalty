@@ -87,4 +87,7 @@ impl Holding for &hamlet_handler::HamletTransactionHandler {
         state.set_holding(holding_id, new_holding)?;
         Ok(())
     }
+
+
+
 }
