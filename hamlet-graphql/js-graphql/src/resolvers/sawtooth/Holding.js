@@ -1,4 +1,4 @@
-import { TypeComposer } from 'graphql-compose';
+import { TypeComposer, InputTypeComposer } from 'graphql-compose';
 
 import {
   createTransactionResolver,
@@ -16,7 +16,19 @@ type Holding {
   quantity: String
 }
 `);
-createTransactionResolver(HoldingTC);
+const HoldingITC = InputTypeComposer.create({
+  name: 'HoldingInput',
+  description: 'Used to find or create an Holding',
+  fields: {
+    id: 'String',
+    label: 'String',
+    description: 'String',
+    asset: 'String',
+    quantity: 'Int'
+  }
+});
+
+createTransactionResolver(HoldingTC, HoldingITC);
 createDbFindOneResolver(HoldingTC, {
   holdingId: 'String',
   assetId: 'String',

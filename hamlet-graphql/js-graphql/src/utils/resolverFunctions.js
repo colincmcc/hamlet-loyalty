@@ -1,27 +1,21 @@
-import { TypeComposer } from 'graphql-compose';
 import * as _ from 'lodash';
-import { withFilter, AuthenticationError } from 'apollo-server';
+import { AuthenticationError } from 'apollo-server';
 import sjcl from 'sjcl';
 import * as dotenv from 'dotenv';
 import {
   submit,
   makePrivateKey,
   payloadMethods,
-  createTxn,
-  getSignerPublicKey,
-  getPrivateKey
+  createTxn
 } from '../service/blockchain';
 import {
   fetchAccount, userInsert, userQuery, userUpdate,
-  listAccounts, assetUpdate, fetchAsset, listAssets
+  listAccounts, fetchAsset, listAssets
 } from '../service/rethink';
+
 import {
-  RuleMsg, AssetMsg, PayloadMsg, CreateAssetMsg
-} from '../service/blockchain/payloads';
-import {
-  AssetTC, AccountTC, OfferTC, UserTC
+  AssetTC, AccountTC, OfferTC, UserTC, HoldingTC
 } from '../resolvers/sawtooth';
-import { CreateAsset, Rule } from '../protos/proto';
 
 import { BadRequest } from './errors';
 import * as auth from '../service/auth';
@@ -91,6 +85,7 @@ const updateUser = (changes, { authedKey }) => Promise.resolve()
   .then(finalChanges => userUpdate(authedKey, finalChanges))
   .then(updated => _.omit(updated, 'password'));
 
+
 // * Create Sawtooth Transaction
 export function createTransactionResolver(tc, inputType) {
   tc.addResolver({
@@ -141,6 +136,16 @@ export function createTransactionResolver(tc, inputType) {
           payload = payloadMethods.createOffer({
             name: input.name,
             description: input.description
+          });
+          break;
+        case HoldingTC:
+          console.log('Creating Holding');
+          payload = payloadMethods.createHolding({
+            id: input.id,
+            label: input.label,
+            asset: input.asset,
+            description: input.description,
+            quantity: input.quantity
           });
           break;
         default: {
