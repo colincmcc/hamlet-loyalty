@@ -91,13 +91,13 @@ const addAsset = (asset, blockNum) => {
 }
 
 const addHolding = (holding, blockNum) => {
-  return addBlockState('holding', 'hodlingId', holding.id,
+  return addBlockState('holdings', 'id', holding.id,
   holding, blockNum)
 }
 
-const addOffer = (holding, blockNum) => {
-  return addBlockState('holding', 'offerId', offer.id,
-  holding, blockNum)
+const addOffer = (offer, blockNum) => {
+  return addBlockState('offers', 'id', offer.id,
+  offer, blockNum)
 }
 
 const addRecord = (record, blockNum) => {
@@ -172,6 +172,8 @@ const addProposal = (proposal, blockNum) => {
 module.exports = {
   addAccount,
   addAsset,
+  addHolding,
+  addOffer,
   addRecord,
   addRecordType,
   addProperty,

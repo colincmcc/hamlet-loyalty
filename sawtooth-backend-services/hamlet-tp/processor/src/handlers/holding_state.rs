@@ -65,15 +65,23 @@ impl Holding for &hamlet_handler::HamletTransactionHandler {
             Err(err) => return Err(err),
         };
         // The signer must be an owner of the asset
-        match asset.get_owners().contains(&signer.to_string()) && holding_quantity > 0 {
-            true => (),
-            false => {
+        info!(
+            "is owner: {:?} \
+             > 0 {} \
+             both {}",
+            !asset.get_owners().contains(&signer.to_string()),
+            holding_quantity > 0,
+            !asset.get_owners().contains(&signer.to_string()) && holding_quantity > 0
+        );
+        match !asset.get_owners().contains(&signer.to_string()) && holding_quantity > 0 {
+            true => {
                 return Err(ApplyError::InvalidTransaction(format!(
                     "Account {} is not authorized to create a holding greater than 0 with this asset: {}",
                     signer,
                     asset.get_name()
                 )))
-            }
+            },
+            false => ()
         }
 
         let mut new_holding = holding::Holding::new();

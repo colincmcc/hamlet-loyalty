@@ -22,6 +22,8 @@ const db = require('./')
 const stateTables = [
   'accounts',
   'assets',
+  'holdings',
+  'offers',
   'records',
   'recordTypes',
   'properties',

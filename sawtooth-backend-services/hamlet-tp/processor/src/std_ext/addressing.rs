@@ -53,8 +53,8 @@ const PROPERTY: &str = "ea";
 const PROPOSAL: &str = "aa";
 const RECORD: &str = "ec";
 const RECORD_TYPE: &str = "ee";
-const HOLDING: &str = "ho";
-const OFFER: &str = "of";
+const HOLDING: &str = "ab";
+const OFFER: &str = "af";
 
 pub fn get_hamlet_prefix() -> String {
     let mut sha = Sha512::new();

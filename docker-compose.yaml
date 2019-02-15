@@ -18,6 +18,8 @@ services:
   validator:
     image: hyperledger/sawtooth-validator:1.1
     container_name: hamlet-validator
+    volumes:
+      - .:/project
     expose:
       - 4004
     ports:
@@ -28,11 +30,14 @@ services:
         if [ ! -f /etc/sawtooth/keys/validator.priv ]; then
           sawadm keygen && \
           sawtooth keygen my_key && \
+          mkdir -p /project/keys && \
+          cp /root/.sawtooth/keys/* /project/keys && \
           sawset genesis -k /root/.sawtooth/keys/my_key.priv && \
           sawset proposal create \
             -k /root/.sawtooth/keys/my_key.priv \
             sawtooth.consensus.algorithm.name=Devmode \
             sawtooth.consensus.algorithm.version=0.1 \
+            sawtooth.swa.administrators=$$(cat project/keys/root.pub) \
             -o config.batch && \
           sawadm genesis config-genesis.batch config.batch
         fi;
@@ -76,13 +81,38 @@ services:
     depends_on:
       - rest-api
     entrypoint: "bash -c \"\
-      sawtooth keygen && \
       tail -f /dev/null \
       \""
 
   sabre-tp:
     image: hyperledger/sawtooth-sabre-tp
     container_name: sawtooth-sabre-tp
+    volumes:
+      - .:/project
     depends_on:
       - validator
     entrypoint: sawtooth-sabre -vv --connect tcp://validator:4004
+
+  sabre-cli:
+    image: hyperledger/sawtooth-sabre-cli
+    container_name: sabre-cli
+    volumes:
+      - .:/project
+      - ./keys:/root/.sawtooth/keys
+    entrypoint: "bash -c \"\
+      cargo build && \
+      tail -f /dev/null \
+      \""
+
+  hamlet-sm-cli:
+    image: hamlet-sm-cli
+    container_name: hamlet-sm-cli
+    entrypoint: "bash -c \"\
+      cd /project/sawtooth-backend-services/hamlet-tp/cli && \
+      cargo build && \
+      tail -f /dev/null \
+      \""
+    volumes:
+      - .:/project
+    build:
+      context: sawtooth-backend-services/hamlet-tp/cli

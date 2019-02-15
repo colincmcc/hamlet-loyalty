@@ -14,6 +14,8 @@ const protoJson = require('../../protos/generated_protos.json');
 const ACTIONS = [
   'CREATE_ACCOUNT',
   'CREATE_ASSET',
+  'CREATE_HOLDING',
+  'CREATE_OFFER',
   'CREATE_RECORD',
   'FINALIZE_RECORD',
   'CREATE_RECORD_TYPE',

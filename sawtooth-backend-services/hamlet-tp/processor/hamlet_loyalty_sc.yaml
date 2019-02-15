@@ -1,0 +1,11 @@
+name: hamlet_loyalty
+version: '1.0'
+wasm: hamlet-tp/code/target/wasm32-unknown-unknown/release/bin_hamlet.wasm
+inputs:
+  - 'cad11d' # Pike Identity
+  - 'a4d67b' # Hamlet Loyalty
+  - '00ec03' # Sabre smart permission
+outputs:
+  - 'a4d67b'
+  - 'cad11d'
+  - '00ec03'

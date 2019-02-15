@@ -29,13 +29,7 @@ const HoldingITC = InputTypeComposer.create({
 });
 
 createTransactionResolver(HoldingTC, HoldingITC);
-createDbFindOneResolver(HoldingTC, {
-  holdingId: 'String',
-  assetId: 'String',
-  accountId: 'String',
-  offerId: 'String',
-  name: 'String'
-});
+createDbFindOneResolver(HoldingTC, HoldingITC);
 
 export function getHoldingResolvers() {
   return {

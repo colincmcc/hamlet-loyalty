@@ -11,9 +11,9 @@ cfg_if! {
         use crate::handle;
     } else {
         use sawtooth_sdk::processor::handler::{ApplyError, TransactionContext, TransactionHandler};
+        use sawtooth_sdk::messages::processor::TpProcessRequest;
     }
 }
-use sawtooth_sdk::messages::processor::TpProcessRequest;
 use protobuf;
 
 use crate::hamlet_state::HamletState;
@@ -166,7 +166,7 @@ impl TransactionHandler for HamletTransactionHandler {
             }
             /*
             // TODO: catch unregistered actions
-            // Possibly check for updates to processor
+            // Possibly check for updates to processor/wasm contract
             other_action => {
                 return Err(ApplyError::InvalidTransaction(format!(
                     "Invalid action: '{}'",
@@ -181,20 +181,20 @@ impl TransactionHandler for HamletTransactionHandler {
 
 #[cfg(target_arch = "wasm32")]
 fn run_smart_permisson(state: &mut HamletState, signer: &str, payload: &[u8]) -> Result<i32, ApplyError> {
-    let agent = match state.get_agent(signer)? {
-        Some(agent) => agent,
+    let account = match state.get_account(signer)? {
+        Some(account) => account,
         None => return Err(ApplyError::InvalidTransaction(format!(
             "Signer is not an agent: {}", signer
         )))
     };
 
-    let org_id = agent.get_org_id();
+    let org_id = account.get_org_id();
 
-    let smart_permission_addr = handle::compute_smart_permission_address(org_id, "test");
+    let smart_permission_addr = handle::compute_smart_permission_address(org_id, "hamlet");
 
     invoke_smart_permission(
         smart_permission_addr,
-        "test".to_string(),
+        "hamlet".to_string(),
         agent.get_roles().to_vec(),
         org_id.to_string(),
         signer.to_string(),
@@ -202,6 +202,8 @@ fn run_smart_permisson(state: &mut HamletState, signer: &str, payload: &[u8]) ->
         format!("Unable to run smart permission: {}", err)))
 }
 
+
+// Sabre WASM smart contract's entrypoint.
 #[cfg(target_arch = "wasm32")]
 // Sabre apply must return a bool
 fn apply(

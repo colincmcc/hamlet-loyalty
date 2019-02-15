@@ -69,6 +69,7 @@ pub trait Offer {
 }
 
 impl Offer for &hamlet_handler::HamletTransactionHandler {
+
     fn create(
         &self,
         payload: payload::CreateOffer,
@@ -111,7 +112,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             Ok(Some(holding)) => holding,
             Ok(None) => {
                 return Err(ApplyError::InvalidTransaction(format!(
-                    "Holding does not exist {}",
+                    "Source Holding does not exist {}",
                     offer_source
                 )))
             }
@@ -133,7 +134,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             Ok(Some(asset)) => asset,
             Ok(None) => {
                 return Err(ApplyError::InvalidTransaction(format!(
-                    "Asset does not exist {}",
+                    "Source Asset does not exist {}",
                     source_holding_asset
                 )))
             }
@@ -142,7 +143,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
 
         if handle::_is_not_transferable(source_asset, &signer) {
             return Err(ApplyError::InvalidTransaction(format!(
-                "Asset is not transferable {}",
+                "Source Asset is not transferable {}",
                 source_holding_asset
             )))
         }
@@ -151,7 +152,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             Ok(Some(holding)) => holding,
             Ok(None) => {
                 return Err(ApplyError::InvalidTransaction(format!(
-                    "Holding does not exist {}",
+                    "Target Holding does not exist {}",
                     offer_target
                 )))
             }
@@ -164,7 +165,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             Ok(Some(asset)) => asset,
             Ok(None) => {
                 return Err(ApplyError::InvalidTransaction(format!(
-                    "Asset does not exist {}",
+                    "Target Asset does not exist {}",
                     source_holding.get_asset()
                 )))
             }
@@ -174,7 +175,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
 
         if handle::_is_not_transferable(target_asset, &signer) {
             return Err(ApplyError::InvalidTransaction(format!(
-                "Asset is not transferable {}",
+                "Target Asset is not transferable {}",
                 target_holding_asset
             )))
         }

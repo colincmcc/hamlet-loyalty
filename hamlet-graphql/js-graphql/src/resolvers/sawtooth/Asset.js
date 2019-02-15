@@ -31,7 +31,17 @@ const AssetITC = InputTypeComposer.create({
     password: 'String'
   }
 });
-createTransactionResolver(AssetTC, AssetITC);
+
+const CreateAssetITC = InputTypeComposer.create({
+  name: 'CreateAssetInput',
+  description: 'Used create an Asset',
+  fields: {
+    name: 'String',
+    description: 'String',
+    rules: [RuleITC]
+  }
+});
+createTransactionResolver(AssetTC, CreateAssetITC);
 createUpdateTransactionResolver(AssetTC, AssetITC);
 createDbFindManyResolver(AssetTC);
 createDbFindOneResolver(AssetTC, AssetITC);

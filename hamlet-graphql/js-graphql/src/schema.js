@@ -10,6 +10,8 @@ import {
   getAccountMutations,
   getOfferMutations,
   getOfferResolvers,
+  getHoldingMutations,
+  getHoldingResolvers,
   getUserMutations,
   getUserResolvers
 } from './resolvers/sawtooth';
@@ -24,24 +26,32 @@ const assetQueries = getAssetResolvers();
 const accountQueries = getAccountResolvers();
 const infoQueries = getInfoResolvers();
 const userQueries = getUserResolvers();
+const holdingQueries = getHoldingResolvers();
+const offerQueries = getOfferResolvers();
 // Mutations
 const assetMutations = getAssetMutations();
 const accountMutations = getAccountMutations();
 const userMutations = getUserMutations();
+const holdingMutations = getHoldingMutations();
+const offerMutations = getOfferMutations();
 // Subscriptions
 
 GQC.rootMutation().addFields({
   ...assetMutations,
   ...accountMutations,
   ...userMutations,
-  ...authMutations
+  ...authMutations,
+  ...offerMutations,
+  ...holdingMutations
 });
 GQC.rootQuery().addFields({
   ...infoQueries,
   ...accountQueries,
   ...userQueries,
   ...authQueries,
-  ...assetQueries
+  ...assetQueries,
+  ...offerQueries,
+  ...holdingQueries
 });
 
 // GQC.rootSubscription().addFields({});

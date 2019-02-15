@@ -57,6 +57,19 @@ AccountTC.addRelation(
     }
   }
 );
+
+const CreateAccountITC = InputTypeComposer.create({
+  name: 'CreateAccountInput',
+  description: 'Used to create an Account',
+  fields: {
+    password: 'String',
+    label: 'String',
+    description: 'String',
+    username: 'String',
+    email: 'String'
+  }
+});
+
 const AccountITC = InputTypeComposer.create({
   name: 'AccountInput',
   description: 'Used to find or create an Account',
@@ -71,7 +84,7 @@ const AccountITC = InputTypeComposer.create({
   }
 });
 
-createAccountTransactionResolver(AccountTC);
+createAccountTransactionResolver(AccountTC, CreateAccountITC);
 createDbFindOneResolver(AccountTC, AccountITC);
 createDbFindManyResolver(AccountTC, AccountITC);
 

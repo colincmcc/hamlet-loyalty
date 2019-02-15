@@ -56,6 +56,8 @@ const getProtoName = address => {
   const names = {
     ac: 'Account',
     ae: 'Asset',
+    ab: 'Holding',
+    af: 'Offer',
     aa: 'Proposal',
     ec: 'Record',
     ee: 'RecordType'
@@ -66,6 +68,8 @@ const getProtoName = address => {
 }
 
 const getObjectifier = address => {
+  console.log(address)
+  console.log(getProtoName(address))
   const name = getProtoName(address)
   return stateInstance => {
     const obj = protos[name].toObject(stateInstance, {
@@ -84,6 +88,7 @@ const stateAdder = address => {
   const addState = state[`add${getProtoName(address)}`]
   const toObject = getObjectifier(address)
   return (stateInstance, blockNum) => {
+    console.log(addState)
     addState(toObject(stateInstance), blockNum)
   }
 }

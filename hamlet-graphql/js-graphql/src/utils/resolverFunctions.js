@@ -20,11 +20,12 @@ import {
 import { BadRequest } from './errors';
 import * as auth from '../service/auth';
 import { fetchUser } from '../service/rethink/userDB';
+import { uuid4 } from './utils';
+import { DEFAULT_WAIT_TIME } from './constants';
 
 dotenv.config();
 
 const { VALIDATOR_URL, SAWTOOTH_URL, JWT_SECRET } = process.env;
-const DEFAULT_WAIT_TIME = 30;
 
 
 /**
@@ -41,7 +42,7 @@ const DEFAULT_WAIT_TIME = 30;
  */
 
 
-const createAccountData = (password, name, description) => {
+const createAccountData = (password, label, description) => {
   const {
     publicKey,
     encryptedKey,
@@ -49,7 +50,7 @@ const createAccountData = (password, name, description) => {
   } = makePrivateKey(password);
 
   const accountPayload = payloadMethods.createAccount({
-    label: name,
+    label,
     description
   });
   return {
@@ -93,25 +94,20 @@ export function createTransactionResolver(tc, inputType) {
     type: tc,
     args: { input: inputType },
     resolve: async ({ args, context }) => {
-      if (!context.user) throw AuthenticationError('not logged in');
+      if (!context.user) throw new AuthenticationError('not logged in');
       const { input } = args;
-      const password = input.password;
-      const encryptedKey = input.encryptedKey;
-      // const privateKey = getPrivateKey(password, encryptedKey);
-
       let payload;
-      const { privateKey } = context;
-      const signerPublicKey = context.user;
-      let data;
+      const { privateKey, user: signerPublicKey } = context;
       let formattedData;
+      const generatedId = uuid4();
       console.log(signerPublicKey);
       console.log(privateKey);
+
       // TODO: fix rule.value output to be bytes
       const rulePayload = input.rules ? input.rules.map(rule => ({
         type: payloadMethods.createAsset.enum[rule.type],
         value: rule.value
       })) : [];
-      console.log('rules', rulePayload);
 
       switch (tc) {
         case AssetTC:
@@ -122,32 +118,56 @@ export function createTransactionResolver(tc, inputType) {
             description: input.description,
             rules: rulePayload
           });
+
           formattedData = {
             name: input.name,
             description: input.description,
             rules: input.rules,
             owners: [context.user]
           };
-
           break;
+
         case OfferTC:
           console.log('Creating Offer');
-
           payload = payloadMethods.createOffer({
-            name: input.name,
-            description: input.description
+            id: generatedId,
+            label: input.label,
+            description: input.description,
+            source: input.source,
+            source_quantity: input.source_quantity,
+            target: input.target,
+            target_quantity: input.target_quantity,
+            rules: rulePayload
           });
+          formattedData = {
+            id: generatedId,
+            label: input.label,
+            description: input.description,
+            asset: input.asset,
+            quantity: input.quantity
+          };
           break;
+
         case HoldingTC:
           console.log('Creating Holding');
+
           payload = payloadMethods.createHolding({
-            id: input.id,
+            id: generatedId,
             label: input.label,
             asset: input.asset,
             description: input.description,
             quantity: input.quantity
           });
+
+          formattedData = {
+            id: generatedId,
+            label: input.label,
+            asset: input.asset,
+            description: input.description,
+            quantity: input.quantity
+          };
           break;
+
         default: {
           break;
         }
@@ -176,8 +196,6 @@ export function createUpdateTransactionResolver(tc, inputType) {
     resolve: async ({ args, context }) => {
       if (!context.user) throw AuthenticationError('not logged in');
       const { input } = args;
-      const password = input.password;
-      const encryptedKey = input.encryptedKey;
       let payload;
       const { privateKey } = context;
       const signerPublicKey = context.user;
@@ -238,34 +256,28 @@ export function createUpdateTransactionResolver(tc, inputType) {
   });
 }
 
-export function createAccountTransactionResolver(tc) {
+export function createAccountTransactionResolver(tc, inputType) {
   tc.addResolver({
     name: 'createAccountBcTransaction',
     type: tc,
-    args: {
-      name: 'String',
-      username: 'String',
-      description: 'String',
-      password: 'String',
-      encryptedKey: 'String',
-      email: 'String',
-      publicKey: 'String'
-    },
+    args: { input: inputType },
     resolve: async ({ args, context }) => {
+      const { input } = args;
+
       console.log('Creating Account');
       let createdAccount;
       let createdUser;
+
       const {
         accountPayload,
         encryptedKey,
         publicKey,
         newPrivateKey
       } = createAccountData(
-        args.password,
-        args.name,
-        args.description
+        input.password,
+        input.label,
+        input.description
       );
-
 
       const signerPublicKey = publicKey;
       const privateKey = newPrivateKey;
@@ -273,9 +285,9 @@ export function createAccountTransactionResolver(tc) {
       console.log('----pub key', signerPublicKey);
       console.log('----privKey', privateKey);
       const user = {
-        username: args.username,
-        password: args.password,
-        email: args.email,
+        username: input.username,
+        password: input.password,
+        email: input.email,
         publicKey,
         encryptedKey
       };
@@ -290,15 +302,15 @@ export function createAccountTransactionResolver(tc) {
           console.log(result);
           const authInfo = await createUser(user);
           createdUser = {
-            username: args.username,
-            email: args.email,
+            username: input.username,
+            email: input.email,
             publicKey,
             encryptedKey,
             authToken: authInfo.authorization
           };
           createdAccount = {
-            label: args.name,
-            description: args.description,
+            label: input.name,
+            description: input.description,
             publicKey,
             user
           };
