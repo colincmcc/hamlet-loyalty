@@ -92,7 +92,7 @@
     },
     "Holding": {
       "fields": {
-        "id": {
+        "holdingId": {
           "type": "string",
           "id": 1
         },
@@ -129,7 +129,7 @@
     },
     "Offer": {
       "fields": {
-        "id": {
+        "offerId": {
           "type": "string",
           "id": 1
         },
@@ -370,7 +370,7 @@
     },
     "CreateHolding": {
       "fields": {
-        "id": {
+        "holdingId": {
           "type": "string",
           "id": 1
         },
@@ -394,7 +394,7 @@
     },
     "CreateOffer": {
       "fields": {
-        "id": {
+        "offerId": {
           "type": "string",
           "id": 1
         },
@@ -431,7 +431,7 @@
     },
     "AcceptOffer": {
       "fields": {
-        "id": {
+        "offerId": {
           "type": "string",
           "id": 1
         },
@@ -451,7 +451,7 @@
     },
     "CloseOffer": {
       "fields": {
-        "id": {
+        "offerId": {
           "type": "string",
           "id": 1
         }
@@ -841,11 +841,11 @@
           "type": "uint64",
           "id": 2
         },
-        "issuingAgent": {
+        "issuingAccount": {
           "type": "string",
           "id": 3
         },
-        "receivingAgent": {
+        "receivingAccount": {
           "type": "string",
           "id": 4
         },
@@ -961,6 +961,103 @@
         "entries": {
           "rule": "repeated",
           "type": "RecordType",
+          "id": 1
+        }
+      }
+    },
+    "Agent": {
+      "fields": {
+        "orgId": {
+          "type": "string",
+          "id": 1
+        },
+        "publicKey": {
+          "type": "string",
+          "id": 2
+        },
+        "active": {
+          "type": "bool",
+          "id": 3
+        },
+        "roles": {
+          "rule": "repeated",
+          "type": "string",
+          "id": 4
+        },
+        "metadata": {
+          "rule": "repeated",
+          "type": "KeyValueEntry",
+          "id": 5
+        }
+      }
+    },
+    "AgentList": {
+      "fields": {
+        "agents": {
+          "rule": "repeated",
+          "type": "Agent",
+          "id": 1
+        }
+      }
+    },
+    "KeyValueEntry": {
+      "fields": {
+        "key": {
+          "type": "string",
+          "id": 1
+        },
+        "value": {
+          "type": "string",
+          "id": 2
+        }
+      }
+    },
+    "Organization": {
+      "fields": {
+        "orgId": {
+          "type": "string",
+          "id": 1
+        },
+        "name": {
+          "type": "string",
+          "id": 2
+        },
+        "address": {
+          "type": "string",
+          "id": 3
+        }
+      }
+    },
+    "OrganizationList": {
+      "fields": {
+        "organizations": {
+          "rule": "repeated",
+          "type": "Organization",
+          "id": 1
+        }
+      }
+    },
+    "SmartPermission": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "id": 1
+        },
+        "orgId": {
+          "type": "string",
+          "id": 2
+        },
+        "function": {
+          "type": "bytes",
+          "id": 3
+        }
+      }
+    },
+    "SmartPermissionList": {
+      "fields": {
+        "smartPermissions": {
+          "rule": "repeated",
+          "type": "SmartPermission",
           "id": 1
         }
       }

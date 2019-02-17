@@ -24,7 +24,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 #[derive(PartialEq,Clone,Default)]
 pub struct Holding {
     // message fields
-    pub id: ::std::string::String,
+    pub holding_id: ::std::string::String,
     pub label: ::std::string::String,
     pub description: ::std::string::String,
     pub account: ::std::string::String,
@@ -40,30 +40,30 @@ impl Holding {
         ::std::default::Default::default()
     }
 
-    // string id = 1;
+    // string holding_id = 1;
 
-    pub fn clear_id(&mut self) {
-        self.id.clear();
+    pub fn clear_holding_id(&mut self) {
+        self.holding_id.clear();
     }
 
     // Param is passed by value, moved
-    pub fn set_id(&mut self, v: ::std::string::String) {
-        self.id = v;
+    pub fn set_holding_id(&mut self, v: ::std::string::String) {
+        self.holding_id = v;
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_id(&mut self) -> &mut ::std::string::String {
-        &mut self.id
+    pub fn mut_holding_id(&mut self) -> &mut ::std::string::String {
+        &mut self.holding_id
     }
 
     // Take field
-    pub fn take_id(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.id, ::std::string::String::new())
+    pub fn take_holding_id(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.holding_id, ::std::string::String::new())
     }
 
-    pub fn get_id(&self) -> &str {
-        &self.id
+    pub fn get_holding_id(&self) -> &str {
+        &self.holding_id
     }
 
     // string label = 2;
@@ -196,7 +196,7 @@ impl ::protobuf::Message for Holding {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.id)?;
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.holding_id)?;
                 },
                 2 => {
                     ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.label)?;
@@ -229,8 +229,8 @@ impl ::protobuf::Message for Holding {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        if !self.id.is_empty() {
-            my_size += ::protobuf::rt::string_size(1, &self.id);
+        if !self.holding_id.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.holding_id);
         }
         if !self.label.is_empty() {
             my_size += ::protobuf::rt::string_size(2, &self.label);
@@ -253,8 +253,8 @@ impl ::protobuf::Message for Holding {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        if !self.id.is_empty() {
-            os.write_string(1, &self.id)?;
+        if !self.holding_id.is_empty() {
+            os.write_string(1, &self.holding_id)?;
         }
         if !self.label.is_empty() {
             os.write_string(2, &self.label)?;
@@ -314,9 +314,9 @@ impl ::protobuf::Message for Holding {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "id",
-                    |m: &Holding| { &m.id },
-                    |m: &mut Holding| { &mut m.id },
+                    "holding_id",
+                    |m: &Holding| { &m.holding_id },
+                    |m: &mut Holding| { &mut m.holding_id },
                 ));
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
                     "label",
@@ -365,7 +365,7 @@ impl ::protobuf::Message for Holding {
 
 impl ::protobuf::Clear for Holding {
     fn clear(&mut self) {
-        self.clear_id();
+        self.clear_holding_id();
         self.clear_label();
         self.clear_description();
         self.clear_account();
@@ -558,13 +558,13 @@ impl ::protobuf::reflect::ProtobufValue for HoldingContainer {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n\rholding.proto\"\x9d\x01\n\x07Holding\x12\x0e\n\x02id\x18\x01\x20\x01\
-    (\tR\x02id\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\x12\x20\n\x0b\
-    description\x18\x03\x20\x01(\tR\x0bdescription\x12\x18\n\x07account\x18\
-    \x04\x20\x01(\tR\x07account\x12\x14\n\x05asset\x18\x05\x20\x01(\tR\x05as\
-    set\x12\x1a\n\x08quantity\x18\x06\x20\x01(\x12R\x08quantity\"6\n\x10Hold\
-    ingContainer\x12\"\n\x07entries\x18\x01\x20\x03(\x0b2\x08.HoldingR\x07en\
-    triesb\x06proto3\
+    \n\rholding.proto\"\xac\x01\n\x07Holding\x12\x1d\n\nholding_id\x18\x01\
+    \x20\x01(\tR\tholdingId\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\
+    \x12\x20\n\x0bdescription\x18\x03\x20\x01(\tR\x0bdescription\x12\x18\n\
+    \x07account\x18\x04\x20\x01(\tR\x07account\x12\x14\n\x05asset\x18\x05\
+    \x20\x01(\tR\x05asset\x12\x1a\n\x08quantity\x18\x06\x20\x01(\x12R\x08qua\
+    ntity\"6\n\x10HoldingContainer\x12\"\n\x07entries\x18\x01\x20\x03(\x0b2\
+    \x08.HoldingR\x07entriesb\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

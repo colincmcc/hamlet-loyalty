@@ -9,8 +9,17 @@ import {
   createTxn
 } from '../service/blockchain';
 import {
-  fetchAccount, userInsert, userQuery, userUpdate,
-  listAccounts, fetchAsset, listAssets
+  fetchAccount,
+  userInsert,
+  userQuery,
+  userUpdate,
+  listAccounts,
+  fetchAsset,
+  listAssets,
+  fetchHolding,
+  listHoldings,
+  fetchOffer,
+  listOffers
 } from '../service/rethink';
 
 import {
@@ -19,7 +28,6 @@ import {
 
 import { BadRequest } from './errors';
 import * as auth from '../service/auth';
-import { fetchUser } from '../service/rethink/userDB';
 import { uuid4 } from './utils';
 import { DEFAULT_WAIT_TIME } from './constants';
 
@@ -97,8 +105,10 @@ export function createTransactionResolver(tc, inputType) {
       if (!context.user) throw new AuthenticationError('not logged in');
       const { input } = args;
       let payload;
-      const { privateKey, user: signerPublicKey } = context;
+      let data;
       let formattedData;
+
+      const { privateKey, user: signerPublicKey } = context;
       const generatedId = uuid4();
       console.log(signerPublicKey);
       console.log(privateKey);
@@ -130,17 +140,17 @@ export function createTransactionResolver(tc, inputType) {
         case OfferTC:
           console.log('Creating Offer');
           payload = payloadMethods.createOffer({
-            id: generatedId,
+            offerId: generatedId,
             label: input.label,
             description: input.description,
             source: input.source,
-            source_quantity: input.source_quantity,
+            sourceQuantity: input.sourceQuantity,
             target: input.target,
-            target_quantity: input.target_quantity,
+            targetQuantity: input.targetQuantity,
             rules: rulePayload
           });
           formattedData = {
-            id: generatedId,
+            offerId: generatedId,
             label: input.label,
             description: input.description,
             asset: input.asset,
@@ -151,8 +161,9 @@ export function createTransactionResolver(tc, inputType) {
         case HoldingTC:
           console.log('Creating Holding');
 
+
           payload = payloadMethods.createHolding({
-            id: generatedId,
+            holdingId: generatedId,
             label: input.label,
             asset: input.asset,
             description: input.description,
@@ -160,7 +171,7 @@ export function createTransactionResolver(tc, inputType) {
           });
 
           formattedData = {
-            id: generatedId,
+            holdingId: generatedId,
             label: input.label,
             asset: input.asset,
             description: input.description,
@@ -331,26 +342,19 @@ export function createDbFindOneResolver(tc, inputType) {
       let formattedData;
       switch (tc) {
         case AccountTC:
-          data = await fetchAccount(input.publicKey, true);
-
-          formattedData = {
-            label: data.label,
-            publicKey: data.publicKey
-          };
+          formattedData = await fetchAccount(input.publicKey, true);
           break;
         case UserTC:
           formattedData = await userQuery(users => users.filter(input), false)[0];
           break;
         case AssetTC:
-          data = await fetchAsset(input.name, true);
-
-          formattedData = {
-            name: data.name,
-            id: data.id,
-            description: data.description,
-            owners: data.owners,
-            rules: data.rules
-          };
+          formattedData = await fetchAsset(input.name, true);
+          break;
+        case HoldingTC:
+          formattedData = await fetchHolding(input.holdingId, true);
+          break;
+        case OfferTC:
+          formattedData = await fetchOffer(input.offerId, true);
           break;
         default:
           break;
@@ -369,9 +373,8 @@ export function createDbFindManyResolver(tc, inputType) {
     args: { input: inputType },
     resolve: async ({ args, context }) => {
       const { input } = args;
+      console.log('input', args);
       let data;
-      let formattedData;
-      let filterQuery;
       switch (tc) {
         case AccountTC:
           data = await listAccounts(input);
@@ -381,6 +384,12 @@ export function createDbFindManyResolver(tc, inputType) {
           break;
         case UserTC:
           data = await userQuery(users => users.filter(input));
+          break;
+        case HoldingTC:
+          data = await listHoldings(input);
+          break;
+        case OfferTC:
+          data = await listOffers(input);
           break;
         default:
           break;
@@ -398,15 +407,10 @@ export function updateOneDbResolver(tc, fields) {
     args: fields,
     resolve: async ({ args, context }) => {
       if (!context.user) throw AuthenticationError('not logged in');
-      let updated;
       let formattedData;
-      console.log('user updating data', context.user);
       switch (tc) {
         case UserTC:
           formattedData = updateUser(args, { authedKey: context.user });
-          break;
-        case AssetTC:
-          formattedData = assetUpdate(args.assetName, args);
           break;
         default:
           break;

@@ -60,7 +60,8 @@ const getProtoName = address => {
     af: 'Offer',
     aa: 'Proposal',
     ec: 'Record',
-    ee: 'RecordType'
+    ee: 'RecordType',
+    "00": "OfferHistory"
   }
   if (names[typePrefix]) return names[typePrefix]
 
@@ -68,8 +69,7 @@ const getProtoName = address => {
 }
 
 const getObjectifier = address => {
-  console.log(address)
-  console.log(getProtoName(address))
+
   const name = getProtoName(address)
   return stateInstance => {
     const obj = protos[name].toObject(stateInstance, {

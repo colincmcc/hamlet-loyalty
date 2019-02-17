@@ -16,9 +16,18 @@ export {
 
 export {
   fetchAsset,
-  listAssets,
-  assetUpdate
+  listAssets
 } from './assetDB';
+
+export {
+  fetchHolding,
+  listHoldings
+} from './holdingDB';
+
+export {
+  fetchOffer,
+  listOffers
+} from './offerDB';
 
 export {
   fetchProperty,

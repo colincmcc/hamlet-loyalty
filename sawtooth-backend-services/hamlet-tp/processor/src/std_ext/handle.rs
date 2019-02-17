@@ -4,13 +4,7 @@ use sawtooth_sdk::processor::handler::{ApplyError};
 use protobuf::{RepeatedField};
 
 // Rule validation
-pub fn _is_not_transferable(asset: asset::Asset, owner_public_key: &str) -> bool {
-    if _has_rule(asset.get_rules().to_vec(), rule::Rule_RuleType::NOT_TRANSFERABLE) && asset.get_owners().contains(&owner_public_key.to_string()) {
-        return true
-    } else {
-        return false
-    }
-}
+
 
 pub fn _has_rule(rules: Vec<rule::Rule>, rule_type: rule::Rule_RuleType) -> bool {
     for rule in rules {
@@ -20,6 +14,39 @@ pub fn _has_rule(rules: Vec<rule::Rule>, rule_type: rule::Rule_RuleType) -> bool
     }
     return false
 }
+
+pub fn _exchange_once_per_account(offer: offer::Offer) -> bool {
+    if _has_rule(offer.get_rules().to_vec(), rule::Rule_RuleType::EXCHANGE_ONCE_PER_ACCOUNT){
+        return true
+    } else {
+        return false
+    }
+}
+
+pub fn _exchange_once(offer: offer::Offer) -> bool {
+    if _has_rule(offer.get_rules().to_vec(), rule::Rule_RuleType::EXCHANGE_ONCE){
+        return true
+    } else {
+        return false
+    }
+}
+
+pub fn _is_not_transferable(asset: asset::Asset, owner_public_key: &str) -> bool {
+    if _has_rule(asset.get_rules().to_vec(), rule::Rule_RuleType::NOT_TRANSFERABLE) && asset.get_owners().contains(&owner_public_key.to_string()) {
+        return true
+    } else {
+        return false
+    }
+}
+
+pub fn _holding_is_infinite(asset: asset::Asset, owner_public_key: &str) -> bool {
+    if _has_rule(asset.get_rules().to_vec(), rule::Rule_RuleType::ALL_HOLDINGS_INFINITE) || _has_rule(asset.get_rules().to_vec(), rule::Rule_RuleType::OWNER_HOLDINGS_INFINITE) && asset.get_owners().contains(&owner_public_key.to_string()) {
+        return true
+    } else {
+        return false
+    }
+}
+
 
 // Misc
 pub fn _make_new_reported_value(

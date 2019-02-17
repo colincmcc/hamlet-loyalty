@@ -77,7 +77,7 @@ message UpdateAsset {
 }
 
 message CreateHolding {
-    string id = 1;
+    string holding_id = 1;
     string label = 2;
     string description = 3;
     string asset = 4;
@@ -85,7 +85,7 @@ message CreateHolding {
 }
 
 message CreateOffer {
-    string id = 1;
+    string offer_id = 1;
     string label = 2;
     string description = 3;
     string source = 4;
@@ -96,14 +96,14 @@ message CreateOffer {
 }
 
 message AcceptOffer {
-    string id = 1;
+    string offer_id = 1;
     string source = 2;
     string target = 3;
     uint64 count = 4;
 }
 
 message CloseOffer {
-    string id = 1;
+    string offer_id = 1;
 }
 
 

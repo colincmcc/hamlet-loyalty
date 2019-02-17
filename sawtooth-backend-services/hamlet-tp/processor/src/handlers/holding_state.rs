@@ -13,7 +13,6 @@ pub trait Holding {
         state: HamletState,
         signer: &str
     ) -> Result<(), ApplyError>;
-
 }
 
 impl Holding for &hamlet_handler::HamletTransactionHandler {
@@ -35,7 +34,7 @@ impl Holding for &hamlet_handler::HamletTransactionHandler {
             Err(err) => return Err(err),
         }
 
-        let holding_id = payload.get_id();
+        let holding_id = payload.get_holding_id();
         let holding_label = payload.get_label();
         let holding_description = payload.get_description();
         let holding_asset = payload.get_asset();
@@ -85,7 +84,7 @@ impl Holding for &hamlet_handler::HamletTransactionHandler {
         }
 
         let mut new_holding = holding::Holding::new();
-        new_holding.set_id(holding_id.to_string());
+        new_holding.set_holding_id(holding_id.to_string());
         new_holding.set_label(holding_label.to_string());
         new_holding.set_description(holding_description.to_string());
         new_holding.set_account(signer.to_string());
@@ -93,6 +92,7 @@ impl Holding for &hamlet_handler::HamletTransactionHandler {
         new_holding.set_quantity(holding_quantity);
 
         state.set_holding(holding_id, new_holding)?;
+        state.add_holding_to_account(&signer.to_string(), holding_id);
         Ok(())
     }
 

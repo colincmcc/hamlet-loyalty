@@ -55,6 +55,7 @@ const RECORD: &str = "ec";
 const RECORD_TYPE: &str = "ee";
 const HOLDING: &str = "ab";
 const OFFER: &str = "af";
+const OTHER: &str = "00";
 
 pub fn get_hamlet_prefix() -> String {
     let mut sha = Sha512::new();
@@ -108,4 +109,12 @@ pub fn num_to_page_number(page: u32) -> String {
 
 pub fn make_proposal_address(record_id: &str, agent_id: &str) -> String {
     get_hamlet_prefix() + PROPOSAL + &hash(record_id, 36) + &hash(agent_id, 26)
+}
+
+pub fn make_offer_account_address(offer_id: &str, public_key: &str) -> String {
+    get_hamlet_prefix() + OTHER + &hash(offer_id, 36) + &hash(public_key, 26)
+}
+
+pub fn make_offer_history_address(offer_id: &str) -> String {
+    get_hamlet_prefix() + OTHER + &hash(offer_id, 60) + OTHER
 }

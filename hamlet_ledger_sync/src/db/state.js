@@ -80,6 +80,10 @@ const addBlockState = (tableName, indexName, indexValue, doc, blockNum) => {
   })
 }
 
+// Temporary
+const addOfferHistory = () => {}
+
+
 const addAccount = (account, blockNum) => {
   return addBlockState('accounts', 'publicKey', account.publicKey,
   account, blockNum)
@@ -91,12 +95,12 @@ const addAsset = (asset, blockNum) => {
 }
 
 const addHolding = (holding, blockNum) => {
-  return addBlockState('holdings', 'id', holding.id,
+  return addBlockState('holdings', 'holdingId', holding.holdingId,
   holding, blockNum)
 }
 
 const addOffer = (offer, blockNum) => {
-  return addBlockState('offers', 'id', offer.id,
+  return addBlockState('offers', 'offerId', offer.offerId,
   offer, blockNum)
 }
 
@@ -178,5 +182,6 @@ module.exports = {
   addRecordType,
   addProperty,
   addPropertyPage,
-  addProposal
+  addProposal,
+  addOfferHistory
 }

@@ -32,7 +32,7 @@ message Offer {
         CANCELED = 3;
     }
 
-    string id = 1;
+    string offer_id = 1;
     string label = 2;
     string description = 3;
     repeated string owners = 4;

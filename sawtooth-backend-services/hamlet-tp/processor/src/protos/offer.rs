@@ -24,7 +24,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 #[derive(PartialEq,Clone,Default)]
 pub struct Offer {
     // message fields
-    pub id: ::std::string::String,
+    pub offer_id: ::std::string::String,
     pub label: ::std::string::String,
     pub description: ::std::string::String,
     pub owners: ::protobuf::RepeatedField<::std::string::String>,
@@ -46,30 +46,30 @@ impl Offer {
         ::std::default::Default::default()
     }
 
-    // string id = 1;
+    // string offer_id = 1;
 
-    pub fn clear_id(&mut self) {
-        self.id.clear();
+    pub fn clear_offer_id(&mut self) {
+        self.offer_id.clear();
     }
 
     // Param is passed by value, moved
-    pub fn set_id(&mut self, v: ::std::string::String) {
-        self.id = v;
+    pub fn set_offer_id(&mut self, v: ::std::string::String) {
+        self.offer_id = v;
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_id(&mut self) -> &mut ::std::string::String {
-        &mut self.id
+    pub fn mut_offer_id(&mut self) -> &mut ::std::string::String {
+        &mut self.offer_id
     }
 
     // Take field
-    pub fn take_id(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.id, ::std::string::String::new())
+    pub fn take_offer_id(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.offer_id, ::std::string::String::new())
     }
 
-    pub fn get_id(&self) -> &str {
-        &self.id
+    pub fn get_offer_id(&self) -> &str {
+        &self.offer_id
     }
 
     // string label = 2;
@@ -317,7 +317,7 @@ impl ::protobuf::Message for Offer {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.id)?;
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.offer_id)?;
                 },
                 2 => {
                     ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.label)?;
@@ -376,8 +376,8 @@ impl ::protobuf::Message for Offer {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        if !self.id.is_empty() {
-            my_size += ::protobuf::rt::string_size(1, &self.id);
+        if !self.offer_id.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.offer_id);
         }
         if !self.label.is_empty() {
             my_size += ::protobuf::rt::string_size(2, &self.label);
@@ -419,8 +419,8 @@ impl ::protobuf::Message for Offer {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        if !self.id.is_empty() {
-            os.write_string(1, &self.id)?;
+        if !self.offer_id.is_empty() {
+            os.write_string(1, &self.offer_id)?;
         }
         if !self.label.is_empty() {
             os.write_string(2, &self.label)?;
@@ -500,9 +500,9 @@ impl ::protobuf::Message for Offer {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "id",
-                    |m: &Offer| { &m.id },
-                    |m: &mut Offer| { &mut m.id },
+                    "offer_id",
+                    |m: &Offer| { &m.offer_id },
+                    |m: &mut Offer| { &mut m.offer_id },
                 ));
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
                     "label",
@@ -581,7 +581,7 @@ impl ::protobuf::Message for Offer {
 
 impl ::protobuf::Clear for Offer {
     fn clear(&mut self) {
-        self.clear_id();
+        self.clear_offer_id();
         self.clear_label();
         self.clear_description();
         self.clear_owners();
@@ -899,21 +899,21 @@ impl ::protobuf::reflect::ProtobufValue for OfferContainer {
 }
 
 static file_descriptor_proto_data: &'static [u8] = b"\
-    \n\x0boffer.proto\x1a\nrule.proto\"\xda\x03\n\x05Offer\x12\x0e\n\x02id\
-    \x18\x01\x20\x01(\tR\x02id\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05lab\
-    el\x12\x20\n\x0bdescription\x18\x03\x20\x01(\tR\x0bdescription\x12\x16\n\
-    \x06owners\x18\x04\x20\x03(\tR\x06owners\x12\x16\n\x06source\x18\x05\x20\
-    \x01(\tR\x06source\x12'\n\x0fsource_quantity\x18\x06\x20\x01(\x12R\x0eso\
-    urceQuantity\x12\x16\n\x06target\x18\x07\x20\x01(\tR\x06target\x12'\n\
-    \x0ftarget_quantity\x18\x08\x20\x01(\x12R\x0etargetQuantity\x12\x1b\n\
-    \x05rules\x18\t\x20\x03(\x0b2\x05.RuleR\x05rules\x12%\n\x06status\x18\n\
-    \x20\x01(\x0e2\r.Offer.StatusR\x06status\x12\x1c\n\ttimestamp\x18\x0b\
-    \x20\x01(\x04R\ttimestamp\x12\x1f\n\x04role\x18\x0c\x20\x01(\x0e2\x0b.Of\
-    fer.RoleR\x04role\".\n\x04Role\x12\t\n\x05OWNER\x10\0\x12\r\n\tCUSTODIAN\
-    \x10\x01\x12\x0c\n\x08REPORTER\x10\x02\"<\n\x06Status\x12\x08\n\x04OPEN\
-    \x10\0\x12\x0c\n\x08ACCEPTED\x10\x01\x12\x0c\n\x08REJECTED\x10\x02\x12\
-    \x0c\n\x08CANCELED\x10\x03\"2\n\x0eOfferContainer\x12\x20\n\x07entries\
-    \x18\x01\x20\x03(\x0b2\x06.OfferR\x07entriesb\x06proto3\
+    \n\x0boffer.proto\x1a\nrule.proto\"\xe5\x03\n\x05Offer\x12\x19\n\x08offe\
+    r_id\x18\x01\x20\x01(\tR\x07offerId\x12\x14\n\x05label\x18\x02\x20\x01(\
+    \tR\x05label\x12\x20\n\x0bdescription\x18\x03\x20\x01(\tR\x0bdescription\
+    \x12\x16\n\x06owners\x18\x04\x20\x03(\tR\x06owners\x12\x16\n\x06source\
+    \x18\x05\x20\x01(\tR\x06source\x12'\n\x0fsource_quantity\x18\x06\x20\x01\
+    (\x12R\x0esourceQuantity\x12\x16\n\x06target\x18\x07\x20\x01(\tR\x06targ\
+    et\x12'\n\x0ftarget_quantity\x18\x08\x20\x01(\x12R\x0etargetQuantity\x12\
+    \x1b\n\x05rules\x18\t\x20\x03(\x0b2\x05.RuleR\x05rules\x12%\n\x06status\
+    \x18\n\x20\x01(\x0e2\r.Offer.StatusR\x06status\x12\x1c\n\ttimestamp\x18\
+    \x0b\x20\x01(\x04R\ttimestamp\x12\x1f\n\x04role\x18\x0c\x20\x01(\x0e2\
+    \x0b.Offer.RoleR\x04role\".\n\x04Role\x12\t\n\x05OWNER\x10\0\x12\r\n\tCU\
+    STODIAN\x10\x01\x12\x0c\n\x08REPORTER\x10\x02\"<\n\x06Status\x12\x08\n\
+    \x04OPEN\x10\0\x12\x0c\n\x08ACCEPTED\x10\x01\x12\x0c\n\x08REJECTED\x10\
+    \x02\x12\x0c\n\x08CANCELED\x10\x03\"2\n\x0eOfferContainer\x12\x20\n\x07e\
+    ntries\x18\x01\x20\x03(\x0b2\x06.OfferR\x07entriesb\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

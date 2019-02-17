@@ -23,10 +23,10 @@ message Proposal {
   // The public key of the Agent sending the Proposal. This Agent must
   // be the owner of the Record (or the custodian, if the Proposal is
   // to transfer custodianship).
-  string issuing_agent = 3;
+  string issuing_account = 3;
 
   // The public key of the Agent to whom the Proposal is sent.
-  string receiving_agent = 4;
+  string receiving_account = 4;
 
   // What the Proposal is for -- transferring ownership, transferring
   // custodianship, or authorizing a reporter.

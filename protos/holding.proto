@@ -16,7 +16,7 @@
 syntax = "proto3";
 
 message Holding {
-    string id = 1;
+    string holding_id = 1;
     string label = 2;
     string description = 3;
     string account = 4;

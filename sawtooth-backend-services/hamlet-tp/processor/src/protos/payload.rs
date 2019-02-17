@@ -1857,7 +1857,7 @@ impl ::protobuf::reflect::ProtobufValue for UpdateAsset {
 #[derive(PartialEq,Clone,Default)]
 pub struct CreateHolding {
     // message fields
-    pub id: ::std::string::String,
+    pub holding_id: ::std::string::String,
     pub label: ::std::string::String,
     pub description: ::std::string::String,
     pub asset: ::std::string::String,
@@ -1872,30 +1872,30 @@ impl CreateHolding {
         ::std::default::Default::default()
     }
 
-    // string id = 1;
+    // string holding_id = 1;
 
-    pub fn clear_id(&mut self) {
-        self.id.clear();
+    pub fn clear_holding_id(&mut self) {
+        self.holding_id.clear();
     }
 
     // Param is passed by value, moved
-    pub fn set_id(&mut self, v: ::std::string::String) {
-        self.id = v;
+    pub fn set_holding_id(&mut self, v: ::std::string::String) {
+        self.holding_id = v;
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_id(&mut self) -> &mut ::std::string::String {
-        &mut self.id
+    pub fn mut_holding_id(&mut self) -> &mut ::std::string::String {
+        &mut self.holding_id
     }
 
     // Take field
-    pub fn take_id(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.id, ::std::string::String::new())
+    pub fn take_holding_id(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.holding_id, ::std::string::String::new())
     }
 
-    pub fn get_id(&self) -> &str {
-        &self.id
+    pub fn get_holding_id(&self) -> &str {
+        &self.holding_id
     }
 
     // string label = 2;
@@ -2002,7 +2002,7 @@ impl ::protobuf::Message for CreateHolding {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.id)?;
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.holding_id)?;
                 },
                 2 => {
                     ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.label)?;
@@ -2032,8 +2032,8 @@ impl ::protobuf::Message for CreateHolding {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        if !self.id.is_empty() {
-            my_size += ::protobuf::rt::string_size(1, &self.id);
+        if !self.holding_id.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.holding_id);
         }
         if !self.label.is_empty() {
             my_size += ::protobuf::rt::string_size(2, &self.label);
@@ -2053,8 +2053,8 @@ impl ::protobuf::Message for CreateHolding {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        if !self.id.is_empty() {
-            os.write_string(1, &self.id)?;
+        if !self.holding_id.is_empty() {
+            os.write_string(1, &self.holding_id)?;
         }
         if !self.label.is_empty() {
             os.write_string(2, &self.label)?;
@@ -2111,9 +2111,9 @@ impl ::protobuf::Message for CreateHolding {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "id",
-                    |m: &CreateHolding| { &m.id },
-                    |m: &mut CreateHolding| { &mut m.id },
+                    "holding_id",
+                    |m: &CreateHolding| { &m.holding_id },
+                    |m: &mut CreateHolding| { &mut m.holding_id },
                 ));
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
                     "label",
@@ -2157,7 +2157,7 @@ impl ::protobuf::Message for CreateHolding {
 
 impl ::protobuf::Clear for CreateHolding {
     fn clear(&mut self) {
-        self.clear_id();
+        self.clear_holding_id();
         self.clear_label();
         self.clear_description();
         self.clear_asset();
@@ -2181,7 +2181,7 @@ impl ::protobuf::reflect::ProtobufValue for CreateHolding {
 #[derive(PartialEq,Clone,Default)]
 pub struct CreateOffer {
     // message fields
-    pub id: ::std::string::String,
+    pub offer_id: ::std::string::String,
     pub label: ::std::string::String,
     pub description: ::std::string::String,
     pub source: ::std::string::String,
@@ -2199,30 +2199,30 @@ impl CreateOffer {
         ::std::default::Default::default()
     }
 
-    // string id = 1;
+    // string offer_id = 1;
 
-    pub fn clear_id(&mut self) {
-        self.id.clear();
+    pub fn clear_offer_id(&mut self) {
+        self.offer_id.clear();
     }
 
     // Param is passed by value, moved
-    pub fn set_id(&mut self, v: ::std::string::String) {
-        self.id = v;
+    pub fn set_offer_id(&mut self, v: ::std::string::String) {
+        self.offer_id = v;
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_id(&mut self) -> &mut ::std::string::String {
-        &mut self.id
+    pub fn mut_offer_id(&mut self) -> &mut ::std::string::String {
+        &mut self.offer_id
     }
 
     // Take field
-    pub fn take_id(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.id, ::std::string::String::new())
+    pub fn take_offer_id(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.offer_id, ::std::string::String::new())
     }
 
-    pub fn get_id(&self) -> &str {
-        &self.id
+    pub fn get_offer_id(&self) -> &str {
+        &self.offer_id
     }
 
     // string label = 2;
@@ -2400,7 +2400,7 @@ impl ::protobuf::Message for CreateOffer {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.id)?;
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.offer_id)?;
                 },
                 2 => {
                     ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.label)?;
@@ -2443,8 +2443,8 @@ impl ::protobuf::Message for CreateOffer {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        if !self.id.is_empty() {
-            my_size += ::protobuf::rt::string_size(1, &self.id);
+        if !self.offer_id.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.offer_id);
         }
         if !self.label.is_empty() {
             my_size += ::protobuf::rt::string_size(2, &self.label);
@@ -2474,8 +2474,8 @@ impl ::protobuf::Message for CreateOffer {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        if !self.id.is_empty() {
-            os.write_string(1, &self.id)?;
+        if !self.offer_id.is_empty() {
+            os.write_string(1, &self.offer_id)?;
         }
         if !self.label.is_empty() {
             os.write_string(2, &self.label)?;
@@ -2543,9 +2543,9 @@ impl ::protobuf::Message for CreateOffer {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "id",
-                    |m: &CreateOffer| { &m.id },
-                    |m: &mut CreateOffer| { &mut m.id },
+                    "offer_id",
+                    |m: &CreateOffer| { &m.offer_id },
+                    |m: &mut CreateOffer| { &mut m.offer_id },
                 ));
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
                     "label",
@@ -2604,7 +2604,7 @@ impl ::protobuf::Message for CreateOffer {
 
 impl ::protobuf::Clear for CreateOffer {
     fn clear(&mut self) {
-        self.clear_id();
+        self.clear_offer_id();
         self.clear_label();
         self.clear_description();
         self.clear_source();
@@ -2631,7 +2631,7 @@ impl ::protobuf::reflect::ProtobufValue for CreateOffer {
 #[derive(PartialEq,Clone,Default)]
 pub struct AcceptOffer {
     // message fields
-    pub id: ::std::string::String,
+    pub offer_id: ::std::string::String,
     pub source: ::std::string::String,
     pub target: ::std::string::String,
     pub count: u64,
@@ -2645,30 +2645,30 @@ impl AcceptOffer {
         ::std::default::Default::default()
     }
 
-    // string id = 1;
+    // string offer_id = 1;
 
-    pub fn clear_id(&mut self) {
-        self.id.clear();
+    pub fn clear_offer_id(&mut self) {
+        self.offer_id.clear();
     }
 
     // Param is passed by value, moved
-    pub fn set_id(&mut self, v: ::std::string::String) {
-        self.id = v;
+    pub fn set_offer_id(&mut self, v: ::std::string::String) {
+        self.offer_id = v;
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_id(&mut self) -> &mut ::std::string::String {
-        &mut self.id
+    pub fn mut_offer_id(&mut self) -> &mut ::std::string::String {
+        &mut self.offer_id
     }
 
     // Take field
-    pub fn take_id(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.id, ::std::string::String::new())
+    pub fn take_offer_id(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.offer_id, ::std::string::String::new())
     }
 
-    pub fn get_id(&self) -> &str {
-        &self.id
+    pub fn get_offer_id(&self) -> &str {
+        &self.offer_id
     }
 
     // string source = 2;
@@ -2749,7 +2749,7 @@ impl ::protobuf::Message for AcceptOffer {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.id)?;
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.offer_id)?;
                 },
                 2 => {
                     ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.source)?;
@@ -2776,8 +2776,8 @@ impl ::protobuf::Message for AcceptOffer {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        if !self.id.is_empty() {
-            my_size += ::protobuf::rt::string_size(1, &self.id);
+        if !self.offer_id.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.offer_id);
         }
         if !self.source.is_empty() {
             my_size += ::protobuf::rt::string_size(2, &self.source);
@@ -2794,8 +2794,8 @@ impl ::protobuf::Message for AcceptOffer {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        if !self.id.is_empty() {
-            os.write_string(1, &self.id)?;
+        if !self.offer_id.is_empty() {
+            os.write_string(1, &self.offer_id)?;
         }
         if !self.source.is_empty() {
             os.write_string(2, &self.source)?;
@@ -2849,9 +2849,9 @@ impl ::protobuf::Message for AcceptOffer {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "id",
-                    |m: &AcceptOffer| { &m.id },
-                    |m: &mut AcceptOffer| { &mut m.id },
+                    "offer_id",
+                    |m: &AcceptOffer| { &m.offer_id },
+                    |m: &mut AcceptOffer| { &mut m.offer_id },
                 ));
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
                     "source",
@@ -2890,7 +2890,7 @@ impl ::protobuf::Message for AcceptOffer {
 
 impl ::protobuf::Clear for AcceptOffer {
     fn clear(&mut self) {
-        self.clear_id();
+        self.clear_offer_id();
         self.clear_source();
         self.clear_target();
         self.clear_count();
@@ -2913,7 +2913,7 @@ impl ::protobuf::reflect::ProtobufValue for AcceptOffer {
 #[derive(PartialEq,Clone,Default)]
 pub struct CloseOffer {
     // message fields
-    pub id: ::std::string::String,
+    pub offer_id: ::std::string::String,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -2924,30 +2924,30 @@ impl CloseOffer {
         ::std::default::Default::default()
     }
 
-    // string id = 1;
+    // string offer_id = 1;
 
-    pub fn clear_id(&mut self) {
-        self.id.clear();
+    pub fn clear_offer_id(&mut self) {
+        self.offer_id.clear();
     }
 
     // Param is passed by value, moved
-    pub fn set_id(&mut self, v: ::std::string::String) {
-        self.id = v;
+    pub fn set_offer_id(&mut self, v: ::std::string::String) {
+        self.offer_id = v;
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_id(&mut self) -> &mut ::std::string::String {
-        &mut self.id
+    pub fn mut_offer_id(&mut self) -> &mut ::std::string::String {
+        &mut self.offer_id
     }
 
     // Take field
-    pub fn take_id(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.id, ::std::string::String::new())
+    pub fn take_offer_id(&mut self) -> ::std::string::String {
+        ::std::mem::replace(&mut self.offer_id, ::std::string::String::new())
     }
 
-    pub fn get_id(&self) -> &str {
-        &self.id
+    pub fn get_offer_id(&self) -> &str {
+        &self.offer_id
     }
 }
 
@@ -2961,7 +2961,7 @@ impl ::protobuf::Message for CloseOffer {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.id)?;
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.offer_id)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -2975,8 +2975,8 @@ impl ::protobuf::Message for CloseOffer {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        if !self.id.is_empty() {
-            my_size += ::protobuf::rt::string_size(1, &self.id);
+        if !self.offer_id.is_empty() {
+            my_size += ::protobuf::rt::string_size(1, &self.offer_id);
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
@@ -2984,8 +2984,8 @@ impl ::protobuf::Message for CloseOffer {
     }
 
     fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        if !self.id.is_empty() {
-            os.write_string(1, &self.id)?;
+        if !self.offer_id.is_empty() {
+            os.write_string(1, &self.offer_id)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -3030,9 +3030,9 @@ impl ::protobuf::Message for CloseOffer {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "id",
-                    |m: &CloseOffer| { &m.id },
-                    |m: &mut CloseOffer| { &mut m.id },
+                    "offer_id",
+                    |m: &CloseOffer| { &m.offer_id },
+                    |m: &mut CloseOffer| { &mut m.offer_id },
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<CloseOffer>(
                     "CloseOffer",
@@ -3056,7 +3056,7 @@ impl ::protobuf::Message for CloseOffer {
 
 impl ::protobuf::Clear for CloseOffer {
     fn clear(&mut self) {
-        self.clear_id();
+        self.clear_offer_id();
         self.unknown_fields.clear();
     }
 }
@@ -4798,41 +4798,42 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     ateAsset\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x20\n\x0bdesc\
     ription\x18\x02\x20\x01(\tR\x0bdescription\x12\x1b\n\x05rules\x18\x03\
     \x20\x03(\x0b2\x05.RuleR\x05rules\x12\x16\n\x06owners\x18\x04\x20\x03(\t\
-    R\x06owners\"\x89\x01\n\rCreateHolding\x12\x0e\n\x02id\x18\x01\x20\x01(\
-    \tR\x02id\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\x12\x20\n\x0bd\
-    escription\x18\x03\x20\x01(\tR\x0bdescription\x12\x14\n\x05asset\x18\x04\
-    \x20\x01(\tR\x05asset\x12\x1a\n\x08quantity\x18\x05\x20\x01(\x12R\x08qua\
-    ntity\"\xf4\x01\n\x0bCreateOffer\x12\x0e\n\x02id\x18\x01\x20\x01(\tR\x02\
-    id\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\x12\x20\n\x0bdescript\
-    ion\x18\x03\x20\x01(\tR\x0bdescription\x12\x16\n\x06source\x18\x04\x20\
-    \x01(\tR\x06source\x12'\n\x0fsource_quantity\x18\x05\x20\x01(\x12R\x0eso\
-    urceQuantity\x12\x16\n\x06target\x18\x06\x20\x01(\tR\x06target\x12'\n\
-    \x0ftarget_quantity\x18\x07\x20\x01(\x12R\x0etargetQuantity\x12\x1b\n\
-    \x05rules\x18\x08\x20\x03(\x0b2\x05.RuleR\x05rules\"c\n\x0bAcceptOffer\
-    \x12\x0e\n\x02id\x18\x01\x20\x01(\tR\x02id\x12\x16\n\x06source\x18\x02\
-    \x20\x01(\tR\x06source\x12\x16\n\x06target\x18\x03\x20\x01(\tR\x06target\
-    \x12\x14\n\x05count\x18\x04\x20\x01(\x04R\x05count\"\x1c\n\nCloseOffer\
-    \x12\x0e\n\x02id\x18\x01\x20\x01(\tR\x02id\"|\n\x0cCreateRecord\x12\x1b\
-    \n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12\x1f\n\x0brecord_type\
-    \x18\x02\x20\x01(\tR\nrecordType\x12.\n\nproperties\x18\x03\x20\x03(\x0b\
-    2\x0e.PropertyValueR\nproperties\"-\n\x0eFinalizeRecord\x12\x1b\n\trecor\
-    d_id\x18\x01\x20\x01(\tR\x08recordId\"W\n\x10CreateRecordType\x12\x12\n\
-    \x04name\x18\x01\x20\x01(\tR\x04name\x12/\n\nproperties\x18\x02\x20\x03(\
-    \x0b2\x0f.PropertySchemaR\nproperties\"_\n\x10UpdateProperties\x12\x1b\n\
-    \trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12.\n\nproperties\x18\x02\
-    \x20\x03(\x0b2\x0e.PropertyValueR\nproperties\"\x9e\x01\n\x0eCreatePropo\
-    sal\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12+\n\x11recei\
-    ving_account\x18\x02\x20\x01(\tR\x10receivingAccount\x12\"\n\x04role\x18\
-    \x03\x20\x01(\x0e2\x0e.Proposal.RoleR\x04role\x12\x1e\n\nproperties\x18\
-    \x04\x20\x03(\tR\nproperties\"\xe4\x01\n\x0eAnswerProposal\x12\x1b\n\tre\
-    cord_id\x18\x01\x20\x01(\tR\x08recordId\x12+\n\x11receiving_account\x18\
-    \x02\x20\x01(\tR\x10receivingAccount\x12\"\n\x04role\x18\x03\x20\x01(\
-    \x0e2\x0e.Proposal.RoleR\x04role\x124\n\x08response\x18\x04\x20\x01(\x0e\
-    2\x18.AnswerProposal.ResponseR\x08response\".\n\x08Response\x12\n\n\x06A\
-    CCEPT\x10\0\x12\n\n\x06REJECT\x10\x01\x12\n\n\x06CANCEL\x10\x02\"n\n\x0e\
-    RevokeReporter\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08recordId\x12\
-    \x1f\n\x0breporter_id\x18\x02\x20\x01(\tR\nreporterId\x12\x1e\n\npropert\
-    ies\x18\x03\x20\x03(\tR\npropertiesb\x06proto3\
+    R\x06owners\"\x98\x01\n\rCreateHolding\x12\x1d\n\nholding_id\x18\x01\x20\
+    \x01(\tR\tholdingId\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05label\x12\
+    \x20\n\x0bdescription\x18\x03\x20\x01(\tR\x0bdescription\x12\x14\n\x05as\
+    set\x18\x04\x20\x01(\tR\x05asset\x12\x1a\n\x08quantity\x18\x05\x20\x01(\
+    \x12R\x08quantity\"\xff\x01\n\x0bCreateOffer\x12\x19\n\x08offer_id\x18\
+    \x01\x20\x01(\tR\x07offerId\x12\x14\n\x05label\x18\x02\x20\x01(\tR\x05la\
+    bel\x12\x20\n\x0bdescription\x18\x03\x20\x01(\tR\x0bdescription\x12\x16\
+    \n\x06source\x18\x04\x20\x01(\tR\x06source\x12'\n\x0fsource_quantity\x18\
+    \x05\x20\x01(\x12R\x0esourceQuantity\x12\x16\n\x06target\x18\x06\x20\x01\
+    (\tR\x06target\x12'\n\x0ftarget_quantity\x18\x07\x20\x01(\x12R\x0etarget\
+    Quantity\x12\x1b\n\x05rules\x18\x08\x20\x03(\x0b2\x05.RuleR\x05rules\"n\
+    \n\x0bAcceptOffer\x12\x19\n\x08offer_id\x18\x01\x20\x01(\tR\x07offerId\
+    \x12\x16\n\x06source\x18\x02\x20\x01(\tR\x06source\x12\x16\n\x06target\
+    \x18\x03\x20\x01(\tR\x06target\x12\x14\n\x05count\x18\x04\x20\x01(\x04R\
+    \x05count\"'\n\nCloseOffer\x12\x19\n\x08offer_id\x18\x01\x20\x01(\tR\x07\
+    offerId\"|\n\x0cCreateRecord\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\
+    \x08recordId\x12\x1f\n\x0brecord_type\x18\x02\x20\x01(\tR\nrecordType\
+    \x12.\n\nproperties\x18\x03\x20\x03(\x0b2\x0e.PropertyValueR\nproperties\
+    \"-\n\x0eFinalizeRecord\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\x08reco\
+    rdId\"W\n\x10CreateRecordType\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04n\
+    ame\x12/\n\nproperties\x18\x02\x20\x03(\x0b2\x0f.PropertySchemaR\nproper\
+    ties\"_\n\x10UpdateProperties\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\
+    \x08recordId\x12.\n\nproperties\x18\x02\x20\x03(\x0b2\x0e.PropertyValueR\
+    \nproperties\"\x9e\x01\n\x0eCreateProposal\x12\x1b\n\trecord_id\x18\x01\
+    \x20\x01(\tR\x08recordId\x12+\n\x11receiving_account\x18\x02\x20\x01(\tR\
+    \x10receivingAccount\x12\"\n\x04role\x18\x03\x20\x01(\x0e2\x0e.Proposal.\
+    RoleR\x04role\x12\x1e\n\nproperties\x18\x04\x20\x03(\tR\nproperties\"\
+    \xe4\x01\n\x0eAnswerProposal\x12\x1b\n\trecord_id\x18\x01\x20\x01(\tR\
+    \x08recordId\x12+\n\x11receiving_account\x18\x02\x20\x01(\tR\x10receivin\
+    gAccount\x12\"\n\x04role\x18\x03\x20\x01(\x0e2\x0e.Proposal.RoleR\x04rol\
+    e\x124\n\x08response\x18\x04\x20\x01(\x0e2\x18.AnswerProposal.ResponseR\
+    \x08response\".\n\x08Response\x12\n\n\x06ACCEPT\x10\0\x12\n\n\x06REJECT\
+    \x10\x01\x12\n\n\x06CANCEL\x10\x02\"n\n\x0eRevokeReporter\x12\x1b\n\trec\
+    ord_id\x18\x01\x20\x01(\tR\x08recordId\x12\x1f\n\x0breporter_id\x18\x02\
+    \x20\x01(\tR\nreporterId\x12\x1e\n\nproperties\x18\x03\x20\x03(\tR\nprop\
+    ertiesb\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

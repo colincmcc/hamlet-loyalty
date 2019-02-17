@@ -5,12 +5,11 @@ import {
   createDbFindManyResolver,
   createDbFindOneResolver
 } from '../../utils/resolverFunctions';
-import AccountTC from './Account';
+import { AccountTC } from './Account';
 import { RuleITC } from './Rule';
 
-const AssetTC = TypeComposer.create(`
+export const AssetTC = TypeComposer.create(`
 type Asset {
-  asset_id: String
   name: String
   description: String
   owners: [String]
@@ -43,7 +42,7 @@ const CreateAssetITC = InputTypeComposer.create({
 });
 createTransactionResolver(AssetTC, CreateAssetITC);
 createUpdateTransactionResolver(AssetTC, AssetITC);
-createDbFindManyResolver(AssetTC);
+createDbFindManyResolver(AssetTC, AssetITC);
 createDbFindOneResolver(AssetTC, AssetITC);
 
 
@@ -52,7 +51,7 @@ AssetTC.addRelation( // GraphQL relation definition
   {
     resolver: () => AccountTC.getResolver('dbFindMany'),
     prepareArgs: {
-      filter: source => ({
+      input: source => ({
         publicKey: `${source.publicKey}`
       })
     },
@@ -62,7 +61,8 @@ AssetTC.addRelation( // GraphQL relation definition
 
 export function getAssetResolvers() {
   return {
-    findAsset: AssetTC.getResolver('dbFindOne')
+    findAsset: AssetTC.getResolver('dbFindOne'),
+    findAssets: AssetTC.getResolver('dbFindMany')
   };
 }
 

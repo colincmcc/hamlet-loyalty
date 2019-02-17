@@ -2,25 +2,29 @@ import { TypeComposer, InputTypeComposer } from 'graphql-compose';
 
 import {
   createTransactionResolver,
-  createDbFindOneResolver
+  createDbFindOneResolver,
+  createDbFindManyResolver
 } from '../../utils/resolverFunctions';
 
+import { AccountTC } from './Account';
+import { AssetTC } from './Asset';
 
-const HoldingTC = TypeComposer.create(`
+export const HoldingTC = TypeComposer.create(`
 type Holding {
-  id: String,
+  holdingId: String,
   label: String
   description: String
-  account: Account
-  asset: Asset
+  account: String
+  asset: String
   quantity: String
 }
 `);
-const HoldingITC = InputTypeComposer.create({
-  name: 'HoldingInput',
+const HoldingITC = HoldingTC.getITC();
+const CreateHoldingITC = InputTypeComposer.create({
+  name: 'CreateHoldingInput',
   description: 'Used to find or create an Holding',
   fields: {
-    id: 'String',
+    holdingId: 'String',
     label: 'String',
     description: 'String',
     asset: 'String',
@@ -28,12 +32,34 @@ const HoldingITC = InputTypeComposer.create({
   }
 });
 
-createTransactionResolver(HoldingTC, HoldingITC);
+HoldingTC.addRelation(
+  'accountData',
+  {
+    resolver: () => AccountTC.getResolver('dbFindOne'),
+    prepareArgs: {
+      input: source => ({ publicKey: `${[source.account]}` })
+    }
+  }
+);
+
+HoldingTC.addRelation(
+  'assetData',
+  {
+    resolver: () => AssetTC.getResolver('dbFindOne'),
+    prepareArgs: {
+      input: source => ({ publicKey: `${[source.assetName]}` })
+    }
+  }
+);
+
+createTransactionResolver(HoldingTC, CreateHoldingITC);
 createDbFindOneResolver(HoldingTC, HoldingITC);
+createDbFindManyResolver(HoldingTC, HoldingITC);
 
 export function getHoldingResolvers() {
   return {
-    findHolding: HoldingTC.getResolver('dbFindOne')
+    findHolding: HoldingTC.getResolver('dbFindOne'),
+    findHoldings: HoldingTC.getResolver('dbFindMany')
   };
 }
 

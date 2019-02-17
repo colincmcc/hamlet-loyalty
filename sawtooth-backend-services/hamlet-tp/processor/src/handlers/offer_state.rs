@@ -87,7 +87,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             Err(err) => return Err(err),
         }
 
-        let offer_id = payload.get_id();
+        let offer_id = payload.get_offer_id();
         let offer_label = payload.get_label();
         let offer_description = payload.get_description();
         let offer_source = payload.get_source();
@@ -95,7 +95,11 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
         let offer_target = payload.get_target();
         let offer_target_quantity = payload.get_target_quantity();
         let offer_rules = payload.get_rules().to_vec();
-
+        info!(
+            "Offer: source_qty {:?}  target_qty{}",
+            &offer_source_quantity,
+            &offer_target_quantity
+        );
 
         match state.get_offer(offer_id) {
             Ok(Some(_)) => {
@@ -182,7 +186,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
 
         // All checks have passed
         let mut new_offer = offer::Offer::new();
-        new_offer.set_id(offer_id.to_string());
+        new_offer.set_offer_id(offer_id.to_string());
         new_offer.set_label(offer_label.to_string());
         new_offer.set_description(offer_description.to_string());
         new_offer.set_source(offer_source.to_string());
@@ -204,7 +208,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
         mut state: HamletState,
         signer: &str
     ) -> Result<(), ApplyError> {
-        let offer_id = payload.get_id();
+        let offer_id = payload.get_offer_id();
         let accept_offer_source = payload.get_source();
         let accept_offer_target = payload.get_target();
         let accept_offer_count = payload.get_count() as i64;
@@ -244,9 +248,10 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             }
             Err(err) => return Err(err),
         };
-        let offeror_source_holding_id = offeror_source_holding.get_id();
+        let offeror_source_holding_id = offeror_source_holding.get_holding_id();
         let offeror_source_holding_asset = offeror_source_holding.get_asset();
         let offeror_source_holding_qty = offeror_source_holding.get_quantity();
+        let offeror_public_key = offeror_source_holding.get_account();
 
         let offeror_target_holding = match state.get_holding(offeror_target) {
             Ok(Some(holding)) => holding,
@@ -258,7 +263,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             }
             Err(err) => return Err(err),
         };
-        let offeror_target_holding_id = offeror_target_holding.get_id();
+        let offeror_target_holding_id = offeror_target_holding.get_holding_id();
         let offeror_target_holding_asset = offeror_target_holding.get_asset();
         let offeror_target_holding_qty = offeror_target_holding.get_quantity();
 
@@ -273,7 +278,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             }
             Err(err) => return Err(err),
         };
-        let receiver_source_holding_id = receiver_source_holding.get_id();
+        let receiver_source_holding_id = receiver_source_holding.get_holding_id();
         let receiver_source_holding_asset = receiver_source_holding.get_asset();
         let receiver_source_holding_qty = receiver_source_holding.get_quantity();
 
@@ -287,7 +292,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             }
             Err(err) => return Err(err),
         };
-        let receiver_target_holding_id = receiver_target_holding.get_id();
+        let receiver_target_holding_id = receiver_target_holding.get_holding_id();
         let receiver_target_holding_asset = receiver_target_holding.get_asset();
         let receiver_target_holding_qty = receiver_target_holding.get_quantity();
 
@@ -308,26 +313,65 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
             )))
         }
 
-        /* Make sure the assets exist
-        match state.get_asset(source_holding_asset) {
-            Ok(Some(_)) => match state.get_asset(target_holding_asset) {
-                Ok(Some(_)) => (),
-                Ok(None) => {
+        // Rule Validation
+        let mut exchange_once: bool = false;
+        let mut exchange_once_per_account: bool = false;
+
+        if handle::_exchange_once(offer.clone()) {
+            match state.offer_has_receipt(offer_id) {
+                Ok(true) => {
                     return Err(ApplyError::InvalidTransaction(format!(
-                        "Offer exists, but is not open {}",
-                        offer_id
+                        "Failed to accept offer, EXCHANGE ONCE set \
+                         and this offer has already been accepted"
                     )))
                 }
-            },
+                Ok(false) => {
+                    exchange_once = true;
+                    ()
+                },
+                Err(err) => return Err(err),
+            }
+        }
+
+        if handle::_exchange_once_per_account(offer.clone()) {
+            match state.get_offer_account_receipt(offer_id, signer) {
+                Ok(Some(_)) => {
+                    return Err(ApplyError::InvalidTransaction(format!(
+                        "Failed to accept offer, EXCHANGE ONCE PER ACCOUNT set \
+                         and account {} already has accepted the offer",
+                        signer
+                    )))
+                }
+                Ok(None) => {
+                    exchange_once_per_account = true;
+                    ()
+                },
+                Err(err) => return Err(err),
+            }
+        }
+
+        let receiver_source_asset = match state.get_asset(receiver_source_holding_asset) {
+            Ok(Some(receiver_source_asset)) => receiver_source_asset,
             Ok(None) => {
                 return Err(ApplyError::InvalidTransaction(format!(
-                    "Offer with this id already exists: {}",
-                    offer_id
+                    "Asset does not exist: {}",
+                    receiver_source_holding_asset
                 )))
             },
             Err(err) => return Err(err),
-        }
-        */
+        };
+
+        let offeror_source_asset = match state.get_asset(offeror_source_holding_asset) {
+            Ok(Some(offeror_source_asset)) => offeror_source_asset,
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Asset does not exist: {}",
+                    offeror_source_holding_asset
+                )))
+            },
+            Err(err) => return Err(err),
+        };
+
         // ! TODO: Do rule validation
 
         let new_rec_source_holding_qty = receiver_source_holding_qty - offeror_target_qty * accept_offer_count;
@@ -335,11 +379,49 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
         let new_off_source_holding_qty = offeror_source_holding_qty - offeror_source_qty * accept_offer_count;
         let new_off_target_holding_qty = offeror_target_holding_qty + offeror_target_qty * accept_offer_count;
 
+        // Make sure there is enough in the accounts or the asset is infinite
+        match new_rec_source_holding_qty < 0 {
+            true => match handle::_holding_is_infinite(receiver_source_asset, signer){
+                false => {
+                    return Err(ApplyError::InvalidTransaction(format!(
+                        "Failed to accept offer, the accepting Account {} does not have enough {}",
+                        signer,
+                        receiver_source_holding_asset
+                    )))
+                },
+                true => ()
+
+            },
+            false => ()
+        }
+
+        // Make sure there is enough in the accounts or the asset is infinite
+        match new_off_source_holding_qty < 0 {
+            true => match handle::_holding_is_infinite(offeror_source_asset, offeror_public_key){
+                false => {
+                    return Err(ApplyError::InvalidTransaction(format!(
+                        "Failed to accept offer, the offering Account {} does not have enough of {}",
+                        offeror_public_key,
+                        offeror_source_holding_asset
+                    )))
+                },
+                true => ()
+
+            },
+            false => ()
+        }
         // TODO: when available - async or coroutine
         state.update_holding(receiver_source_holding_id, new_rec_source_holding_qty);
         state.update_holding(receiver_target_holding_id, new_rec_target_holding_qty);
         state.update_holding(offeror_source_holding_id, new_off_source_holding_qty);
         state.update_holding(offeror_target_holding_id, new_off_target_holding_qty);
+
+        if(exchange_once){
+            state.save_offer_receipt(offer_id);
+        }
+        if(exchange_once_per_account){
+            state.save_offer_account_receipt(offer_id, signer);
+        }
         Ok(())
     }
 
@@ -349,7 +431,7 @@ impl Offer for &hamlet_handler::HamletTransactionHandler {
         mut state: HamletState,
         signer: &str
     ) -> Result<(), ApplyError> {
-        let offer_id = payload.get_id();
+        let offer_id = payload.get_offer_id();
 
         match state.get_offer(offer_id) {
             Ok(Some(_)) => {

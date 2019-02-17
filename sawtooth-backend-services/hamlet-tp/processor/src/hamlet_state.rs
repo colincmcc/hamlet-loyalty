@@ -11,6 +11,7 @@ cfg_if! {
 use std::collections::HashMap;
 use protobuf::Message;
 use protobuf;
+use protobuf::{RepeatedField};
 use crate::std_ext::addressing::*;
 use crate::protos::*;
 
@@ -183,13 +184,13 @@ impl<'a> HamletState<'a> {
                         Ok(offers) => offers,
                         Err(_) => {
                             return Err(ApplyError::InternalError(String::from(
-                                "Cannot deserialize account container",
+                                "Cannot deserialize offer container",
                             )))
                         }
                     };
 
                 for offer in offers.get_entries() {
-                    if offer.id == offer_id {
+                    if offer.offer_id == offer_id {
                         return Ok(Some(offer.clone()));
                     }
                 }
@@ -215,7 +216,7 @@ impl<'a> HamletState<'a> {
         };
 
         offers.entries.push(offer);
-        offers.entries.sort_by_key(|a| a.clone().id);
+        offers.entries.sort_by_key(|a| a.clone().offer_id);
         let serialized = match offers.write_to_bytes() {
             Ok(serialized) => serialized,
             Err(_) => {
@@ -231,6 +232,134 @@ impl<'a> HamletState<'a> {
             .map_err(|err| ApplyError::InternalError(format!("{}", err)))?;
         Ok(())
     }
+
+    pub fn save_offer_account_receipt(&mut self, offer_id: &str, public_key: &str)  -> Result<(), ApplyError> {
+        let address = make_offer_account_address(offer_id, public_key);
+        let offer_history_containers = self.context.get_state(vec![address.clone()])?;
+        let mut offer_history_container = match offer_history_containers {
+            Some(packed) => match protobuf::parse_from_bytes(packed.as_slice()) {
+                Ok(offer_histories) => offer_histories,
+                Err(_) => {
+                    return Err(ApplyError::InternalError(String::from(
+                        "Cannot deserialize offer history container",
+                    )))
+                }
+            },
+            None => offer_history::OfferHistoryContainer::new(),
+        };
+
+        let mut new_offer_history = offer_history::OfferHistory::new();
+        new_offer_history.set_offer_id(offer_id.to_string());
+        new_offer_history.set_account_id(public_key.to_string());
+
+        offer_history_container.entries.push(new_offer_history);
+
+        let serialized = match offer_history_container.write_to_bytes() {
+            Ok(serialized) => serialized,
+            Err(_) => {
+                return Err(ApplyError::InternalError(String::from(
+                    "Cannot serialize offer history container",
+                )))
+            }
+        };
+        let mut sets = HashMap::new();
+        sets.insert(address, serialized);
+        self.context
+            .set_state(sets)
+            .map_err(|err| ApplyError::InternalError(format!("{}", err)))?;
+        Ok(())
+    }
+
+    pub fn save_offer_receipt(&mut self, offer_id: &str) -> Result<(), ApplyError> {
+        let address = make_offer_history_address(offer_id);
+        let offer_history_containers = self.context.get_state(vec![address.clone()])?;
+        let mut offer_history_container = match offer_history_containers {
+            Some(packed) => match protobuf::parse_from_bytes(packed.as_slice()) {
+                Ok(offer_histories) => offer_histories,
+                Err(_) => {
+                    return Err(ApplyError::InternalError(String::from(
+                        "Cannot deserialize offer history container",
+                    )))
+                }
+            },
+            None => offer_history::OfferHistoryContainer::new(),
+        };
+
+        let mut new_offer_history = offer_history::OfferHistory::new();
+        new_offer_history.set_offer_id(offer_id.to_string());
+
+        offer_history_container.entries.push(new_offer_history);
+
+        let serialized = match offer_history_container.write_to_bytes() {
+            Ok(serialized) => serialized,
+            Err(_) => {
+                return Err(ApplyError::InternalError(String::from(
+                    "Cannot serialize offer history container",
+                )))
+            }
+        };
+        let mut sets = HashMap::new();
+        sets.insert(address, serialized);
+        self.context
+            .set_state(sets)
+            .map_err(|err| ApplyError::InternalError(format!("{}", err)))?;
+        Ok(())
+    }
+
+    pub fn offer_has_receipt(&mut self, offer_id: &str) -> Result<bool, ApplyError> {
+        let address = make_offer_history_address(offer_id);
+        let offer_history_containers = self.context.get_state(vec![address])?;
+
+        match offer_history_containers {
+            Some(packed) => {
+                let offer_histories: offer_history::OfferHistoryContainer =
+                    match protobuf::parse_from_bytes(packed.as_slice()) {
+                        Ok(offer_histories) => offer_histories,
+                        Err(_) => {
+                            return Err(ApplyError::InternalError(String::from(
+                                "Cannot deserialize offer history container",
+                            )))
+                        }
+                    };
+
+                for offer_history in offer_histories.get_entries() {
+                    if offer_history.offer_id == offer_id {
+                        return Ok(true);
+                    }
+                }
+                Ok(false)
+            }
+            None => Ok(false),
+        }
+    }
+
+    pub fn get_offer_account_receipt(&mut self, offer_id: &str, public_key: &str) -> Result<Option<offer_history::OfferHistory>, ApplyError> {
+        let address = make_offer_account_address(offer_id, public_key);
+        let offer_history_containers = self.context.get_state(vec![address])?;
+
+        match offer_history_containers {
+            Some(packed) => {
+                let offer_histories: offer_history::OfferHistoryContainer =
+                    match protobuf::parse_from_bytes(packed.as_slice()) {
+                        Ok(offer_histories) => offer_histories,
+                        Err(_) => {
+                            return Err(ApplyError::InternalError(String::from(
+                                "Cannot deserialize offer history container",
+                            )))
+                        }
+                    };
+
+                for offer_history in offer_histories.get_entries() {
+                    if offer_history.offer_id == offer_id && offer_history.account_id == public_key {
+                        return Ok(Some(offer_history.clone()));
+                    }
+                }
+                Ok(None)
+            }
+            None => Ok(None),
+        }
+    }
+
 
     pub fn get_holding(&mut self, holding_id: &str) -> Result<Option<holding::Holding>, ApplyError> {
         let address = make_holding_address(holding_id);
@@ -249,7 +378,7 @@ impl<'a> HamletState<'a> {
                     };
 
                 for holding in holdings.get_entries() {
-                    if holding.id == holding_id {
+                    if holding.holding_id == holding_id {
                         return Ok(Some(holding.clone()));
                     }
                 }
@@ -281,9 +410,9 @@ impl<'a> HamletState<'a> {
         let mut index = None;
         let mut count = 0;
 
-        // Find the existing Asset's index in the deserialized Asset list
+        // Find the existing Holdings's index in the deserialized Holding list
         for holding in holdings.clone() {
-            if holding.id == holding_id {
+            if holding.holding_id == holding_id {
                 index = Some(count);
                 break;
             }
@@ -301,7 +430,7 @@ impl<'a> HamletState<'a> {
         holding_container.entries.push(a);
         holding_container
             .entries
-            .sort_by_key(|x| x.clone().id);
+            .sort_by_key(|x| x.clone().holding_id);
 
         let serialized = match holding_container.write_to_bytes() {
             Ok(serialized) => serialized,
@@ -316,6 +445,40 @@ impl<'a> HamletState<'a> {
         self.context
             .set_state(sets)
             .map_err(|err| ApplyError::InternalError(format!("{}", err)))?;
+        Ok(())
+    }
+    pub fn add_holding_to_account(
+        &mut self,
+        public_key: &str,
+        holding_id: &str
+    )-> Result<(), ApplyError> {
+        let account = match self.get_account(public_key) {
+            Ok(Some(updated_account)) => updated_account,
+            Ok(None) => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Account does not exist with public key: {}",
+                    public_key
+                )))
+            }
+            Err(err) => return Err(err),
+        };
+        let mut updated_account = account.clone();
+        let mut holdings = updated_account.get_holdings().to_vec();
+
+        match holdings.contains(&holding_id.to_string()) {
+            true => {
+                return Err(ApplyError::InvalidTransaction(format!(
+                    "Account {} already owns Holding {} ",
+                    public_key,
+                    &holding_id
+                )))
+            },
+            false => ()
+        }
+
+        holdings.push(holding_id.to_string());
+        updated_account.set_holdings(RepeatedField::from_vec(holdings.clone()));
+        self.set_account(public_key, updated_account)?;
         Ok(())
     }
 

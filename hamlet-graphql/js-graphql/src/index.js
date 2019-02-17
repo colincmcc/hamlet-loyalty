@@ -116,7 +116,9 @@ const apolloServer = new ApolloServer({
 });
 apolloServer.applyMiddleware({ app });
 
-// We then wrap the express server and install subscription handlers.  Apollo handles the creation of the subscription websocket below
+// We then wrap the express server and install
+// subscription handlers.  Apollo handles the
+// creation of the subscription websocket below
 let server;
 if (config.ssl) {
   console.log('Launching server with SSL');

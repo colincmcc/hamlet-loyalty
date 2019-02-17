@@ -12,6 +12,7 @@ pub trait Account {
         state: HamletState,
         signer: &str
     ) -> Result<(), ApplyError>;
+
 }
 
 impl Account for &hamlet_handler::HamletTransactionHandler {
@@ -44,4 +45,5 @@ impl Account for &hamlet_handler::HamletTransactionHandler {
         state.set_account(signer, new_account)?;
         Ok(())
     }
+
 }

@@ -68,7 +68,7 @@ impl HamletPayload {
             }
             payload::TransactionPayload_PayloadType::CREATE_HOLDING=> {
                 let create_holding = payload.get_create_holding();
-                if create_holding.get_id() == "" {
+                if create_holding.get_holding_id() == "" {
                     return Err(ApplyError::InvalidTransaction(String::from(
                         "Holding Id cannot be an empty string",
                     )));
@@ -77,7 +77,7 @@ impl HamletPayload {
             }
             payload::TransactionPayload_PayloadType::CREATE_OFFER => {
                 let create_offer = payload.get_create_offer();
-                if create_offer.get_id() == "" {
+                if create_offer.get_offer_id() == "" {
                     return Err(ApplyError::InvalidTransaction(String::from(
                         "Offer Id cannot be an empty string",
                     )));
@@ -86,7 +86,7 @@ impl HamletPayload {
             }
             payload::TransactionPayload_PayloadType::CLOSE_OFFER => {
                 let close_offer = payload.get_close_offer();
-                if close_offer.get_id() == "" {
+                if close_offer.get_offer_id() == "" {
                     return Err(ApplyError::InvalidTransaction(String::from(
                         "Offer Id cannot be an empty string",
                     )));
@@ -95,7 +95,7 @@ impl HamletPayload {
             }
             payload::TransactionPayload_PayloadType::ACCEPT_OFFER => {
                 let accept_offer = payload.get_accept_offer();
-                if accept_offer.get_id() == "" {
+                if accept_offer.get_offer_id() == "" {
                     return Err(ApplyError::InvalidTransaction(String::from(
                         "Offer Id cannot be an empty string",
                     )));

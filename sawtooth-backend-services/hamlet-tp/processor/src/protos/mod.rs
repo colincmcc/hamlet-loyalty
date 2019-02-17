@@ -8,3 +8,4 @@ pub mod property;
 pub mod proposal;
 pub mod record;
 pub mod rule;
+pub mod smart_permission;

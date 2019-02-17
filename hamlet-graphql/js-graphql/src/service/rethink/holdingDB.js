@@ -6,7 +6,7 @@ import * as db from './rethinkRepository';
 
 const getAttribute = attr => obj => obj(attr);
 const getName = getAttribute('label');
-const getHoldingId = getAttribute('id');
+const getHoldingId = getAttribute('holdingId');
 const getDescription = getAttribute('description');
 const getAccount = getAttribute('account');
 const getAsset = getAttribute('asset');
@@ -40,7 +40,7 @@ const findHolding = holdingId => block => getTable('holdings', block)
 
 const getHoldingAccount = publicKey => block => getTable('accounts', block)
   .filter(hasAccount(publicKey))
-  .pluck('name', 'publicKey')
+  .pluck('label', 'publicKey')
   .coerceTo('array')
   .do(results => r.branch(
     results.isEmpty(),
@@ -50,7 +50,7 @@ const getHoldingAccount = publicKey => block => getTable('accounts', block)
 
 const getHoldingAsset = assetId => block => getTable('assets', block)
   .filter(hasAsset(assetId))
-  .pluck('name', 'id', 'rules')
+  .pluck('name', 'holdingId', 'rules')
   .coerceTo('array')
   .do(results => r.branch(
     results.isEmpty(),
@@ -60,7 +60,8 @@ const getHoldingAsset = assetId => block => getTable('assets', block)
 
 const fetchHoldingQuery = holdingId => block => findHolding(holdingId)(block);
 
-const listHoldingQuery = (authedKey, filterQuery) => block => getTable('holdings', block)
+// TODO: Use authentication key to make sure the user has the right to see the holdings. Allow asset owners to see current holdings of their assets
+const listHoldingQuery = filterQuery => block => getTable('holdings', block)
   .filter(filterQuery)
   .coerceTo('array');
 
@@ -69,7 +70,10 @@ const listHoldingQuery = (authedKey, filterQuery) => block => getTable('holdings
 
 const fetchHolding = holdingId => db.queryWithCurrentBlock(fetchHoldingQuery(holdingId));
 
-const listHoldings = (authedKey, filterQuery) => db.queryWithCurrentBlock(listHoldingQuery(authedKey, filterQuery));
+const listHoldings = (filterQuery) => {
+  console.log(filterQuery);
+  return db.queryWithCurrentBlock(listHoldingQuery(filterQuery));
+};
 
 export {
   fetchHolding,

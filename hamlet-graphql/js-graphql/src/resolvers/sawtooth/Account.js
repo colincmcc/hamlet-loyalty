@@ -10,7 +10,7 @@ import AssetTC from './Asset';
 import HoldingTC from './Holding';
 import RecordTC from './Record';
 
-const AccountTC = TypeComposer.create(`
+export const AccountTC = TypeComposer.create(`
 type Account {
   label: String
   description: String
@@ -22,19 +22,19 @@ type Account {
 AccountTC.addRelation(
   'assets',
   {
-    resolver: () => AssetTC.getResolver('dbFindOne'),
+    resolver: () => AssetTC.getResolver('dbFindMany'),
     prepareArgs: {
-      filter: source => ({ owners: `${[source.publicKey]}` })
+      input: source => ({ owners: `${source.publicKey}` })
     }
   }
 );
 
 AccountTC.addRelation(
-  'holdings',
+  'holdingsData',
   {
-    resolver: () => UserTC.getResolver('dbFindOne'),
+    resolver: () => HoldingTC.getResolver('dbFindMany'),
     prepareArgs: {
-      filter: source => ({ owners: `${[source.publicKey]}` })
+      input: source => ({ account: `${[source.publicKey]}` })
     }
   }
 );
@@ -44,7 +44,7 @@ AccountTC.addRelation(
   {
     resolver: () => UserTC.getResolver('dbFindOne'),
     prepareArgs: {
-      filter: source => ({ owners: `${[source.publicKey]}` })
+      input: source => ({ owners: `${[source.publicKey]}` })
     }
   }
 );
