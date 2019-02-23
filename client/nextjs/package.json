@@ -1,0 +1,30 @@
+{
+  "name": "with-apollo",
+  "version": "2.0.0",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@material-ui/icons": "3.0.2",
+    "apollo-boost": "^0.1.16",
+    "chartist": "0.10.1",
+    "dotenv-webpack": "1.5.7",
+    "graphql": "^14.0.2",
+    "isomorphic-unfetch": "^3.0.0",
+    "jss": "latest",
+    "next": "^8.0.1",
+    "prop-types": "^15.6.2",
+    "react": "^16.8.2",
+    "react-apollo": "^2.1.11",
+    "react-dom": "^16.8.2",
+    "react-jss": "^8.1.0",
+    "styled-components": "^4.1.3"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-plugin-styled-components": "^1.10.0"
+  }
+}

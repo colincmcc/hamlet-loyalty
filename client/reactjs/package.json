@@ -1,0 +1,65 @@
+{
+  "name": "hamlet-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "@material-ui/icons": "^3.0.2",
+    "@material-ui/lab": "^3.0.0-alpha.30",
+    "apollo-cache-inmemory": "^1.2.5",
+    "apollo-cache-persist": "^0.1.1",
+    "apollo-client": "^2.3.5",
+    "apollo-link": "^1.2.2",
+    "apollo-link-error": "^1.1.0",
+    "apollo-link-http": "^1.5.4",
+    "apollo-link-state": "^0.4.1",
+    "apollo-link-ws": "^1.0.8",
+    "apollo-utilities": "^1.0.18",
+    "graphql": "^14.1.1",
+    "graphql-tag": "^2.9.2",
+    "lodash": "^4.17.10",
+    "lodash.merge": "^4.6.1",
+    "numeral": "^2.0.6",
+    "prop-types": "^15.7.2",
+    "query-string": "^6.2.0",
+    "react": "^16.8.2",
+    "react-apollo": "^2.1.5",
+    "react-dom": "^16.8.2",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "^2.1.5",
+    "react-swipeable-views": "^0.13.1",
+    "react-swipeable-views-utils": "^0.13.1",
+    "recharts": "^1.5.0",
+    "styled-components": "^4.1.3",
+    "subscriptions-transport-ws": "^0.9.15",
+    "yup": "^0.26.2"
+  },
+  "devDependencies": {
+    "dotenv": "^6.2.0",
+    "eslint-config-airbnb": "^17.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "airbnb"
+    ],
+    "rules": {
+      "linebreak-style": [
+        "error",
+        "windows"
+      ]
+    }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
